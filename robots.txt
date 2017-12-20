@@ -1,0 +1,10 @@
+User-agent: Mediapartners-Google
+User-agent: *
+Disallow: /dashboard
+Disallow: /dashboard/login
+Allow: /
+user-agent: Mediapartners-Google
+Allow: /
+user-agent: Googlebot-Image
+Allow: /
+user-agent: Googlebot-Mobile

@@ -1,0 +1,54 @@
+@php($get_app_configuration = \App\Master_app_configuration::first())
+<header class="topbar">
+    <nav class="navbar top-navbar navbar-expand-md navbar-light">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{{ URL('/') }}" target="_blank">
+                <b>
+                    <img src="{{ URL::asset($get_app_configuration->path_logo_app_configurations.$get_app_configuration->name_logo_app_configurations) }}" alt="homepage" class="light-logo" width="55%" />
+                </b>
+                <span>
+                    <img src="{{ URL::asset($get_app_configuration->path_logo_text_app_configurations.$get_app_configuration->name_logo_text_app_configurations) }}" alt="homepage" class="dark-logo" width="55%" />
+                </span>
+            </a>
+        </div>
+        <div class="navbar-collapse">
+            <ul class="navbar-nav mr-auto mt-md-0">
+                <li class="nav-item">
+                    <a class="nav-link nav-toggler hidden-md-up text-muted waves-effect waves-dark" href="javascript:void(0)">
+                        <i class="mdi mdi-menu"></i>
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <div class="nav-link waves-effect waves-dark" style="color:white">
+                        <?php echo Shwetech::changeDBToDate(date('Y-m-d')); ?>, <onload="timeJavascript()" id="output">
+                    </div>
+                </li>
+            </ul>
+            <ul class="navbar-nav my-lg-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <b>{{ Auth::user()->name }}</b> <i class="mdi mdi-arrow-down-drop-circle"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right scale-up">
+                        <ul class="dropdown-user" style="text-align: center">
+                            <li>
+                                <div class="dw-user-box">
+                                    <div class="u-img"><img src="{{ URL::asset($get_app_configuration->path_logo_app_configurations.$get_app_configuration->name_logo_app_configurations) }}" alt="user"></div>
+                                    <div class="u-text">
+                                        <br/>
+                                        <h4>{{ Auth::user()->name }}</h4>
+                                        <p class="text-muted">{{ Auth::user()->email }}</p>
+                                        <br/>
+                                        <a href="{{ URL('dashboard/profile') }}" class="btn btn-rounded btn-danger btn-sm">View Account</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="{{ URL('dashboard/logout') }}"><i class="fa fa-power-off"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>

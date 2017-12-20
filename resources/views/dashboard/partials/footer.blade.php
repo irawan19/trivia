@@ -1,0 +1,1 @@
+<footer class="footer"> Copyright © 2017 trivia.com. All rights reserved. </footer>
