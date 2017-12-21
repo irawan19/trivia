@@ -12,7 +12,8 @@
         <link rel="apple-touch-icon" href="<?php echo e(URL::asset($get_app_configuration->path_icon_app_configurations.$get_app_configuration->name_icon_app_configurations)); ?>">
         <meta name="msapplication-TileColor" content="#ff2658">
         <meta name="msapplication-TileImage" content="<?php echo e(URL::asset($get_app_configuration->path_icon_app_configurations.$get_app_configuration->name_icon_app_configurations)); ?>">
-
+        <link href="<?php echo e(URL::asset('public/dashboard/plugins/bootstrap/css/bootstrap.min.css')); ?>" rel="stylesheet">
+        
         <!-- Styles -->
         <style>
             html, body {
@@ -65,6 +66,9 @@
             .m-b-md {
                 margin-bottom: 30px;
             }
+            .img-fluid{
+                width: 100% \9;
+            }
         </style>
     </head>
     <body>
@@ -86,7 +90,7 @@
             <div class="content">
                 <div style="color:black;font-size:22px;"><b>Welcome To</b></div>
                 <div class="title m-b-md">
-                    <img src="<?php echo e(URL::asset($get_app_configuration->path_logo_app_configurations.$get_app_configuration->name_logo_app_configurations)); ?>">
+                    <img class="img-fluid" src="<?php echo e(URL::asset($get_app_configuration->path_logo_app_configurations.$get_app_configuration->name_logo_app_configurations)); ?>">
                 </div>
             </div>
         </div>

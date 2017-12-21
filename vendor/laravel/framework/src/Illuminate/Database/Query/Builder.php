@@ -1083,9 +1083,7 @@ class Builder
     {
         $this->wheres[] = compact('column', 'type', 'boolean', 'operator', 'value');
 
-        if (! $value instanceof Expression) {
-            $this->addBinding($value, 'where');
-        }
+        $this->addBinding($value, 'where');
 
         return $this;
     }
@@ -1773,9 +1771,9 @@ class Builder
             return 0;
         } elseif (is_object($results[0])) {
             return (int) $results[0]->aggregate;
+        } else {
+            return (int) array_change_key_case((array) $results[0])['aggregate'];
         }
-
-        return (int) array_change_key_case((array) $results[0])['aggregate'];
     }
 
     /**

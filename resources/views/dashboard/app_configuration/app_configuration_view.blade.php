@@ -18,7 +18,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="form-group">
-                            <h4 style="text-align: center">Logo</h4>
+                            <h4 style="text-align: center">Configurations</h4>
                             @if (Session::get('after_save.alert') == 'success')
                                 {{ Shwetech::formSuccess(Session::get('after_save.text')) }}
                             @endif
@@ -26,12 +26,12 @@
                                 {{ csrf_field() }}
                                 <div class="form-group {{ Shwetech::errorStyleGroup($errors->first('sessions_days_duration_app_configurations')) }}">
                                     <label class="form-control-label">Default Sessions Duration (Day) <b style="color:red">*</b></label>
-                                    <input id="sessions_days_duration_app_configurations" type="text" name="sessions_days_duration_app_configurations" class="form-control number_format {{ Shwetech::errorStyleFormControl($errors->first('sessions_days_duration_app_configurations')) }}" value="{{ Request::old('sessions_days_duration_app_configurations') }}" placeholder="Default Sessions Duration (Day)" required>
+                                    <input id="sessions_days_duration_app_configurations" type="text" name="sessions_days_duration_app_configurations" class="form-control number_format {{ Shwetech::errorStyleFormControl($errors->first('sessions_days_duration_app_configurations')) }}" value="{{ Request::old('sessions_days_duration_app_configurations') == '' ? $view_app_configurations->sessions_days_duration_app_configurations : Request::old('sessions_days_duration_app_configurations') }}" placeholder="Default Sessions Duration (Day)" required>
                                     {{ Shwetech::formError($errors->first('sessions_days_duration_app_configurations')) }}
                                 </div>
                                 <div class="form-group {{ Shwetech::errorStyleGroup($errors->first('game_minutes_duration_app_configurations')) }}">
                                     <label class="form-control-label">Default Game Duration (Minutes) <b style="color:red">*</b></label>
-                                    <input id="game_minutes_duration_app_configurations" type="text" name="game_minutes_duration_app_configurations" class="form-control number_format {{ Shwetech::errorStyleFormControl($errors->first('game_minutes_duration_app_configurations')) }}" value="{{ Request::old('game_minutes_duration_app_configurations') }}" placeholder="Default Game Duration (Minutes)" required>
+                                    <input id="game_minutes_duration_app_configurations" type="text" name="game_minutes_duration_app_configurations" class="form-control number_format {{ Shwetech::errorStyleFormControl($errors->first('game_minutes_duration_app_configurations')) }}" value="{{ Request::old('game_minutes_duration_app_configurations') == '' ? $view_app_configurations->game_minutes_duration_app_configurations : Request::old('game_minutes_duration_app_configurations') }}" placeholder="Default Game Duration (Minutes)" required>
                                     {{ Shwetech::formError($errors->first('game_minutes_duration_app_configurations')) }}
                                 </div>
                                 <br/>

@@ -63,7 +63,7 @@ class TopUpAgentController extends AdminCoreController
         $link_top_up_agent = 'top_up_agent';
         if(Shwetech::accessRights($link_top_up_agent,'view') == 'true')
         {
-            $data['link_top_up_agent']      		= $link_top_up_agent;
+            $data['link_top_up_agent']      	= $link_top_up_agent;
             $url_now                    		= $request->fullUrl();
             $result_word                		= $request->search_word;
             $data['result_word']        		= $result_word;
@@ -134,7 +134,13 @@ class TopUpAgentController extends AdminCoreController
                 return view('dashboard/top_up_agent/top_up_agent_add',$data);
             }
             else
-                return view('dashboard/top_up_agent/top_up_agent_add');
+            {
+                $id_admin           = Auth::user()->id;
+                $data['add_agents'] = \App\Master_user::where('level_systems_id',3)
+                                                        ->where('sub_users_id',$id_admin)
+                                                        ->get();
+                return view('dashboard/top_up_agent/top_up_agent_add', $data);
+            }
         }
         else
             return redirect('/dashboard/top_up_agent');
@@ -147,7 +153,7 @@ class TopUpAgentController extends AdminCoreController
         {
             $this->validate($request, [
                 'to_users_id'			=> 'required',
-                'credit_top_ups'		=> 'required|numeric',
+                'credit_top_ups'		=> 'required|numeric|check_top_up_agent',
             ]);
 
     		$id_agent 					= $request->to_users_id;
@@ -169,6 +175,18 @@ class TopUpAgentController extends AdminCoreController
     			'credit_users'	=> $calculate_credit
     		];
     		\App\Master_user::where('id',$id_agent)->update($credit_data);
+
+            if(Auth::user()->level_systems_id == 2)
+            {
+                $id_master_agent                = Auth::user()->id;
+                $get_master_agent               = \App\Master_user::where('id',$id_master_agent)->first();
+                $credit_master_agent            = $get_master_agent->credit_users;
+                $calculate_credit_master_agent  = $credit_master_agent - $get_credit;
+                $credit_master_agent_data       = [
+                    'credit_users'              => $calculate_credit_master_agent
+                ];
+                \App\Master_user::where('id',$id_master_agent)->update($credit_master_agent_data);
+            }
     	    
     	    $save         	= $request->save;
     	    $save_exit 		= $request->save_exit;
@@ -225,7 +243,15 @@ class TopUpAgentController extends AdminCoreController
             $check_top_ups = \App\Master_top_up::where('id_top_ups',$id_top_ups)->count();
             if($check_top_ups != 0)
             {
-            	$data['edit_agents']				= \App\Master_user::where('level_systems_id','3')->get();
+                if(Auth::user()->level_systems_id == 1)
+            	    $data['edit_agents']		= \App\Master_user::where('level_systems_id','3')->get();
+                else
+                {
+                    $id_admin                   = Auth::user()->id;
+                    $data['edit_agents']        = \App\Master_user::where('level_systems_id','3')
+                                                                    ->where('sub_users_id',$id_admin)
+                                                                    ->get();
+                }
                 $data['edit_top_up_agents']		= \App\Master_top_up::where('id_top_ups',$id_top_ups)
                 														->first();
                 return view('dashboard/top_up_agent/top_up_agent_edit',$data);
@@ -249,7 +275,7 @@ class TopUpAgentController extends AdminCoreController
             {
             	$this->validate($request, [
                     'to_users_id'			=> 'required',
-                	'credit_top_ups'		=> 'required|numeric',
+                	'credit_top_ups'		=> 'required|numeric|check_top_up_agent_edit',
                 ]);
 
             	$id_agent 				= $request->to_users_id;
@@ -259,6 +285,19 @@ class TopUpAgentController extends AdminCoreController
 
                 $get_credit_old			= \App\Master_top_up::where('id_top_ups',$id_top_ups)->first();
             	$credit_agent_old 		= $get_credit_old->credit_top_ups;
+
+                if(Auth::user()->level_systems_id == 2)
+                {
+                    $id_master_agent                    = Auth::user()->id;
+                    $get_master_agent                   = \App\Master_user::where('id',$id_master_agent)->first();
+                    $credit_master_agent                = $get_master_agent->credit_users;
+                    $calculate_credit_master_agent_old  = $credit_master_agent + $credit_agent_old;
+                    $credit_master_agent_old_data       = [
+                        'credit_users'                  => $calculate_credit_master_agent_old
+                    ];
+                    \App\Master_user::where('id',$id_master_agent)->update($credit_master_agent_old_data);
+                }
+
             	$calculate_credit_old	= $credit_agent - $credit_agent_old;
             	$credit_old_data 		= [
             		'credit_users'		=> $calculate_credit_old
@@ -281,6 +320,18 @@ class TopUpAgentController extends AdminCoreController
 	    			'credit_users'	=> $calculate_credit_new
 	    		];
 	    		\App\Master_user::where('id',$id_agent)->update($credit_new_data);
+
+                if(Auth::user()->level_systems_id == 2)
+                {
+                    $id_master_agent                = Auth::user()->id;
+                    $get_master_agent               = \App\Master_user::where('id',$id_master_agent)->first();
+                    $credit_master_agent            = $get_master_agent->credit_users;
+                    $calculate_credit_master_agent  = $credit_master_agent - $get_credit;
+                    $credit_master_agent_data       = [
+                        'credit_users'              => $calculate_credit_master_agent
+                    ];
+                    \App\Master_user::where('id',$id_master_agent)->update($credit_master_agent_data);
+                }
 
 	            if(request()->session()->get('page') != '')
 	                $redirect_page    = request()->session()->get('page');

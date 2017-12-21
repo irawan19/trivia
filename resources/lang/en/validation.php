@@ -12,6 +12,8 @@ return [
     | as the size rules. Feel free to tweak each of these messages here.
     |
     */
+    'check_top_up_agent'        => 'The :attribute not enough credit.',
+    'check_top_up_agent_edit'   => 'The :attribute not enough credit.',
     'check_credit_sessions'     => 'The :attribute not enough credit.',
     'check_credit_members'      => 'The :attribute not enough.',
     'check_last_sessions'       => 'The :attribute have another sessions not finished.',

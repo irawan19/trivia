@@ -35,7 +35,7 @@ class GameController extends AdminCoreController
                                                         ->get();
                 $data['view_game']        = \App\Master_game::join('master_sessions','sessions_id','=','master_sessions.id_sessions')
                 												->join('master_groups','groups_id','=','master_groups.id_groups')
-                												->join('users','users_id','=','master_groups.users_id')
+                												->join('users','users_id','=','users.id')
                                                                 ->where('sub_users_id',$id_admin)
                                                                 ->get();
             }
@@ -47,6 +47,7 @@ class GameController extends AdminCoreController
                                                         ->get();
 		        $data['view_game']    	    = \App\Master_game::join('master_sessions','sessions_id','=','master_sessions.id_sessions')
 		        												->join('master_groups','groups_id','=','master_groups.id_groups')
+                                                                ->join('users','users_id','=','users.id')
 		        												->where('id',$id_admin)
 		        												->get();
 	        }
@@ -103,7 +104,7 @@ class GameController extends AdminCoreController
                                                         ->get();
             	$data['view_game']      = \App\Master_game::join('master_sessions','sessions_id','=','master_sessions.id_sessions')
             														->join('master_groups','groups_id','=','master_groups.id_groups')
-            														->join('users','users_id','=','master_game.users_id')
+            														->join('users','users_id','=','users.id')
 		                                                         	->where('sub_users_id',$result_agent)
 		                                                         	->where('name_groups', 'LIKE', '%'.$result_word.'%')
 		                                                         	->get();
@@ -117,6 +118,7 @@ class GameController extends AdminCoreController
                                                         ->get();
                 $data['view_game']          = \App\Master_game::join('master_sessions','sessions_id','=','master_sessions.id_sessions')
                 												->join('master_groups','groups_id','=','master_groups.id_groups')
+                                                                ->join('users','users_id','=','users.id')
                 												->where('id',$id_admin)
                                                                 ->where('name_groups', 'LIKE', '%'.$result_word.'%')
                                                                 ->get();

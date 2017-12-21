@@ -20,7 +20,9 @@
                     <div class="card-body">
     		            <form class="form-horizontal m-t-40" action="{{ URL('dashboard/top_up_agent/processedit/'.$edit_top_up_agents->id_top_ups) }}" method="POST">
     						{{ csrf_field() }}
-    						<div class="form-group row">
+    						
+                            <input id="id_top_ups" type="hidden" name="id_top_ups" class="form-control" value="{{ $edit_top_up_agents->id_top_ups }}" placeholder="ID" required>
+                            <div class="form-group row">
 	                            <label for="example-month-input" class="col-2 col-form-label">Agent <i style="color:red">*</i></label>
 	                            <div class="col-12">
 	                                <select name="to_users_id" class="custom-select col-12 select2" id="inlineFormCustomSelect" required autofocus>

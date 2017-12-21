@@ -32,7 +32,7 @@
                                 <span class="fileinput-filename"></span>
                             </div>
                             <span class="input-group-addon btn btn-default btn-file">
-                                <span class="fileinput-new">Select Logo</span>
+                                <span class="fileinput-new">Select Image</span>
                                 <span class="fileinput-exists">Change</span>
                                 <input type="hidden">
                                 <input type="file" name="userfile_image" id="list_stakes_image" />

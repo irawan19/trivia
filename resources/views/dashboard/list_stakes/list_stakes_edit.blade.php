@@ -22,7 +22,7 @@
 						{{ csrf_field() }}
                         <div class="form-group row" align="center">
                             <div class="col-md-12">
-                                <a href="{{ URL::to($edit_list_stakes->path_logo_list_stakes) }}/{{ $edit_list_stakes->name_logo_list_stakes }}" class="image-popup-no-margins"><img src="{{ URL::to($edit_list_stakes->path_logo_list_stakes) }}/{{ $edit_list_stakes->name_logo_list_stakes }}"></a>
+                                <a href="{{ URL::to($edit_list_stakes->path_image_list_stakes) }}/{{ $edit_list_stakes->name_image_list_stakes }}" class="image-popup-no-margins"><img src="{{ URL::to($edit_list_stakes->path_image_list_stakes) }}/{{ $edit_list_stakes->name_image_list_stakes }}"></a>
                             </div>
                         </div>
                         <div class="col-sm-12" align="center">
@@ -34,14 +34,14 @@
                                 <span class="fileinput-filename"></span>
                             </div>
                             <span class="input-group-addon btn btn-default btn-file">
-                                <span class="fileinput-new">Select Logo</span>
+                                <span class="fileinput-new">Select Image</span>
                                 <span class="fileinput-exists">Change</span>
                                 <input type="hidden">
-                                <input type="file" name="userfile_logo" id="list_stakes_logo" />
+                                <input type="file" name="userfile_image" id="list_stakes_image" />
                             </span>
                             <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
                         </div>
-                        {{ Shwetech::formError($errors->first('userfile_logo')) }}
+                        {{ Shwetech::formError($errors->first('userfile_image')) }}
                         <br/>
                         <div class="form-group {{ Shwetech::errorStyleGroup($errors->first('name_list_stakes')) }}">
                             <label class="form-control-label">Name <b style="color:red">*</b></label>
