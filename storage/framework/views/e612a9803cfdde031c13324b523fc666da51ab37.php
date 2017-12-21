@@ -19,13 +19,32 @@
                     <div class="card-body">
                         <div style="text-align:center">
                             Welcome <b><?php echo e(Auth::user()->name); ?></b> to Trivia Web Admin Panel
-                            <br/>
-                            <?php if(Auth::user()->level_systems_id != '1'): ?>
-                                Your Bot :
-                                <br/>
-                                Your Credit : 
-                            <?php endif; ?>
                         </div>
+                        <br/>
+                        <?php if(Auth::user()->level_systems_id != '1'): ?>
+                            <table width="25%" align="center">
+                                <tr>
+                                    <th width="50%">Your Bot</th>
+                                    <th width="1%">:</th>
+                                    <td>
+                                        <?php ($id_admin = Auth::user()->id); ?>
+                                        <?php ($get_admin = \App\Master_user::where('id',$id_admin)->first()); ?>
+                                        <?php echo e($get_admin->bot_phone_number_users); ?>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Your Credit</th>
+                                    <th>:</th>
+                                    <td>
+                                        <?php ($id_admin = Auth::user()->id); ?>
+                                        <?php ($get_admin = \App\Master_user::where('id',$id_admin)->first()); ?>
+                                        <?php echo e($get_admin->credit_users); ?>
+
+                                    </td>
+                                </tr>
+                            </table>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

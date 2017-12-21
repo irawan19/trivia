@@ -193,6 +193,7 @@ class MasterAgentController extends AdminCoreController
             	        'name'                 => 'required',
             	        'email'                => 'required|unique:users,email,'.$id_master_agents.',id',
             	        'phone_number_users'   => 'required|numeric',
+                        'bot_phone_number_users'=> 'required|numeric',
             	        'credit_users'		   => 'required|numeric'
             	    ]);
 
@@ -210,6 +211,11 @@ class MasterAgentController extends AdminCoreController
             	}
 
             	\App\Master_user::where('id', $id_master_agents)->update($data);
+
+                $agent_data = [
+                    'bot_phone_number_users'    => $request->bot_phone_number_users,
+                ];
+                \App\Master_user::where('sub_users_id',$id_master_agents)->update($agent_data);
 
 	            if(request()->session()->get('page') != '')
 	                $redirect_page    = request()->session()->get('page');

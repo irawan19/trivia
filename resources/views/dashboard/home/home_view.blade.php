@@ -18,24 +18,30 @@
                     <div class="card-body">
                         <div style="text-align:center">
                             Welcome <b>{{ Auth::user()->name }}</b> to Trivia Web Admin Panel
-                            <br/>
-                            @if(Auth::user()->level_systems_id != '1')
-                                <table>
-                                    <tr>
-                                        <th>Your Bot</th>
-                                        <th>:</th>
-                                        <td>
-                                            @php($id_admin = Auth::user()->id)
-                                            @php($get_admin = \App\Master_admin::where('id',$id_admin)->first())
-                                            {{ $get_admin->bot_phone_number_users }}
-                                        </td>
-                                    </tr>
-                                </table>
-                                Your Bot :
-                                <br/>
-                                Your Credit : 
-                            @endif
                         </div>
+                        <br/>
+                        @if(Auth::user()->level_systems_id != '1')
+                            <table width="25%" align="center">
+                                <tr>
+                                    <th width="50%">Your Bot</th>
+                                    <th width="1%">:</th>
+                                    <td>
+                                        @php($id_admin = Auth::user()->id)
+                                        @php($get_admin = \App\Master_user::where('id',$id_admin)->first())
+                                        {{ $get_admin->bot_phone_number_users }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Your Credit</th>
+                                    <th>:</th>
+                                    <td>
+                                        @php($id_admin = Auth::user()->id)
+                                        @php($get_admin = \App\Master_user::where('id',$id_admin)->first())
+                                        {{ $get_admin->credit_users }}
+                                    </td>
+                                </tr>
+                            </table>
+                        @endif
                     </div>
                 </div>
             </div>
