@@ -1152,22 +1152,26 @@ class WhatsappBotController extends Controller
                                     $check_list_stakes = \App\Master_list_stake::where('name_list_stakes',$get_stake)->first();
                                     if($check_list_stakes != '')
                                     {
-                                        $get_register_member = \App\Master_register_member::where('phone_number_register_members',$get_ph_number)->first();
-                                        if($get_register_member != '')
+                                        $get_active_games = \App\Master_game::join('master_sessions','sessions_id','=','master_sessions.id_sessions')
+                                                                            ->join('master_groups','groups_id','=','master_groups.id_groups')
+                                                                            ->where('whatsapp_group_id',$get_group_id)
+                                                                            ->where('status_active_games','1')
+                                                                            ->first();
+                                        if($get_active_games != '')
                                         {
-                                            $id_register_members    = $get_register_member->id_register_members;
-                                            $credit_register_members= $get_register_member->credit_register_members;
-                                            if($credit_register_members >= $get_value)
+                                            $id_sessions            = $get_active_games->id_sessions;
+                                            $get_register_member    = \App\Master_register_member::where('phone_number_register_members',$get_ph_number)
+                                                                                                ->where('sessions_id',$id_sessions)
+                                                                                                ->first();
+                                            if($get_register_member != '')
                                             {
-                                                if($get_value > 0)
+                                                $id_register_members    = $get_register_member->id_register_members;
+                                                $credit_register_members= $get_register_member->credit_register_members;
+                                                if($credit_register_members >= $get_value)
                                                 {
-                                                    $get_active_games = \App\Master_game::join('master_sessions','sessions_id','=','master_sessions.id_sessions')
-                                                                                        ->join('master_groups','groups_id','=','master_groups.id_groups')
-                                                                                        ->where('whatsapp_group_id',$get_group_id)
-                                                                                        ->where('status_active_games','1')
-                                                                                        ->first();
-                                                    if($get_active_games != '')
+                                                    if($get_value > 0)
                                                     {
+                                                    
                                                         $id_list_stake = $check_list_stakes->id_list_stakes;
                                                         $stakes_data = [
                                                             'games_id' => $get_active_games->id_games,
@@ -1194,8 +1198,8 @@ class WhatsappBotController extends Controller
                                                     {
                                                         $error_data = [
                                                             "target"    => "private",
-                                                            "response"  => $get_group_name." No game is active",
-                                                            "value"     => $get_ph_number
+                                                            "response"  => $get_group_name." Value can't be smaller than 0",
+                                                            "value"     => $get_ph_number,
                                                         ];
                                                         return response()->json(["error" => $error_data], $this->errorStatus);
                                                     }
@@ -1204,7 +1208,7 @@ class WhatsappBotController extends Controller
                                                 {
                                                     $error_data = [
                                                         "target"    => "private",
-                                                        "response"  => $get_group_name." Value can't be smaller than 0",
+                                                        "response"  => $get_group_name." Your credit not enough",
                                                         "value"     => $get_ph_number,
                                                     ];
                                                     return response()->json(["error" => $error_data], $this->errorStatus);
@@ -1214,8 +1218,8 @@ class WhatsappBotController extends Controller
                                             {
                                                 $error_data = [
                                                     "target"    => "private",
-                                                    "response"  => $get_group_name." Your credit not enough",
-                                                    "value"     => $get_ph_number,
+                                                    "response"  => $get_group_name."\n Your not member in this group",
+                                                    "value"     => $get_ph_number
                                                 ];
                                                 return response()->json(["error" => $error_data], $this->errorStatus);
                                             }
@@ -1224,7 +1228,7 @@ class WhatsappBotController extends Controller
                                         {
                                             $error_data = [
                                                 "target"    => "private",
-                                                "response"  => $get_group_name."\n Your not member in this group",
+                                                "response"  => $get_group_name." No game is active",
                                                 "value"     => $get_ph_number
                                             ];
                                             return response()->json(["error" => $error_data], $this->errorStatus);
@@ -1318,6 +1322,7 @@ class WhatsappBotController extends Controller
                                                         ->join('master_register_members','register_members_id','=','master_register_members.id_register_members')
                                                         ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
                                                         ->where('whatsapp_group_id',$get_group_id)
+                                                        ->where('status_active_games',1)
                                                         ->get();
                 if($get_stakes_member != '')
                 {
