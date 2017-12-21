@@ -54,7 +54,7 @@
                                 <label class="form-control-label">Credit Agent <b style="color:red">*</b></label>
                                 @if(Auth::user()->level_systems_id != '3')
                                     <input id="credit_agents" type="text" name="credit_agents" class="form-control {{ Shwetech::errorStyleFormControl($errors->first('credit_agents')) }}" value="{{ Request::old('credit_agents') == '' ? 0 : Request::old('credit_agents') }}" placeholder="Credit Agent" readonly>
-                                @elseif(Auth::user()->level_systems-id == '3')
+                                @elseif(Auth::user()->level_systems_id == '3')
                                     <input id="credit_agents" type="text" name="credit_agents" class="form-control {{ Shwetech::errorStyleFormControl($errors->first('credit_agents')) }}" value="{{ $add_agents->credit_users }}" placeholder="Credit Agent">
                                 @endif
                                 {{ Shwetech::formError($errors->first('credit_agents')) }}
