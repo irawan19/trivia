@@ -1671,7 +1671,7 @@ class WhatsappBotController extends Controller
                 if($status_sessions == '2')
                 {
                     $check_game = \App\Master_game::where('sessions_id',$id_sessions)
-                                                    ->where('status_active_games',2)
+                                                    ->where('status_active_games',1)
                                                     ->get();
                     if($check_game != '')
                     {
