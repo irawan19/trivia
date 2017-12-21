@@ -1038,7 +1038,7 @@ class WhatsappBotController extends Controller
 
                                         $success_data = [
                                             "target"    => "group",
-                                            "response"  => "This is the winner in this game ".$get_member_winner,
+                                            "response"  => $get_member_winner,
                                             "value"     => $get_group_id
                                         ];
                                         return response()->json(["success" => $success_data], $this->successStatus);
