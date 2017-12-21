@@ -619,58 +619,47 @@ class WhatsappBotController extends Controller
                                 {
                                     $get_last_sessions  = \App\Master_session::join('master_groups','groups_id','=','master_groups.id_groups')
                                                                                 ->where('name_groups',$get_group_name)
+                                                                                ->where('status_active_sessions',1)
                                                                                 ->first();
                                     if($get_last_sessions != '')
                                     {
-                                        if($get_last_sessions->status_active_sessions == '1')
+                                        $id_sessions    = $get_last_sessions->id_sessions;
+                                        $check_games    = \App\Master_game::where('sessions_id',$id_sessions)
+                                                                            ->first();
+                                        if($check_games != '')
                                         {
-                                            $id_sessions    = $get_last_sessions->id_sessions;
-                                            $check_games    = \App\Master_game::where('sessions_id',$id_sessions)
-                                                                                ->first();
-                                            if($check_games != '')
+                                            if($check_games->status_active_games != 1)
                                             {
-                                                if($check_games->status_active_games != 1)
+                                                if($check_games->start_date_games != '0000-00-00 00:00:00')
                                                 {
-                                                    if($check_games->start_date_games != '0000-00-00 00:00:00')
+                                                    $check_phone_number_agent    = \App\Master_session::join('master_groups','groups_id','=','master_groups.id_groups')
+                                                                                                        ->join('users','users_id','=','users.id')
+                                                                                                        ->where('phone_number_users',$get_ph_number)
+                                                                                                        ->first();
+                                                    if($check_phone_number_agent != '')
                                                     {
-                                                        $check_phone_number_agent    = \App\Master_session::join('master_groups','groups_id','=','master_groups.id_groups')
-                                                                                                            ->join('users','users_id','=','users.id')
-                                                                                                            ->where('phone_number_users',$get_ph_number)
-                                                                                                            ->first();
-                                                        if($check_phone_number_agent != '')
-                                                        {
-                                                            $games_data     = [
-                                                                'sessions_id'           => $id_sessions,
-                                                                'start_date_games'      => '0000-00-00 00:00:00',
-                                                                'end_date_games'        => '0000-00-00 00:00:00',
-                                                                'rtp_games'             => $get_rtp,
-                                                                'status_active_games'   => 0,
-                                                            ];
-                                                            \App\Master_game::insert($games_data);
+                                                        $games_data     = [
+                                                            'sessions_id'           => $id_sessions,
+                                                            'start_date_games'      => '0000-00-00 00:00:00',
+                                                            'end_date_games'        => '0000-00-00 00:00:00',
+                                                            'rtp_games'             => $get_rtp,
+                                                            'status_active_games'   => 0,
+                                                        ];
+                                                        \App\Master_game::insert($games_data);
 
-                                                            $success_data = [
-                                                                "target"    => "private",
-                                                                "response"  => $get_group_name."Awesome! Your game settings are: \n Return to Player = ".$get_rtp." \n ------------------------------- \n Now you can start the game by enter \n #start ".$get_group_name,
-                                                                "value"     => $get_ph_number
-                                                            ];
-                                                            return response()->json(["success" => $success_data], $this->successStatus);
-                                                        }
-                                                        else
-                                                        {
-                                                            $error_data = [
-                                                                "target"        => "private", 
-                                                                "response"      => "Your not agent in ".$get_group_name." group",
-                                                                "value"         => $get_ph_number
-                                                            ];
-                                                            return response()->json(["error" => $error_data], $this->errorStatus);
-                                                        }
+                                                        $success_data = [
+                                                            "target"    => "private",
+                                                            "response"  => $get_group_name."Awesome! Your game settings are: \n Return to Player = ".$get_rtp." \n ------------------------------- \n Now you can start the game by enter \n #start ".$get_group_name,
+                                                            "value"     => $get_ph_number
+                                                        ];
+                                                        return response()->json(["success" => $success_data], $this->successStatus);
                                                     }
                                                     else
                                                     {
                                                         $error_data = [
-                                                            "target"    => "private",
-                                                            "response"  => $get_group_name."\n There are games that have not been started in the current sessions",
-                                                            "value"     => $get_ph_number
+                                                            "target"        => "private", 
+                                                            "response"      => "Your not agent in ".$get_group_name." group",
+                                                            "value"         => $get_ph_number
                                                         ];
                                                         return response()->json(["error" => $error_data], $this->errorStatus);
                                                     }
@@ -679,62 +668,62 @@ class WhatsappBotController extends Controller
                                                 {
                                                     $error_data = [
                                                         "target"    => "private",
-                                                        "response"  => $get_group_name."\n There is an active game",
-                                                        "value"     => $get_ph_number,
+                                                        "response"  => $get_group_name."\n There are games that have not been started in the current sessions",
+                                                        "value"     => $get_ph_number
                                                     ];
                                                     return response()->json(["error" => $error_data], $this->errorStatus);
                                                 }
                                             }
                                             else
                                             {
-                                                $check_phone_number_agent    = \App\Master_session::join('master_groups','groups_id','=','master_groups.id_groups')
-                                                                                                    ->join('users','users_id','=','users.id')
-                                                                                                    ->where('phone_number_users',$get_ph_number)
-                                                                                                    ->first();
-                                                if($check_phone_number_agent != '')
-                                                {
-                                                    $games_data     = [
-                                                        'sessions_id'           => $id_sessions,
-                                                        'start_date_games'      => '0000-00-00 00:00:00',
-                                                        'end_date_games'        => '0000-00-00 00:00:00',
-                                                        'rtp_games'             => $get_rtp,
-                                                        'status_active_games'   => 0,
-                                                    ];
-                                                    \App\Master_game::insert($games_data);
-
-                                                    $success_data = [
-                                                        "target"    => "private",
-                                                        "response"  => $get_group_name."Awesome! Your game settings are: \n Return to Player = ".$get_rtp." \n ------------------------------- \n Now you can start the game by enter \n #start ".$get_group_name,
-                                                        "value"     => $get_ph_number
-                                                    ];
-                                                    return response()->json(["success" => $success_data], $this->successStatus);
-                                                }
-                                                else
-                                                {
-                                                    $error_data = [
-                                                        "target"        => "private", 
-                                                        "response"      => "Your not agent in ".$get_group_name." group",
-                                                        "value"         => $get_ph_number
-                                                    ];
-                                                    return response()->json(["error" => $error_data], $this->errorStatus);
-                                                }
+                                                $error_data = [
+                                                    "target"    => "private",
+                                                    "response"  => $get_group_name."\n There is an active game",
+                                                    "value"     => $get_ph_number,
+                                                ];
+                                                return response()->json(["error" => $error_data], $this->errorStatus);
                                             }
                                         }
                                         else
                                         {
-                                            $error_data = [
-                                                "target"    => "private",
-                                                "response"  => $get_group_name."\n No sessions is active",
-                                                "value"     => $get_ph_number,
-                                            ];
-                                            return response()->json(["error" => $error_data], $this->errorStatus);
+                                            $check_phone_number_agent    = \App\Master_session::join('master_groups','groups_id','=','master_groups.id_groups')
+                                                                                                ->join('users','users_id','=','users.id')
+                                                                                                ->where('phone_number_users',$get_ph_number)
+                                                                                                ->first();
+                                            if($check_phone_number_agent != '')
+                                            {
+                                                $games_data     = [
+                                                    'sessions_id'           => $id_sessions,
+                                                    'start_date_games'      => '0000-00-00 00:00:00',
+                                                    'end_date_games'        => '0000-00-00 00:00:00',
+                                                    'rtp_games'             => $get_rtp,
+                                                    'status_active_games'   => 0,
+                                                ];
+                                                \App\Master_game::insert($games_data);
+
+                                                $success_data = [
+                                                    "target"    => "private",
+                                                    "response"  => $get_group_name."Awesome! Your game settings are: \n Return to Player = ".$get_rtp." \n ------------------------------- \n Now you can start the game by enter \n #start ".$get_group_name,
+                                                    "value"     => $get_ph_number
+                                                ];
+                                                return response()->json(["success" => $success_data], $this->successStatus);
+                                            }
+                                            else
+                                            {
+                                                $error_data = [
+                                                    "target"        => "private", 
+                                                    "response"      => "Your not agent in ".$get_group_name." group",
+                                                    "value"         => $get_ph_number
+                                                ];
+                                                return response()->json(["error" => $error_data], $this->errorStatus);
+                                            }
                                         }
                                     }
                                     else
                                     {
                                         $error_data = [
                                             "target"    => "private",
-                                            "response"  => $get_group_name."\n Group doesn't have any sessions",
+                                            "response"  => $get_group_name."\n Group doesn't have any sessions active",
                                             "value"     => $get_ph_number,
                                         ];
                                         return response()->json(["error" => $error_data], $this->errorStatus);
@@ -1061,7 +1050,7 @@ class WhatsappBotController extends Controller
                                             'status_active_games'=> 2
                                         ];
                                         \App\Master_game::where('id_games',$id_games)->update($games_data);
-                                
+
                                         $success_data = [
                                             "target"    => "group",
                                             "response"  => $get_group_name."\n No winner in this game",
