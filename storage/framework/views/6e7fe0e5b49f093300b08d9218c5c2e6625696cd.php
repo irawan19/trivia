@@ -74,6 +74,14 @@
                                 <?php echo e(Shwetech::formError($errors->first('phone_number_users'))); ?>
 
                             </div>
+                            <?php if(Auth::user()->level_systems_id == 2): ?>
+                                <div class="form-group <?php echo e(Shwetech::errorStyleGroup($errors->first('bot_phone_number_users'))); ?>">
+                                    <label class="form-control-label">BOT Phone Number <b style="color:red">*</b></label>
+                                    <input id="bot_phone_number_users" type="text" name="bot_phone_number_users" readonly="readonly" class="form-control number_format <?php echo e(Shwetech::errorStyleFormControl($errors->first('bot_phone_number_users'))); ?>" value="<?php echo e(Request::old('bot_phone_number_users') == '' ? $view_profile->bot_phone_number_users : Request::old('bot_phone_number_users')); ?>" placeholder="BOT Phone Number" required>
+                                    <?php echo e(Shwetech::formError($errors->first('bot_phone_number_users'))); ?>
+
+                                </div>
+                            <?php endif; ?>
                             <br/>
                             <div align="center">
                             	<label style="color:orange">clear the password if you do not want to change the password</label>

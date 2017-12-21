@@ -40,6 +40,11 @@
 								<td>{{ $read_master_agents->phone_number_users }}</td>
 							</tr>
 							<tr>
+								<th>Bot Phone Number</th>
+								<th>:</th>
+								<td>{{ $read_master_agents->bot_phone_number_users }}</td>
+							</tr>
+							<tr>
 								<th>Credit</th>
 								<th>:</th>
 								<td>{{ $read_master_agents->credit_users }}</td>

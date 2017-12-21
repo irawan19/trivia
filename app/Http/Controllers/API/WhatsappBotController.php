@@ -478,21 +478,20 @@ class WhatsappBotController extends Controller
                         $get_group_name         = $get_group->name_groups;
                         $get_credit_group       = $get_group->credit_groups;
                         $get_last_sessions      = \App\Master_session::join('master_groups','groups_id','=','master_groups.id_groups')
-                                                                    ->where('whatsapp_group_id',$get_group_id)
-                                                                    ->first();
+                                                                        ->where('groups_id',$id_group)
+                                                                        ->where('status_active_sessions',1)
+                                                                        ->first();
                         if($get_last_sessions != '')
                         {
-                            if($get_last_sessions->status_active_sessions == 1)
+                            $id_sessions                = $get_last_sessions->id_sessions;
+                            $get_start_date             = $get_last_sessions->start_date_sessions;
+                            $get_end_date               = $get_last_sessions->end_date_sessions;
+                            $get_credit_member_sessions = $get_last_sessions->credit_member_sessions;
+                            $get_agent_id                = $get_last_sessions->users_id;
+                            $get_agent                   = \App\Master_user::where('id',$get_agent_id)->first();
+                            $get_phone_number_agent      = $get_agent->phone_number_users;
+                            if($get_phone_number_agent != $get_ph_number)
                             {
-                                $id_sessions                = $get_last_sessions->id_sessions;
-                                $get_start_date             = $get_last_sessions->start_date_sessions;
-                                $get_end_date               = $get_last_sessions->end_date_sessions;
-                                $get_credit_member_sessions = $get_last_sessions->credit_member_sessions;
-                                $get_agent_id                = $get_last_sessions->users_id;
-                                $get_agent                   = \App\Master_user::where('id',$get_agent_id)->first();
-                                $get_phone_number_agent      = $get_agent->phone_number_users;
-                                if($get_phone_number_agent != $get_ph_number)
-                                {
                                     $check_register_members     = \App\Master_register_member::where('sessions_id',$id_sessions)
                                                                                             ->where('phone_number_register_members',$get_ph_number)
                                                                                             ->count();
@@ -539,23 +538,13 @@ class WhatsappBotController extends Controller
                                         ];
                                         return response()->json(["error" => $error_data], $this->errorStatus);
                                     }
-                                }
-                                else
-                                {
-                                    $error_data = [
-                                        "target"    => "private",
-                                        "response"  => $get_group_name." Your is agent in this group, you can't play in your own group",
-                                        "value"     => $get_ph_number,
-                                    ];
-                                    return response()->json(["error" => $error_data], $this->errorStatus);
-                                }
                             }
                             else
                             {
                                 $error_data = [
                                     "target"    => "private",
-                                    "response"  => $get_group_name." No sessions is active",
-                                    "value"     => $get_ph_number
+                                    "response"  => $get_group_name." Your is agent in this group, you can't play in your own group",
+                                    "value"     => $get_ph_number,
                                 ];
                                 return response()->json(["error" => $error_data], $this->errorStatus);
                             }

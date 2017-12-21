@@ -65,7 +65,8 @@ class MasterAgentController extends AdminCoreController
                 'email'              	=> 'required|unique:users',
                 'password'           	=> 'required|string|min:6|confirmed',
                 'phone_number_users'	=> 'required|numeric',
-                'credit_users'			=> 'required|numeric'
+                'bot_phone_number_users'=> 'required|numeric',
+                'credit_users'			=> 'required|numeric',
             ]);
 
     		$data = [
@@ -74,6 +75,7 @@ class MasterAgentController extends AdminCoreController
     		    'name' 			     => $request->name,
     		    'email'			     => $request->email,
                 'phone_number_users' => $request->phone_number_users,
+                'bot_phone_number_users'=> $request->bot_phone_number_users,
                 'credit_users'		 => $request->credit_users,
                 'max_group_users'    => 0,
     		    'created_at'	     => date('Y-m-d H:i:s'),
@@ -168,7 +170,8 @@ class MasterAgentController extends AdminCoreController
                         'email'                 => 'required|unique:users,email,'.$id_master_agents.',id',
                         'password'              => 'required|string|min:6|confirmed',
                         'phone_number_users'	=> 'required|numeric',
-                        'credit_users'			=> 'required|numeric'
+                        'bot_phone_number_users'=> 'required|numeric',
+                        'credit_users'			=> 'required|numeric',
                     ]);
 
             	    $data = [
@@ -179,6 +182,7 @@ class MasterAgentController extends AdminCoreController
             	        'updated_at'	      => date('Y-m-d H:i:s'),
             	        'password' 		      => bcrypt($request->password),
                         'phone_number_users'  => $request->phone_number_users,
+                        'bot_phone_number_users' => $request->bot_phone_number_users,
                 		'credit_users'		  => $request->credit_users,
                         'max_group_users'     => 0
             	    ];
@@ -199,6 +203,7 @@ class MasterAgentController extends AdminCoreController
                         'level_systems_id'    	=> 2,
                         'sub_users_id'          => 0,
                         'phone_number_users'    => $request->phone_number_users,
+                        'bot_phone_number_users'=> $request->bot_phone_number_users,
                 		'credit_users'		 	=> $request->credit_users,
                         'max_group_users'       => 0
             	    ];

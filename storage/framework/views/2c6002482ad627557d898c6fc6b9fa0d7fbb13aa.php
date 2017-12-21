@@ -58,7 +58,7 @@
                                 <label class="form-control-label">Credit Agent <b style="color:red">*</b></label>
                                 <?php if(Auth::user()->level_systems_id != '3'): ?>
                                     <input id="credit_agents" type="text" name="credit_agents" class="form-control <?php echo e(Shwetech::errorStyleFormControl($errors->first('credit_agents'))); ?>" value="<?php echo e(Request::old('credit_agents') == '' ? 0 : Request::old('credit_agents')); ?>" placeholder="Credit Agent" readonly>
-                                <?php elseif(Auth::user()->level_systems-id == '3'): ?>
+                                <?php elseif(Auth::user()->level_systems_id == '3'): ?>
                                     <input id="credit_agents" type="text" name="credit_agents" class="form-control <?php echo e(Shwetech::errorStyleFormControl($errors->first('credit_agents'))); ?>" value="<?php echo e($add_agents->credit_users); ?>" placeholder="Credit Agent">
                                 <?php endif; ?>
                                 <?php echo e(Shwetech::formError($errors->first('credit_agents'))); ?>

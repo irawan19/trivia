@@ -39,7 +39,8 @@
 	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="persist" width="5%">No</th>
 	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="2">Name</th>
 	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="3">Phone Number</th>
-	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="4">Credit</th>
+	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="4">BOT</th>
+	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="5">Credit</th>
 	                                <th scope="col">Action</th>
 	                            </tr>
 	                        </thead>
@@ -50,6 +51,7 @@
 		                                <td>{{ $no }}</td>
 		                                <td>{{ $master_agents->name }}</td>
 		                                <td>{{ $master_agents->phone_number_users }}</td>
+		                                <td>{{ $master_agents->bot_phone_number_users }}</td>
 		                                <td>{{ $master_agents->credit_users }}</td>
 		                                <td width="5%">
 		                                	<div class="input-group">

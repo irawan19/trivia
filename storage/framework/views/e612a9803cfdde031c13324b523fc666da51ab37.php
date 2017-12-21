@@ -20,6 +20,11 @@
                         <div style="text-align:center">
                             Welcome <b><?php echo e(Auth::user()->name); ?></b> to Trivia Web Admin Panel
                             <br/>
+                            <?php if(Auth::user()->level_systems_id != '1'): ?>
+                                Your Bot :
+                                <br/>
+                                Your Credit : 
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

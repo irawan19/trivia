@@ -44,6 +44,12 @@
                                 <?php echo e(Shwetech::formError($errors->first('phone_number_users'))); ?>
 
                             </div>
+                            <div class="form-group <?php echo e(Shwetech::errorStyleGroup($errors->first('bot_phone_number_users'))); ?>">
+                                <label class="form-control-label">BOT Phone Number <b style="color:red">*</b></label>
+                                <input id="bot_phone_number_users" type="text" name="bot_phone_number_users" class="form-control number_format <?php echo e(Shwetech::errorStyleFormControl($errors->first('bot_phone_number_users'))); ?>" value="<?php echo e(Request::old('bot_phone_number_users')); ?>" placeholder="BOT Phone Number" required>
+                                <?php echo e(Shwetech::formError($errors->first('bot_phone_number_users'))); ?>
+
+                            </div>
                             <div class="form-group <?php echo e(Shwetech::errorStyleGroup($errors->first('credit_users'))); ?>">
                                 <label class="form-control-label">Credit <b style="color:red">*</b></label>
                                 <input id="credit_users" type="text" name="credit_users" class="form-control number_format <?php echo e(Shwetech::errorStyleFormControl($errors->first('credit_users'))); ?>" value="<?php echo e(Request::old('credit_users')); ?>" placeholder="Credit" required>

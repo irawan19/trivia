@@ -46,6 +46,11 @@
                                 <input id="phone_number_users" type="text" name="phone_number_users" class="form-control number_format {{ Shwetech::errorStyleFormControl($errors->first('phone_number_users')) }}" value="{{ Request::old('phone_number_users') == '' ? $edit_master_agents->phone_number_users : Request::old('phone_number_users') }}" placeholder="Phone Number" required>
                                 {{ Shwetech::formError($errors->first('phone_number_users')) }}
                             </div>
+                            <div class="form-group {{ Shwetech::errorStyleGroup($errors->first('bot_phone_number_users')) }}">
+                                <label class="form-control-label">BOT Phone Number <b style="color:red">*</b></label>
+                                <input id="bot_phone_number_users" type="text" name="bot_phone_number_users" class="form-control number_format {{ Shwetech::errorStyleFormControl($errors->first('bot_phone_number_users')) }}" value="{{ Request::old('bot_phone_number_users') == '' ? $edit_master_agents->bot_phone_number_users : Request::old('bot_phone_number_users') }}" placeholder="BOT Phone Number" required>
+                                {{ Shwetech::formError($errors->first('bot_phone_number_users')) }}
+                            </div>
                             <br/>
                             <div align="center">
                             	<label style="color:orange">clear the password if you do not want to change the password</label>

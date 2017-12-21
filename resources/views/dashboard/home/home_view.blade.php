@@ -19,6 +19,22 @@
                         <div style="text-align:center">
                             Welcome <b>{{ Auth::user()->name }}</b> to Trivia Web Admin Panel
                             <br/>
+                            @if(Auth::user()->level_systems_id != '1')
+                                <table>
+                                    <tr>
+                                        <th>Your Bot</th>
+                                        <th>:</th>
+                                        <td>
+                                            @php($id_admin = Auth::user()->id)
+                                            @php($get_admin = \App\Master_admin::where('id',$id_admin)->first())
+                                            {{ $get_admin->bot_phone_number_users }}
+                                        </td>
+                                    </tr>
+                                </table>
+                                Your Bot :
+                                <br/>
+                                Your Credit : 
+                            @endif
                         </div>
                     </div>
                 </div>

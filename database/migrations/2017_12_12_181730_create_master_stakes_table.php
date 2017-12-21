@@ -16,6 +16,7 @@ class CreateMasterStakesTable extends Migration
         Schema::create('master_stakes', function (Blueprint $table) {
             $table->increments('id_stakes');
             $table->integer('games_id')->index();
+            $table->integer('register_members_id')->index();
             $table->integer('list_stakes_id')->index();
             $table->double('value_stakes');
         });
