@@ -1374,7 +1374,7 @@ class WhatsappBotController extends Controller
                                                                 ->get();
                         $list_stakes_data = [
                             "target"                => "group",
-                            "response"              => "The following is a list of stakes : \n".$get_list_stakes,
+                            "response"              => $get_list_stakes,
                             "value"                 => $get_group_id,
                         ];
                         return response()->json(["success" => $list_stakes_data], $this->successStatus);
