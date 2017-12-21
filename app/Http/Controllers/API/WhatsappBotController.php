@@ -334,7 +334,9 @@ class WhatsappBotController extends Controller
                                 {
                                     if($credit_groups >= $get_credit_member)
                                     {
-                                        $check_sessions = \App\Master_session::where('end_date_sessions', '>' ,$date_now)->count();
+                                        $check_sessions = \App\Master_session::where('groups_id',$id_group)
+                                                                            ->where('end_date_sessions', '>' ,$date_now)
+                                                                            ->count();
                                         if($check_sessions == 0)
                                         {
                                             $get_start_date         = date('Y-m-d H:i:s');
