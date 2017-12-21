@@ -1056,6 +1056,12 @@ class WhatsappBotController extends Controller
                                     }
                                     else
                                     {
+                                        $games_data = [
+                                            'end_date_games'     => date('Y-m-d H:i:s'),
+                                            'status_active_games'=> 2
+                                        ];
+                                        \App\Master_game::where('id_games',$id_games)->update($games_data);
+                                
                                         $success_data = [
                                             "target"    => "group",
                                             "response"  => $get_group_name."\n No winner in this game",
@@ -1082,12 +1088,6 @@ class WhatsappBotController extends Controller
                             }
                             else
                             {
-                                $games_data = [
-                                    'end_date_games'     => date('Y-m-d H:i:s'),
-                                    'status_active_games'=> 2
-                                ];
-                                \App\Master_game::where('id_games',$id_games)->update($games_data);
-                                        
                                 $error_data = [
                                     "target"    => "private",
                                     "response"  => $get_group_name."\n No game is active",
