@@ -1056,22 +1056,22 @@ class WhatsappBotController extends Controller
                                     }
                                     else
                                     {
-                                        $error_data = [
+                                        $success_data = [
                                             "target"    => "group",
                                             "response"  => $get_group_name."\n No winner in this game",
                                             "value"     => $get_group_id,
                                         ];
-                                        return response()->json(["error" => $error_data], $this->errorStatus);
+                                        return response()->json(["success" => $success_data], $this->errorStatus);
                                     }
                                 }
                                 else
                                 {
-                                    $error_data = [
-                                        "target"    => "private",
-                                        "response"  => $get_group_name."\n No stake at all",
-                                        "value"     => $get_ph_number
+                                    $success_data = [
+                                        "target"    => "group",
+                                        "response"  => $get_group_name."\n No winner in this game",
+                                        "value"     => $get_group_id,
                                     ];
-                                    return response()->json(["error" => $error_data], $this->errorStatus);
+                                    return response()->json(["success" => $success_data], $this->successStatus);
                                 }
                             }
                             else
