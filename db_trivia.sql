@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Dec 21, 2017 at 03:53 AM
+-- Generation Time: Dec 22, 2017 at 04:11 AM
 -- Server version: 10.1.29-MariaDB
 -- PHP Version: 7.1.12
 
@@ -242,8 +242,10 @@ CREATE TABLE `master_games` (
 --
 
 INSERT INTO `master_games` (`id_games`, `sessions_id`, `start_date_games`, `end_date_games`, `rtp_games`, `status_active_games`) VALUES
-(1, 1, '2017-12-21 10:38:17', '2017-12-21 10:41:12', 74, 2),
-(2, 1, '2017-12-22 00:00:00', '2017-12-23 23:59:59', 25, 0);
+(1, 1, '2017-12-21 14:35:35', '2017-12-21 14:43:47', 10, 2),
+(2, 1, '2017-12-21 14:47:28', '2017-12-21 15:19:37', 10, 2),
+(3, 3, '2017-12-21 15:56:33', '2017-12-21 16:38:17', 10, 2),
+(5, 5, '2017-12-22 10:29:26', '2017-12-22 10:46:18', 40, 2);
 
 -- --------------------------------------------------------
 
@@ -265,7 +267,9 @@ CREATE TABLE `master_groups` (
 --
 
 INSERT INTO `master_groups` (`id_groups`, `users_id`, `credit_groups`, `whatsapp_group_id`, `name_groups`, `created_on_groups`) VALUES
-(2, 8, 23200, '6285743531989-1234567890', 'shwetech', '2017-12-21 10:08:37');
+(1, 8, 31900, '6285743531989-1234567890', 'shwetech', '2017-12-21 14:21:37'),
+(2, 8, 10000, '6285743531989-111111', 'test', '2017-12-21 15:12:41'),
+(3, 4, 246920, '6285328908074-1234567890', 'trivia', '2017-12-22 09:41:54');
 
 -- --------------------------------------------------------
 
@@ -296,6 +300,7 @@ INSERT INTO `master_level_systems` (`id_level_systems`, `name_level_systems`) VA
 CREATE TABLE `master_list_stakes` (
   `id_list_stakes` int(10) UNSIGNED NOT NULL,
   `name_list_stakes` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `command_list_stakes` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `path_image_list_stakes` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name_image_list_stakes` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -304,19 +309,19 @@ CREATE TABLE `master_list_stakes` (
 -- Dumping data for table `master_list_stakes`
 --
 
-INSERT INTO `master_list_stakes` (`id_list_stakes`, `name_list_stakes`, `path_image_list_stakes`, `name_image_list_stakes`) VALUES
-(1, 'dog', './public/images/stake/', 'dog.jpg'),
-(2, 'dragon', './public/images/stake/', 'dragon.jpg'),
-(3, 'goat', './public/images/stake/', 'goat.jpg'),
-(4, 'horse', './public/images/stake/', 'horse.jpg'),
-(5, 'monkey', './public/images/stake/', 'monkey.jpg'),
-(6, 'ox', './public/images/stake/', 'ox.jpg'),
-(7, 'pig', './public/images/stake/', 'pig.jpg'),
-(8, 'rabbit', './public/images/stake/', 'rabbit.jpg'),
-(9, 'rat', './public/images/stake/', 'rat.jpg'),
-(10, 'rooster', './public/images/stake/', 'rooster.jpg'),
-(11, 'snake', './public/images/stake/', 'snake.jpg'),
-(12, 'tiger', './public/images/stake/', 'tiger.jpg');
+INSERT INTO `master_list_stakes` (`id_list_stakes`, `name_list_stakes`, `command_list_stakes`, `path_image_list_stakes`, `name_image_list_stakes`) VALUES
+(1, 'dog', 'do', './public/images/stake/', 'dog.jpg'),
+(2, 'dragon', 'dr', './public/images/stake/', 'dragon.jpg'),
+(3, 'goat', 'gt', './public/images/stake/', 'goat.jpg'),
+(4, 'horse', 'hr', './public/images/stake/', 'horse.jpg'),
+(5, 'monkey', 'mk', './public/images/stake/', 'monkey.jpg'),
+(6, 'ox', 'ox', './public/images/stake/', 'ox.jpg'),
+(7, 'pig', 'pg', './public/images/stake/', 'pig.jpg'),
+(8, 'rabbit', 'rb', './public/images/stake/', 'rabbit.jpg'),
+(9, 'rat', 'rt', './public/images/stake/', 'rat.jpg'),
+(10, 'rooster', 'ck', './public/images/stake/', 'rooster.jpg'),
+(11, 'snake', 'sn', './public/images/stake/', 'snake.jpg'),
+(12, 'tiger', 'tg', './public/images/stake/', 'tiger.jpg');
 
 -- --------------------------------------------------------
 
@@ -375,8 +380,12 @@ CREATE TABLE `master_register_members` (
 --
 
 INSERT INTO `master_register_members` (`id_register_members`, `sessions_id`, `credit_register_members`, `phone_number_register_members`) VALUES
-(1, 1, 1800, 6285643167946),
-(2, 1, 600, 959252232135);
+(1, 1, 5450, 6285643167946),
+(2, 1, 750, 959252232135),
+(3, 1, 800, 6590609450),
+(4, 3, 1000, 6590609450),
+(5, 3, 950, 6285643167946),
+(6, 5, 3580, 6285643167946);
 
 -- --------------------------------------------------------
 
@@ -398,7 +407,10 @@ CREATE TABLE `master_sessions` (
 --
 
 INSERT INTO `master_sessions` (`id_sessions`, `groups_id`, `start_date_sessions`, `end_date_sessions`, `credit_member_sessions`, `status_active_sessions`) VALUES
-(1, 2, '2017-12-21 10:11:40', '2017-12-31 10:11:40', 1000, 1);
+(1, 1, '2017-12-21 09:26:31', '2017-12-21 13:26:31', 1000, 2),
+(3, 1, '2017-12-21 15:00:58', '2017-12-28 15:00:58', 1000, 1),
+(4, 2, '2017-12-21 15:13:29', '2017-12-28 15:13:29', 1000, 1),
+(5, 3, '2017-12-22 09:51:58', '2017-12-25 09:51:58', 2000, 1);
 
 -- --------------------------------------------------------
 
@@ -419,10 +431,22 @@ CREATE TABLE `master_stakes` (
 --
 
 INSERT INTO `master_stakes` (`id_stakes`, `games_id`, `register_members_id`, `list_stakes_id`, `value_stakes`) VALUES
-(1, 1, 1, 7, 100),
-(2, 1, 1, 1, 100),
-(3, 1, 2, 1, 200),
-(4, 1, 2, 2, 200);
+(1, 1, 1, 1, 500),
+(2, 1, 1, 7, 200),
+(3, 1, 1, 2, 200),
+(4, 1, 3, 2, 200),
+(5, 3, 1, 2, 200),
+(6, 3, 1, 7, 200),
+(7, 3, 1, 10, 200),
+(8, 3, 2, 10, 200),
+(9, 3, 2, 2, 50),
+(10, 3, 1, 2, 50),
+(11, 3, 5, 2, 50),
+(12, 5, 6, 2, 120),
+(13, 5, 6, 2, 80),
+(14, 5, 6, 7, 200),
+(15, 5, 6, 7, 10),
+(16, 5, 6, 7, 10);
 
 -- --------------------------------------------------------
 
@@ -444,9 +468,7 @@ CREATE TABLE `master_top_ups` (
 --
 
 INSERT INTO `master_top_ups` (`id_top_ups`, `from_users_id`, `to_users_id`, `date_top_ups`, `time_top_ups`, `credit_top_ups`) VALUES
-(1, 1, 7, '2017-12-21', '09:19:43', 500),
-(2, 7, 8, '2017-12-21', '10:04:34', 500),
-(3, 2147483647, 2147483647, '2017-12-21', '10:46:56', 100);
+(1, 2147483647, 2147483647, '2017-12-22', '10:49:17', 500);
 
 -- --------------------------------------------------------
 
@@ -465,7 +487,9 @@ CREATE TABLE `master_winloses` (
 --
 
 INSERT INTO `master_winloses` (`id_winloses`, `stakes_id`, `profit_winloses`) VALUES
-(1, 1, 1000);
+(1, 2, 2000),
+(3, 6, 2000),
+(4, 12, 2000);
 
 -- --------------------------------------------------------
 
@@ -624,6 +648,7 @@ CREATE TABLE `users` (
   `email` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `phone_number_users` double NOT NULL,
+  `bot_phone_number_users` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `credit_users` double NOT NULL,
   `max_group_users` double NOT NULL,
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -635,15 +660,15 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `sub_users_id`, `level_systems_id`, `name`, `email`, `password`, `phone_number_users`, `credit_users`, `max_group_users`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 0, 1, 'Trivia', 'info@trivia.com', '$2y$10$yz8HMeQDxtLUnu48iwnZpuCZbeFzCDlawRf9Cpd/YG16E6yxVWYwy', 0, 0, 0, 'zNBb2gQ6KaedaumHqgTJ7Y5HxZyjlkRCeO9HgRMO03sr57xeiGQQfqXAmrgP', '2017-12-08 10:50:13', '2017-12-11 07:54:06'),
-(2, 0, 2, 'Irawan Agung Nugroho', 'irawan@shwetech.com', '$2y$10$RdxAgFb2nqr97wOShSk89eSwBpIy1nRXXbtFZISPRZS5kYoV43aVu', 6285643167946, 0, 0, 'DS8DIh5OEwSaxifVQS1TFALlzqQsLzmXadK3F7Dq7mAmVcbZa1OlYJIfT6hs', '2017-12-11 08:17:16', '2017-12-17 12:28:27'),
-(3, 0, 2, 'Abdul Alim', 'abdul@shwetech.com', '$2y$10$CbjdDpV4HHaguFO2no0ayOOKxZdJdLzeYOeuWNUU4iziCQaYHLJfm', 959424013044, 0, 0, '08wYpE2boWWQgWzGHm6wb2TmWmUBjYvUZ7vQXqgatQo12lyijd7DAUZS57Ji', '2017-12-11 09:51:04', '2017-12-19 04:20:36'),
-(4, 2, 3, 'Muhammad Hanif', 'hanif@shwetech.com', '$2y$10$QJ6j9k76oELlJM2l7J4wPemQW2VuXvHslrLtY.5MLiaJ.JK7L5IOG', 6285328908074, 0, 2, 'qvBTSuJlvGvEfkOKdhd65GNnaXmk5OpcY23Zf4GHttHiwk8k71UiYjZg4By7', '2017-12-11 11:00:53', '2017-12-17 12:28:53'),
-(5, 3, 3, 'James', 'james@shwetech.com', '$2y$10$QJ6j9k76oELlJM2l7J4wPemQW2VuXvHslrLtY.5MLiaJ.JK7L5IOG', 6596427506, 0, 1, 'Blkc22gA4cd3WnTik1SInrOCOwb1RMNNOGRTZrEwTFuLPXyL7gBQlqTBHfxm', '2017-12-11 11:00:53', '2017-12-17 12:28:53'),
-(6, 3, 3, 'Lionel Low', 'lionel@shwetech.com', '$2y$10$QJ6j9k76oELlJM2l7J4wPemQW2VuXvHslrLtY.5MLiaJ.JK7L5IOG', 6590609450, 0, 1, '9zCYXXT94r7E0Whei7z6SfkCQnDSJG7HSS7857gMz4gd2n8rlS3w1v9YUzpg', '2017-12-11 11:00:53', '2017-12-17 12:28:53'),
-(7, 0, 2, 'San Pwint Thu', 'san@shwetech.com', '$2y$10$TBUsfmufnPYLMJcOqXcfNONXwr5evn29.ww9kZ6B337bwm6xdihlO', 959252232135, 99900, 0, 'BzLmKhevo0bIW2u3SGKypDESimUlmoWyj8fDEbc47ge3ZNr7fKWOTjSLVweu', '2017-12-21 02:18:04', '2017-12-21 02:18:04'),
-(8, 7, 3, 'Totok', 'totok@shwetech.com', '$2y$10$JBlYgA1iKxcUzUUl9VpPbe6fhn0ftXJG0U2yAdXOVtcTEQRT4077y', 6285743531989, 25100, 2, 'cD2Y0o3SInXm9FpxSxqqbGfYUtjJIui1ARbnEUIQzBccCy7iy5zuCN2vX7y7bEqcZhbzK3zxq8Nx9xvQBIyPTq8nrKXxdwMFI02s', '2017-12-21 02:29:01', '2017-12-21 02:29:15');
+INSERT INTO `users` (`id`, `sub_users_id`, `level_systems_id`, `name`, `email`, `password`, `phone_number_users`, `bot_phone_number_users`, `credit_users`, `max_group_users`, `remember_token`, `created_at`, `updated_at`) VALUES
+(1, 0, 1, 'Trivia', 'info@trivia.com', '$2y$10$yz8HMeQDxtLUnu48iwnZpuCZbeFzCDlawRf9Cpd/YG16E6yxVWYwy', 0, '', 0, 0, 'wih7DAqaAjjXZwTEZrH2AlqutexeSpR19B9xAbYmcvTkxC7M8CDaKmVrCoJ2', '2017-12-08 10:50:13', '2017-12-11 07:54:06'),
+(2, 0, 2, 'Irawan Agung Nugroho', 'irawan@shwetech.com', '$2y$10$RdxAgFb2nqr97wOShSk89eSwBpIy1nRXXbtFZISPRZS5kYoV43aVu', 6285643167946, '6285123123', 500, 0, 'ZzaegRdP7HKS6yyLyXuLIledkl44j7fUwzFINKS41VtZozstKOp4sC9KmVQS', '2017-12-11 08:17:16', '2017-12-21 07:18:57'),
+(3, 0, 2, 'Abdul Alim', 'abdul@shwetech.com', '$2y$10$CbjdDpV4HHaguFO2no0ayOOKxZdJdLzeYOeuWNUU4iziCQaYHLJfm', 959424013044, '', 0, 0, '08wYpE2boWWQgWzGHm6wb2TmWmUBjYvUZ7vQXqgatQo12lyijd7DAUZS57Ji', '2017-12-11 09:51:04', '2017-12-19 04:20:36'),
+(4, 2, 3, 'Muhammad Hanif', 'hanif@shwetech.com', '$2y$10$QJ6j9k76oELlJM2l7J4wPemQW2VuXvHslrLtY.5MLiaJ.JK7L5IOG', 6285328908074, '6285123123', 250500, 2, 'qvBTSuJlvGvEfkOKdhd65GNnaXmk5OpcY23Zf4GHttHiwk8k71UiYjZg4By7', '2017-12-11 11:00:53', '2017-12-17 12:28:53'),
+(5, 3, 3, 'James', 'james@shwetech.com', '$2y$10$QJ6j9k76oELlJM2l7J4wPemQW2VuXvHslrLtY.5MLiaJ.JK7L5IOG', 6596427506, '', 0, 1, 'Blkc22gA4cd3WnTik1SInrOCOwb1RMNNOGRTZrEwTFuLPXyL7gBQlqTBHfxm', '2017-12-11 11:00:53', '2017-12-17 12:28:53'),
+(6, 3, 3, 'Lionel Low', 'lionel@shwetech.com', '$2y$10$QJ6j9k76oELlJM2l7J4wPemQW2VuXvHslrLtY.5MLiaJ.JK7L5IOG', 6590609450, '', 0, 1, '9zCYXXT94r7E0Whei7z6SfkCQnDSJG7HSS7857gMz4gd2n8rlS3w1v9YUzpg', '2017-12-11 11:00:53', '2017-12-17 12:28:53'),
+(7, 0, 2, 'San Pwint Thu', 'san@shwetech.com', '$2y$10$TBUsfmufnPYLMJcOqXcfNONXwr5evn29.ww9kZ6B337bwm6xdihlO', 959252232135, '', 0, 0, '0U0kOCRV7MqyT8FOtrfnh3FCAeCrbAPR7iVR4wM4hKRrz3zznXdbK0PdJmob', '2017-12-21 02:18:04', '2017-12-21 02:18:04'),
+(8, 7, 3, 'Totok', 'totok@shwetech.com', '$2y$10$JBlYgA1iKxcUzUUl9VpPbe6fhn0ftXJG0U2yAdXOVtcTEQRT4077y', 6285743531989, '', 0, 2, 'sNcNK6QydXEoolNrTexR0nRVWElLOqpSKK5HGsF8DTVdlEne44vA3YOkLI4W', '2017-12-21 02:29:01', '2017-12-21 02:29:15');
 
 --
 -- Indexes for dumped tables
@@ -803,13 +828,13 @@ ALTER TABLE `master_features`
 -- AUTO_INCREMENT for table `master_games`
 --
 ALTER TABLE `master_games`
-  MODIFY `id_games` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_games` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `master_groups`
 --
 ALTER TABLE `master_groups`
-  MODIFY `id_groups` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_groups` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `master_level_systems`
@@ -821,7 +846,7 @@ ALTER TABLE `master_level_systems`
 -- AUTO_INCREMENT for table `master_list_stakes`
 --
 ALTER TABLE `master_list_stakes`
-  MODIFY `id_list_stakes` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id_list_stakes` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `master_menus`
@@ -833,31 +858,31 @@ ALTER TABLE `master_menus`
 -- AUTO_INCREMENT for table `master_register_members`
 --
 ALTER TABLE `master_register_members`
-  MODIFY `id_register_members` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_register_members` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `master_sessions`
 --
 ALTER TABLE `master_sessions`
-  MODIFY `id_sessions` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_sessions` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `master_stakes`
 --
 ALTER TABLE `master_stakes`
-  MODIFY `id_stakes` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_stakes` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `master_top_ups`
 --
 ALTER TABLE `master_top_ups`
-  MODIFY `id_top_ups` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_top_ups` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `master_winloses`
 --
 ALTER TABLE `master_winloses`
-  MODIFY `id_winloses` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_winloses` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `migrations`
