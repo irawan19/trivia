@@ -518,7 +518,7 @@ class WhatsappBotController extends Controller
 
                                             $success_group_data = [
                                                 "target"    => "group",
-                                                "response"  => "Hi ".$get_ph_number.", I am a Trivibot, Your success join the sessions in ".$get_group_name."! Good Luck!\nThis sessions :\nStarted at : ".Shwetech::changeDBToDatetime($get_start_date)."\nFinished at : ".Shwetech::changeDBToDatetime($get_end_date)."\nI'll guide your game.\nYou are already registered in this group. You can follow the game in this group by typing command :\n#b[space]list of stakes[space]amount of stake\nFor example : #b dr 100. Above command means that you give stake to a dragon worth 100.\nYou can check list of stake with command : #listbet\nTo view all stakes in this group with command : #list",
+                                                "response"  => "Hi ".substr($get_ph_number, 0, -8)."****, I am a Trivibot, Your success join the sessions in ".$get_group_name."! Good Luck!\nThis sessions :\nStarted at : ".Shwetech::changeDBToDatetime($get_start_date)."\nFinished at : ".Shwetech::changeDBToDatetime($get_end_date)."\nI'll guide your game.\nYou are already registered in this group. You can follow the game in this group by typing command :\n#b[space]list of stakes[space]amount of stake\nFor example : #b dr 100. Above command means that you give stake to a dragon worth 100.\nYou can check list of stake with command : #listbet\nTo view all stakes in this group with command : #list",
                                                 "value"     => $get_group_id
                                             ];
 
@@ -646,6 +646,11 @@ class WhatsappBotController extends Controller
                                                                                                         ->first();
                                                     if($check_phone_number_agent != '')
                                                     {
+                                                        $get_group      = \App\Master_group::join('users','users_id','=','users.id')
+                                                                                            ->where('name_groups',$get_group_name)
+                                                                                            ->where('phone_number_users',$get_ph_number)
+                                                                                            ->first();
+                                                        $get_group_id   = $get_group->groups_Id;
                                                         $games_data     = [
                                                             'sessions_id'           => $id_sessions,
                                                             'start_date_games'      => '0000-00-00 00:00:00',
@@ -655,13 +660,19 @@ class WhatsappBotController extends Controller
                                                         ];
                                                         \App\Master_game::insert($games_data);
 
-                                                        $success_data = [
+                                                        $success_private_data = [
                                                             "target"    => "private",
                                                             // "response"  => $get_group_name."\nAwesome! Your game settings are:\nReturn to Player = ".$get_rtp." \n ------------------------------- \nNow you can start the game by enter :\n#start ".$get_group_name." duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
                                                             "response"  => $get_group_name."\nAwesome! Your game settings are:\n ------------------------------- \nNow you can start the game by enter :\n#start ".$get_group_name." duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
                                                             "value"     => $get_ph_number
                                                         ];
-                                                        return response()->json(["success" => $success_data], $this->successStatus);
+
+                                                        $success_group_data = [
+                                                            "target"    => "group",
+                                                            "response"  => "The game is start, you can place your stake",
+                                                            "value"     => $get_group_id
+                                                        ];
+                                                        return response()->json(["successgroup" => $success_group_data, "successprivate" => $success_private_data], $this->successStatus);
                                                     }
                                                     else
                                                     {
