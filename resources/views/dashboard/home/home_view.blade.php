@@ -59,6 +59,7 @@
                                                 <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="persist" width="5%">No</th>
                                                 <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="2" width="5%">Image</th>
                                                 <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="3">Name</th>
+                                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="4">Command</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -72,6 +73,7 @@
                                                         </a>
                                                     </td>
                                                     <td>{{ $list_stakes->name_list_stakes }}</td>
+                                                    <td>{{ $list_stakes->command_list_stakes }}</td>
                                                 </tr>
                                                 @php($no++)
                                             @endforeach

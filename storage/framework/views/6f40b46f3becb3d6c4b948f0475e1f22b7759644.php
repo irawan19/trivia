@@ -40,6 +40,7 @@
                                 <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="persist">No</th>
                                 <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="2">Image</th>
                                 <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="3">Name</th>
+                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="4">Command</th>
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
@@ -53,7 +54,8 @@
                                             <img width="100%" src="<?php echo e(URL::to($list_stakes->path_image_list_stakes)); ?>/<?php echo e($list_stakes->name_image_list_stakes); ?>">
                                         </a>
                                     </td>
-	                                <td><?php echo e($list_stakes->name_list_stakes); ?></td>
+                                    <td><?php echo e($list_stakes->name_list_stakes); ?></td>
+	                                <td><?php echo e($list_stakes->command_list_stakes); ?></td>
 	                                <td width="5%">
 	                                	<div class="input-group">
 											<div class="input-group-btn">

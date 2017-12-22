@@ -34,7 +34,8 @@ class ListStakesController extends AdminCoreController
             $result_word                        = $request->search_word;
             $data['result_word']                = $result_word;
             $data['view_list_stakes']         	= \App\Master_list_stake::where('name_list_stakes', 'LIKE', '%'.$result_word.'%')
-                                                                            ->get();
+                                                                        ->orWhere('command_list_stakes', 'LIKE', '%'.$result_word.'%')
+                                                                        ->get();
             session(['page'                     => $url_now]);
             session(['result_word'              => $result_word]);
             return view('dashboard/list_stakes/list_stakes_view', $data);
@@ -60,8 +61,9 @@ class ListStakesController extends AdminCoreController
         if(Shwetech::accessRights($link_list_stakes,'add') == 'true')
         {
             $this->validate($request, [
-                'userfile_image'  => 'required|mimes:png,jpg,jpeg',
-                'name_list_stakes'  => 'required',
+                'userfile_image'        => 'required|mimes:png,jpg,jpeg',
+                'name_list_stakes'      => 'required',
+                'command_list_stakes'   => 'required',
             ]);
 
             $name_image = $request->file('userfile_image')->getClientOriginalName();
@@ -71,7 +73,8 @@ class ListStakesController extends AdminCoreController
             );
 
             $data = [
-                'name_list_stakes'        => $request->name_list_stakes,
+                'name_list_stakes'         => $request->name_list_stakes,
+                'command_list_stakes'      => $request->command_list_stakes,
                 'path_image_list_stakes'   => $path_image,
                 'name_image_list_stakes'   => $name_image,
             ];
@@ -96,39 +99,6 @@ class ListStakesController extends AdminCoreController
 
                 return redirect($redirect_page);
             }
-        }
-        else
-            return redirect('/dashboard/list_stakes');
-    }
-
-    public function status($id_list_stakes=0)
-    {
-        $link_list_stakes = 'list_stakes';
-        if(Shwetech::accessRights($link_list_stakes,'edit') == 'true')
-        {
-            if (!is_numeric($id_list_stakes))
-                $id_list_stakes = 0;
-            $check_list_stakes = \App\Master_list_stake::where('id_list_stakes',$id_list_stakes)->count();
-            if($check_list_stakes != 0)
-            {
-                $non_active_all_list_stakes = [ 'active_list_stakes' => 0];
-                \App\Master_list_stake::query()->update($non_active_all_list_stakes);
-
-                $data = [
-                    'active_list_stakes' => 1,
-                ];
-                \App\Master_list_stake::where('id_list_stakes', $id_list_stakes)
-                                        ->update($data);
-
-                if(request()->session()->get('page') != '')
-                    $redirect_page    = request()->session()->get('page');
-                else
-                    $redirect_page  = '/dashboard/list_stakes';
-                
-                return redirect($redirect_page);
-            }
-            else
-                return redirect('/dashboard/list_stakes');
         }
         else
             return redirect('/dashboard/list_stakes');
@@ -166,7 +136,8 @@ class ListStakesController extends AdminCoreController
             if($check_list_stakes != 0)
             {
                 $this->validate($request, [
-                    'name_list_stakes'  => 'required',
+                    'name_list_stakes'      => 'required',
+                    'command_list_stakes'   => 'required',
                 ]);
 
                 if($request->file('userfile_image') != '')
@@ -186,7 +157,8 @@ class ListStakesController extends AdminCoreController
                     );
 
                     $data = [
-                        'name_list_stakes'        => $request->name_list_stakes,
+                        'name_list_stakes'         => $request->name_list_stakes,
+                        'command_list_stakes'      => $request->command_list_stakes,
                         'path_image_list_stakes'   => $path_image,
                         'name_image_list_stakes'   => $name_image,
                     ];
@@ -194,7 +166,8 @@ class ListStakesController extends AdminCoreController
                 else
                 {
                     $data = [
-                        'name_list_stakes'        => $request->name_list_stakes
+                        'name_list_stakes'        => $request->name_list_stakes,
+                        'command_list_stakes'     => $request->command_list_stakes,
                     ];
                 }
                 \App\Master_list_stake::where('id_list_stakes', $id_list_stakes)

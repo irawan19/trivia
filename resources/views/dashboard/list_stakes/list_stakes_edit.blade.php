@@ -48,6 +48,11 @@
                             <input id="name_list_stakes" type="text" name="name_list_stakes" class="form-control {{ Shwetech::errorStyleFormControl($errors->first('name_list_stakes')) }}" value="{{ Request::old('name_list_stakes') == '' ? $edit_list_stakes->name_list_stakes : Request::old('name_list_stakes') }}" placeholder="List Stakes" required>
                             {{ Shwetech::formError($errors->first('name_list_stakes')) }}
                         </div>
+                        <div class="form-group {{ Shwetech::errorStyleGroup($errors->first('command_list_stakes')) }}">
+                            <label class="form-control-label">command <b style="color:red">*</b></label>
+                            <input id="command_list_stakes" type="text" name="command_list_stakes" class="form-control {{ Shwetech::errorStyleFormControl($errors->first('command_list_stakes')) }}" value="{{ Request::old('command_list_stakes') == '' ? $edit_list_stakes->command_list_stakes : Request::old('command_list_stakes') }}" placeholder="List Stakes" required>
+                            {{ Shwetech::formError($errors->first('command_list_stakes')) }}
+                        </div>
                         <br/>
                         <div class="form-group" align="center">
 	            			<button type="submit" name="update" value="update" class="btn btn-success waves-effect waves-light m-r-10"> Update</button>

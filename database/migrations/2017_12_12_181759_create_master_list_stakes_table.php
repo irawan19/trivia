@@ -16,6 +16,7 @@ class CreateMasterListStakesTable extends Migration
         Schema::create('master_list_stakes', function (Blueprint $table) {
             $table->increments('id_list_stakes');
             $table->string('name_list_stakes');
+            $table->string('command_list_stakes');
             $table->string('path_image_list_stakes');
             $table->string('name_image_list_stakes');
         });

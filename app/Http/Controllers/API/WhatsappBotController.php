@@ -28,7 +28,8 @@ class WhatsappBotController extends Controller
                 {
                     if(preg_match('/\s/',$get_group_name) == '')
                     {
-                        $get_agent = \App\Master_user::where('phone_number_users',$get_phone_number)->first();
+                        $get_agent = \App\Master_user::where('phone_number_users',$get_phone_number)
+                                                    ->first();
                         if($get_agent != '')
                         {
                             if($get_agent->level_systems_id == 3)
@@ -46,7 +47,7 @@ class WhatsappBotController extends Controller
                                     {
                                         if($get_credit_group == '')
                                         {
-                                            if($credit_users != 0)
+                                            if($credit_users > 0)
                                             {
                                                 $check_group_name   = \App\Master_group::where('users_id',$id_agent)
                                                                                         ->where('name_groups',$get_group_name)
@@ -69,7 +70,7 @@ class WhatsappBotController extends Controller
 
                                                     $success_data = [
                                                         "target"    => "private",
-                                                        "response"  => "Great! Your ".$get_group_name." has successfully created",
+                                                        "response"  => "Great! Your ".$get_group_name." has successfully created.\nAt the first, please create sessions by sending command bellow :\n#ctsessions[space]group name[space]credit / member[space]day duration\nfor example:\n#ctsessions trivia 5000 7\nabove command means that when a player register, each player get 5000 credit upon registration in sessions. And session will run for 7 days",
                                                         "value"     => $get_phone_number,
                                                     ];
                                                     return response()->json(["success" => $success_data], $this->successStatus);
@@ -78,7 +79,7 @@ class WhatsappBotController extends Controller
                                                 {
                                                     $error_data = [
                                                         "target"    => "private",
-                                                        "response"  => "Group already exits. Please find another name for your group",
+                                                        "response"  => "Group ".$get_group_name." already exits. Please find another name for your group",
                                                         "value"     => $get_phone_number,
                                                     ];
                                                     return response()->json(["error" => $error_data], $this->errorStatus);
@@ -88,7 +89,7 @@ class WhatsappBotController extends Controller
                                             {
                                                 $error_data = [
                                                     "target"    => "private",
-                                                    "response"  => "Your credit is 0.you can't create group anymore. Please top up to your master agent - ".$get_phone_master_agent,
+                                                    "response"  => "Your credit is 0. You can't create group anymore.\nPlease top up to your master agent - ".$get_phone_master_agent,
                                                     "value"     => $get_phone_number,
                                                 ];
                                                 return response()->json(["error" => $error_data], $this->errorStatus);
@@ -121,7 +122,7 @@ class WhatsappBotController extends Controller
 
                                                     $success_data = [
                                                         "target"    => "private",
-                                                        "response"  => "Great! Your ".$get_group_name." has successfully created",
+                                                        "response"  => "Great! Your ".$get_group_name." has successfully created.\nAt the first, please create sessions by sending command bellow :\n#ctsessions[space]group name[space]credit / member[space]day duration\nfor example:\n#ctsessions trivia 5000 7\nabove command means that when a player register, each player get 5000 credit upon registration in sessions. And session will run for 7 days",
                                                         "value"     => $get_phone_number
                                                     ];
                                                     return response()->json(["success" => $success_data], $this->successStatus);
@@ -130,7 +131,7 @@ class WhatsappBotController extends Controller
                                                 {
                                                     $error_data = [
                                                         "target"    => "private",
-                                                        "response"  => "Group already exist. Please find another name for your group",
+                                                        "response"  => "Group ".$get_group_name." already exist. Please find another name for your group",
                                                         "value"     => $get_phone_number
                                                     ];
                                                     return response()->json(["error" => $error_data], $this->errorStatus);
@@ -140,7 +141,7 @@ class WhatsappBotController extends Controller
                                             {
                                                 $error_data = [
                                                     "target"    => "private",
-                                                    "response"  => "Your credit is not enough. your current credit is ".$credit_users,
+                                                    "response"  => "Your credit is not enough. Your current credit is ".$credit_users,
                                                     "value"     => $get_phone_number,
                                                 ];
                                                 return response()->json(["error" => $error_data], $this->errorStatus);
@@ -249,7 +250,7 @@ class WhatsappBotController extends Controller
 
                                 $success_data = [
                                     "target"    => "private",
-                                    "response"  => "Group ID has been updated successfully",
+                                    "response"  => "Great! Your ".$get_group_name." has successfully updated ID.\nAt the first, please create sessions by sending command bellow :\n#ctsessions[space]group name[space]credit / member[space]day duration\nFor example :\n#ctsessions trivia 5000 7\nAbove command means that when a player register, each player get 5000 credit upon registration in sessions. And session will run for 7 days",
                                     "value"     => $get_ph_number,
                                 ];
                                 return response()->json(['success' => $success_data], $this->successStatus);
@@ -289,7 +290,7 @@ class WhatsappBotController extends Controller
                     $error_data = [
                         "target"    => "private",
                         "response"  => "You must enter the group name",
-                        "value"     => "",
+                        "value"     => $get_ph_number,
                     ];
                     return response()->json(["error" => $error_data], $this->errorStatus);
                 }
@@ -348,7 +349,7 @@ class WhatsappBotController extends Controller
                                                 {
                                                     $error_data = [
                                                         "target"    => "private",
-                                                        "response"  => $get_group_name."\n Day should be a number",
+                                                        "response"  => $get_group_name."\nDay should be a number",
                                                         "value"     => $get_ph_number
                                                     ];
                                                     return response()->json(["error" => $error_data], $this->errorStatus);
@@ -379,7 +380,7 @@ class WhatsappBotController extends Controller
 
                                             $success_data = [
                                                 "target"    => "private",
-                                                "response"  => $get_group_name."\n Great! Your sessions has successfully created. This sessions started at ".Shwetech::changeDBToDatetime($get_start_date)." end finished at ".Shwetech::changeDBToDatetime($get_end_date),
+                                                "response"  => $get_group_name."\nGreat! Your sessions has successfully created.\nThis sessions :\nStarted at : ".Shwetech::changeDBToDatetime($get_start_date)."\nFinished at : ".Shwetech::changeDBToDatetime($get_end_date)."\nThe next stage, please create your game first by sending this command bellow:\n#ctgame[space]group name[space]RTP game.\nFor example :\n#ctgame trivia 25\nAbove command means that in this game have RTP 25%. You can set each game with RTO as you wish. RTP can only be set with numbers 1 - 100",
                                                 "value"     => $get_ph_number,
                                             ];
                                             return response()->json(["success" => $success_data], $this->successStatus);
@@ -395,7 +396,7 @@ class WhatsappBotController extends Controller
                                     {
                                         $error_data = [
                                             "target"    => "private",
-                                            "response"  => "Credit group not enough",
+                                            "response"  => $get_group_name."\nCredit group not enough. Credit ".$get_group_name." is ".$credit_groups,
                                             "value"     => $get_ph_number,
                                         ];
                                         return response()->json(["error" => $error_data], $this->errorStatus);
@@ -405,7 +406,7 @@ class WhatsappBotController extends Controller
                                 {
                                     $error_data = [
                                         "target"    => "private",
-                                        "response"  => $get_group_name."\n Credit group not enough",
+                                        "response"  => $get_group_name."\nCredit group not enough. Credit ".$get_group_name." is ".$credit_groups,
                                         "value"     => $get_ph_number,
                                     ];
                                     return response()->json(["error" => $error_data], $this->errorStatus);
@@ -425,7 +426,7 @@ class WhatsappBotController extends Controller
                         {
                             $error_data = [
                                 "target"    => "private",
-                                "response"  => $get_group_name."\n Unlisted group",
+                                "response"  => $get_group_name."\nUnlisted group",
                                 "value"     => $get_ph_number,
                             ];
                             return response()->json(["error" => $error_data], $this->errorStatus);
@@ -473,7 +474,8 @@ class WhatsappBotController extends Controller
             {
                 if($get_ph_number != '')
                 {
-                    $get_group              = \App\Master_group::where('whatsapp_group_id',$get_group_id)->first();
+                    $get_group              = \App\Master_group::where('whatsapp_group_id',$get_group_id)
+                                                                ->first();
                     if($get_group != '')
                     {
                         $id_group               = $get_group->id_groups;
@@ -516,7 +518,7 @@ class WhatsappBotController extends Controller
 
                                             $success_data = [
                                                 "target"    => "group",
-                                                "response"  => $get_ph_number." Success join the sessions! Good Luck! Sessions started at ".Shwetech::changeDBToDatetime($get_start_date)." and finished at ".Shwetech::changeDBToDatetime($get_end_date),
+                                                "response"  => "Hi ".$get_ph_number.", I am a Trivibot, Your success join the sessions in ".$get_group_name."! Good Luck!\nThis sessions :\nStarted at : ".Shwetech::changeDBToDatetime($get_start_date)."\nFinished at : ".Shwetech::changeDBToDatetime($get_end_date)."\nI'll guide your game.\nYou are already registered in this group. Your credit in this group is ".$get_credit_group.", you can follow the game in this group by typing command :\n#stake[space]list of stakes[space]amount of stake\nFor example : #stake dr 100. Above command means that you give stake to a dragon worth 100.\nYou can check list of stake with command : #ltstakes\nTo view all stakes in this group with command : #ckstakes",
                                                 "value"     => $get_group_id
                                             ];
                                             return response()->json(["success" => $success_data], $this->successStatus);
@@ -525,7 +527,7 @@ class WhatsappBotController extends Controller
                                         {
                                             $error_data = [
                                                 "target"    => "private",
-                                                "response"  => $get_group_name." Credit group not enough",
+                                                "response"  => $get_group_name."\nCredit group not enough. Credit ".$get_group_name." is ".$get_credit_group."\nAnd you can't join in this group",
                                                 "value"     => $get_ph_number
                                             ];
                                             return response()->json(["error" => $error_data], $this->errorStatus);
@@ -535,7 +537,7 @@ class WhatsappBotController extends Controller
                                     {
                                         $error_data = [
                                             "target"    => "group",
-                                            "response"  => $get_ph_number." Your already registered",
+                                            "response"  => $get_ph_number."\nYour already registered",
                                             "value"     => $get_group_id
                                         ];
                                         return response()->json(["error" => $error_data], $this->errorStatus);
@@ -545,7 +547,7 @@ class WhatsappBotController extends Controller
                             {
                                 $error_data = [
                                     "target"    => "private",
-                                    "response"  => $get_group_name." Your is agent in this group, you can't play in your own group",
+                                    "response"  => $get_group_name."\nYour is agent in this group, you can't play in your own group",
                                     "value"     => $get_ph_number,
                                 ];
                                 return response()->json(["error" => $error_data], $this->errorStatus);
@@ -555,7 +557,7 @@ class WhatsappBotController extends Controller
                         {
                             $error_data = [
                                 "target"    => "private",
-                                "response"  => $get_group_name."\n Group doesn't have any sessions",
+                                "response"  => $get_group_name."\nGroup doesn't have any sessions",
                                 "value"     => $get_ph_number
                             ];
                             return response()->json(["error" => $error_data], $this->errorStatus);
@@ -649,7 +651,7 @@ class WhatsappBotController extends Controller
 
                                                         $success_data = [
                                                             "target"    => "private",
-                                                            "response"  => $get_group_name."Awesome! Your game settings are: \n Return to Player = ".$get_rtp." \n ------------------------------- \n Now you can start the game by enter \n #start ".$get_group_name,
+                                                            "response"  => $get_group_name."\nAwesome! Your game settings are:\nReturn to Player = ".$get_rtp." \n ------------------------------- \nNow you can start the game by enter :\n#start ".$get_group_name." duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
                                                             "value"     => $get_ph_number
                                                         ];
                                                         return response()->json(["success" => $success_data], $this->successStatus);
@@ -668,7 +670,7 @@ class WhatsappBotController extends Controller
                                                 {
                                                     $error_data = [
                                                         "target"    => "private",
-                                                        "response"  => $get_group_name."\n There are games that have not been started in the current sessions",
+                                                        "response"  => $get_group_name."\nThere are games that have not been started in the current sessions",
                                                         "value"     => $get_ph_number
                                                     ];
                                                     return response()->json(["error" => $error_data], $this->errorStatus);
@@ -678,7 +680,7 @@ class WhatsappBotController extends Controller
                                             {
                                                 $error_data = [
                                                     "target"    => "private",
-                                                    "response"  => $get_group_name."\n There is an active game",
+                                                    "response"  => $get_group_name."\nThere is an active game",
                                                     "value"     => $get_ph_number,
                                                 ];
                                                 return response()->json(["error" => $error_data], $this->errorStatus);
@@ -703,7 +705,7 @@ class WhatsappBotController extends Controller
 
                                                 $success_data = [
                                                     "target"    => "private",
-                                                    "response"  => $get_group_name."Awesome! Your game settings are: \n Return to Player = ".$get_rtp." \n ------------------------------- \n Now you can start the game by enter \n #start ".$get_group_name,
+                                                    "response"  => $get_group_name."\nAwesome! Your game settings are:\nReturn to Player = ".$get_rtp." \n ------------------------------- \nNow you can start the game by enter :\n#start ".$get_group_name." duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
                                                     "value"     => $get_ph_number
                                                 ];
                                                 return response()->json(["success" => $success_data], $this->successStatus);
@@ -711,7 +713,7 @@ class WhatsappBotController extends Controller
                                             else
                                             {
                                                 $error_data = [
-                                                    "target"        => "private", 
+                                                    "target"        => "private",
                                                     "response"      => "Your not agent in ".$get_group_name." group",
                                                     "value"         => $get_ph_number
                                                 ];
@@ -723,7 +725,7 @@ class WhatsappBotController extends Controller
                                     {
                                         $error_data = [
                                             "target"    => "private",
-                                            "response"  => $get_group_name."\n Group doesn't have any sessions active",
+                                            "response"  => $get_group_name."\nGroup doesn't have any sessions active",
                                             "value"     => $get_ph_number,
                                         ];
                                         return response()->json(["error" => $error_data], $this->errorStatus);
@@ -827,7 +829,7 @@ class WhatsappBotController extends Controller
                                     if(is_numeric($get_duration))
                                         $get_end_date       = date('Y-m-d H:i:s',strtotime('+'.$get_duration.' minutes',strtotime($get_start_date)));
                                     else
-                                        return response()->json(["error" => $get_group_name."\n Minutes should be a number"], $this->errorStatus);
+                                        return response()->json(["error" => $get_group_name."\nMinutes should be a number"], $this->errorStatus);
                                 }
                                 else
                                 {
@@ -853,7 +855,7 @@ class WhatsappBotController extends Controller
 
                                 $success_data = [
                                     "target"    => "private",
-                                    "response"  => $get_group_name."\n Perfect! 🏁 Ok we can start the game. 🏁 \n 🎉 You can invite your friends to the group now.",
+                                    "response"  => $get_group_name."\nPerfect!\n🏁 game starts from now and will end in .".Shwetech::changeDBToDatetime($get_end_date)." 🏁",
                                     "value"     => $get_ph_number
                                 ];
                                 return response()->json(["success" => $success_data], $this->successStatus);
@@ -862,7 +864,7 @@ class WhatsappBotController extends Controller
                             {
                                 $error_data = [
                                     "target"    => "private",
-                                    "response"  => "Your not agent in ".$get_group_name." group",
+                                    "response"  => "No games are active in ".$get_group_name." group",
                                     "value"     => $get_ph_number,
                                 ];
                                 return response()->json(["error" => $error_data], $this->errorStatus);
@@ -1149,7 +1151,7 @@ class WhatsappBotController extends Controller
                             {
                                 if(is_numeric($get_value))
                                 {
-                                    $check_list_stakes = \App\Master_list_stake::where('name_list_stakes',$get_stake)->first();
+                                    $check_list_stakes = \App\Master_list_stake::where('command_list_stakes',$get_stake)->first();
                                     if($check_list_stakes != '')
                                     {
                                         $get_active_games = \App\Master_game::join('master_sessions','sessions_id','=','master_sessions.id_sessions')
@@ -1182,23 +1184,32 @@ class WhatsappBotController extends Controller
                                                         \App\Master_stake::insert($stakes_data);
 
                                                         $calculate_credit_members = $credit_register_members - $get_value;
-                                                        $credit_register_members = [
+                                                        $credit_register_members_data = [
                                                             'credit_register_members'   => $calculate_credit_members
                                                         ];
-                                                        \App\Master_register_member::where('id_register_members',$id_register_members)->update($credit_register_members);
+                                                        \App\Master_register_member::where('id_register_members',$id_register_members)->update($credit_register_members_data);
 
-                                                        $success_data = [
+                                                        $get_credit_after_update    = \App\Master_register_member::where('id_register_members',$id_register_members)->first();
+                                                        $credit_register_members_now= $get_credit_after_update->credit_register_members;
+
+                                                        $success_private_data = [
+                                                            "target"    => "private",
+                                                            "response"  => "You have successfully stake on ".$get_stake." with ".$get_value." credit. Your current balance is ".$credit_register_members_now,
+                                                            "value"     => $get_ph_number
+                                                        ];
+
+                                                        $success_group_data = [
                                                             "target"    => "group",
-                                                            "response"  => "Great! ".$get_ph_number." success to stake ".$get_stake." with value ".$get_value,
+                                                            "response"  => $get_ph_number." Place a stake!",
                                                             "value"     => $get_group_id
                                                         ];
-                                                        return response()->json(["success" => $success_data], $this->successStatus);
+                                                        return response()->json(["success" => [$success_private_data, $success_group_data]], $this->successStatus);
                                                     }
                                                     else
                                                     {
                                                         $error_data = [
                                                             "target"    => "private",
-                                                            "response"  => $get_group_name." Value can't be smaller than 0",
+                                                            "response"  => $get_group_name."\nAmount can't be smaller than 0",
                                                             "value"     => $get_ph_number,
                                                         ];
                                                         return response()->json(["error" => $error_data], $this->errorStatus);
@@ -1208,7 +1219,7 @@ class WhatsappBotController extends Controller
                                                 {
                                                     $error_data = [
                                                         "target"    => "private",
-                                                        "response"  => $get_group_name." Your credit not enough",
+                                                        "response"  => $get_group_name."\nYour credit not enough. Your credit is ".$credit_register_members,
                                                         "value"     => $get_ph_number,
                                                     ];
                                                     return response()->json(["error" => $error_data], $this->errorStatus);
@@ -1218,7 +1229,7 @@ class WhatsappBotController extends Controller
                                             {
                                                 $error_data = [
                                                     "target"    => "private",
-                                                    "response"  => $get_group_name."\n Your not member in this group",
+                                                    "response"  => $get_group_name."\nYour not member in ".$get_group_name." group",
                                                     "value"     => $get_ph_number
                                                 ];
                                                 return response()->json(["error" => $error_data], $this->errorStatus);
@@ -1228,7 +1239,7 @@ class WhatsappBotController extends Controller
                                         {
                                             $error_data = [
                                                 "target"    => "private",
-                                                "response"  => $get_group_name." No game is active",
+                                                "response"  => $get_group_name."\nNo game is active",
                                                 "value"     => $get_ph_number
                                             ];
                                             return response()->json(["error" => $error_data], $this->errorStatus);
@@ -1238,7 +1249,7 @@ class WhatsappBotController extends Controller
                                     {
                                         $error_data = [
                                             "target"    => "private",
-                                            "response"  => $get_group_name."\n Your stakes not in list",
+                                            "response"  => $get_group_name."\nYour stakes not in list. You can check the list of stakes by typing command : #ltstakes",
                                             "value"     => $get_ph_number
                                         ];
                                         return response()->json(["error" => $error_data], $this->errorStatus);
@@ -1248,7 +1259,7 @@ class WhatsappBotController extends Controller
                                 {
                                     $error_data = [
                                         "target"    => "private",
-                                        "response"  => $get_group_name."\n Value should be a number",
+                                        "response"  => $get_group_name."\nAmount should be a number",
                                         "value"     => $get_ph_number
                                     ];
                                     return response()->json(["error" => $error_data], $this->errorStatus);
@@ -1258,7 +1269,7 @@ class WhatsappBotController extends Controller
                             {
                                 $error_data = [
                                     "target"    => "private",
-                                    "response"  => $get_group_name."\n You must enter the value",
+                                    "response"  => $get_group_name."\nYou must enter the amount",
                                     "value"     => $get_ph_number,
                                 ];
                                 return response()->json(["error" => $error_data], $this->errorStatus);
@@ -1268,7 +1279,7 @@ class WhatsappBotController extends Controller
                         {
                             $error_data = [
                                 "target"    => "private",
-                                "response"  => $get_group_name."\n You must enter the stake",
+                                "response"  => $get_group_name."\nYou must enter the stake. You can check the list of stakes by typing command : #ltstakes",
                                 "value"     => $get_ph_number
                             ];
                             return response()->json(["error" => $error_data], $this->errorStatus);
@@ -1370,7 +1381,7 @@ class WhatsappBotController extends Controller
                     $check_list_stakes = \App\Master_list_stake::count();
                     if($check_list_stakes != 0)
                     {
-                        $get_list_stakes = \App\Master_list_stake::select('name_list_stakes')
+                        $get_list_stakes = \App\Master_list_stake::select('name_list_stakes','command_list_stakes')
                                                                 ->get();
                         $list_stakes_data = [
                             "target"                => "group",
@@ -1410,7 +1421,7 @@ class WhatsappBotController extends Controller
             }
         }
 
-    //TOP UP HOST
+    //TOP UP AGENT
         public function top_up_agent()
         {
             //PARAMETER
@@ -1468,7 +1479,7 @@ class WhatsappBotController extends Controller
 
                                                 $success_data = [
                                                     "target"    => "private",
-                                                    "response"  => "Congratulations you successfully fill credit to no ".$get_ph_number_agent,
+                                                    "response"  => "Congratulations you successfully fill credit to agent ".$get_ph_number_agent,
                                                     "value"     => $get_ph_number_master_agent
                                                 ];
                                                 return response()->json(["success" => $success_data], $this->successStatus);
@@ -1583,7 +1594,7 @@ class WhatsappBotController extends Controller
 
                                     $success_data = [
                                         "target"    => "private",
-                                        "response"  => "Congratulations you successfully fill credit to group ".$get_group_name,
+                                        "response"  => "Congratulations you successfully fill credit to ".$get_group_name." group",
                                         "value"     => $get_ph_number 
                                     ];
                                     return response()->json(["success" => $success_data], $this->successStatus);
