@@ -5,7 +5,7 @@
 	</a>
 </p>
 
-## About TRIVIA
+## ABOUT TRIVIA
 
 TRIVIA is a Whatsapp Game Bot. The Game system will be able to let user create their own agent, and play their own game with their friend.
 
