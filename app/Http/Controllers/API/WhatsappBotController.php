@@ -1415,7 +1415,7 @@ class WhatsappBotController extends Controller
                 $error_data = [
                     "target"    => "group",
                     "response"  => "You must enter the group ID",
-                    "value"     => "",
+                    "value"     => $get_group_id,
                 ];
                 return response()->json(["error" => $error_data], $this->errorStatus);
             }
@@ -1554,7 +1554,7 @@ class WhatsappBotController extends Controller
                 $error_data = [
                     "target"    => "private",
                     "response"  => "You must enter the phone number master agent",
-                    "value"     => ""
+                    "value"     => $get_ph_number_master_agent
                 ];
                 return response()->json(["error" => $error_data], $this->errorStatus);
             }
@@ -1836,5 +1836,136 @@ class WhatsappBotController extends Controller
                                     ->update($sessions_data);
             }
             return response()->json(["success" => "Its Worked"], $this->successStatus);
+        }
+
+    //HELP
+        public function help()
+        {
+            $get_group_id          = request('wa_group_id');
+            if($get_group_id != '')
+            {
+                $check_group = \App\Master_group::where("whatsapp_group_id",$get_group_id)->count();
+                if($check_group != 0)
+                {
+                    $success_data = [
+                        "target"    => "group",
+                        "response"  => "Here is some command i understand :\n- Register = #reg\n- Bet = #b[space]list stakes[space]amount\n- Check list stakes available = #listber\n- Check all member stakes in current game = #list",
+                        "value"     => $get_group_id
+                    ];
+                    return response()->json(["success" => $success_data], $this->successStatus);
+                }
+                else
+                {
+                    $error_data = [
+                        "target"    => "group",
+                        "response"  => "Group Unlisted",
+                        "value"     => $get_group_id
+                    ];
+                    return response()->json(["error" => $error_data], $this->errorStatus);
+                }
+            }
+            else
+            {
+                $error_data = [
+                    "target"    => "group",
+                    "response"  => "You must enter the group ID",
+                    "value"     => $get_group_id,
+                ];
+                return response()->json(["error" => $error_data], $this->errorStatus);
+            }
+        }
+
+        public function ahelp()
+        {
+            $get_ph_number = request('wa_ph_number');
+            if($get_ph_number != '')
+            {
+                $check_agent = \App\Master_user::where('phone_number_users',$get_ph_number)->first();
+                if($check_agent != '')
+                {
+                    $id_level_systems = $check_agent->level_systems_id;
+                    if($id_level_systems == 2)
+                    {
+                        $success_data = [
+                            "target"    => "private",
+                            "response"  => "Here is some command i understand :\n- Create group = #group[space]group name[space]credit\n- Create session = #session[space]group name[space]credit per member[space]duration (in day)\n- Create game = #game[space]group name[space]rtp\n- Start game = #start[space]group name[space]duration (in minutes)\n- End Game = #end[space]group name\n- Top up group = #credit[space]group name[space]amount",
+                            "value"     => $get_ph_number
+                        ];
+                        return response()->json(["success" => $success_data], $this->successStatus);
+                    }
+                    else
+                    {
+                        $error_data = [
+                            "target"    => "private",
+                            "response"  => "Your not agent",
+                            "value"     => $get_ph_number,
+                        ];
+                        return response()->json(["error" => $error_data], $this->errorStatus);
+                    }
+                }
+                else
+                {
+                    $error_data = [
+                        "target"    => "private",
+                        "response"  => "Phone number unlisted",
+                        "value"     => $get_ph_number,
+                    ];
+                    return response()->json(["error" => $error_data], $this->errorStatus);
+                }
+            }
+            else
+            {
+                $error_data = [
+                    "target"    => "private",
+                    "response"  => "You must enter the phone number",
+                    "value"     => $get_ph_number,
+                ];
+                return response()->json(["error" => $error_data], $this->errorStatus);
+            }
+        }
+
+        public function check_credit_member()
+        {
+            $get_ph_number = request('wa_ph_number');
+            if($get_ph_number != '')
+            {
+                $check_register_members_all = \App\Master_register_member::where('phone_number_register_members',$get_ph_number)
+                                                                          ->first();
+                if($check_register_members_all != '')
+                {
+                    $list_credit_members = \App\Master_register_member::select('name_groups',
+                                                                                'credit_register_members',
+                                                                                'start_date_sessions AS start_sessions',
+                                                                                'end_date_sessions AS end_sessions')
+                                                                        ->join('master_sessions','sessions_id','=','master_sessions.id_sessions')
+                                                                        ->join('master_groups','groups_id','=','master_groups.id_groups')
+                                                                        ->where('phone_number_register_members',$get_ph_number)
+                                                                        ->get();
+                    $success_data = [
+                        "target"    => "private",
+                        "response"  => $list_credit_members,
+                        "value"     => $get_ph_number
+                    ];
+                    return response()->json(["success" => $success_data], $this->successStatus);
+                }
+                else
+                {
+                    $error_data = [
+                        "target"    => "private",
+                        "response"  => "You are not registered in any group",
+                        "value"     => $get_ph_number,
+                    ];
+                    return response()->json(["error" => $error_data], $this->errorStatus);
+                }
+            }
+            else
+            {
+                $error_data = [
+                    "target"    => "private",
+                    "response"  => "You must enter the phone number",
+                    "value"     => $get_ph_number,
+                ];
+                return response()->json(["error" => $error_data], $this->errorStatus);
+            }
         }
 }
