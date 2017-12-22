@@ -1203,7 +1203,7 @@ class WhatsappBotController extends Controller
                                                             "response"  => $get_ph_number." Place a stake!",
                                                             "value"     => $get_group_id
                                                         ];
-                                                        return response()->json(["success" => [$success_private_data, $success_group_data]], $this->successStatus);
+                                                        return response()->json(["successgroup" => $success_group_data, "successprivate" => $success_private_data], $this->successStatus);
                                                     }
                                                     else
                                                     {
