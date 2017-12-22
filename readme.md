@@ -1,7 +1,7 @@
 <p align="center">TRIVIA</p>
 <p align="center">
 	<a href="https://github.com/irawan19/trivia.git">
-		<img src="public/images/download.png" alt="Total Downloads" width="5%">
+		<img src="public/images/download.png" alt="Total Downloads" width="10%">
 	</a>
 </p>
 
