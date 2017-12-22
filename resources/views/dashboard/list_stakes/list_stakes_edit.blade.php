@@ -22,7 +22,7 @@
 						{{ csrf_field() }}
                         <div class="form-group row" align="center">
                             <div class="col-md-12">
-                                <a href="{{ URL::to($edit_list_stakes->path_image_list_stakes) }}/{{ $edit_list_stakes->name_image_list_stakes }}" class="image-popup-no-margins"><img src="{{ URL::to($edit_list_stakes->path_image_list_stakes) }}/{{ $edit_list_stakes->name_image_list_stakes }}"></a>
+                                <a href="{{ URL::to($edit_list_stakes->path_image_list_stakes) }}/{{ $edit_list_stakes->name_image_list_stakes }}" class="image-popup-no-margins"><img width="50%" src="{{ URL::to($edit_list_stakes->path_image_list_stakes) }}/{{ $edit_list_stakes->name_image_list_stakes }}"></a>
                             </div>
                         </div>
                         <div class="col-sm-12" align="center">

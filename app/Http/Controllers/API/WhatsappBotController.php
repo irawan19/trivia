@@ -380,7 +380,7 @@ class WhatsappBotController extends Controller
 
                                             $success_data = [
                                                 "target"    => "private",
-                                                "response"  => $get_group_name."\nGreat! Your sessions has successfully created.\nThis sessions :\nStarted at : ".Shwetech::changeDBToDatetime($get_start_date)."\nFinished at : ".Shwetech::changeDBToDatetime($get_end_date)."\nThe next stage, please create your game first by sending this command bellow:\n#game[space]group name[space]RTP game.\nFor example :\n#game trivia 25\nAbove command means that in this game have RTP 25%. You can set each game with RTO as you wish. RTP can only be set with numbers 1 - 100",
+                                                "response"  => $get_group_name."\nGreat! Your sessions has successfully created.\nThis sessions :\nStarted at : ".Shwetech::changeDBToDatetime($get_start_date)."\nFinished at : ".Shwetech::changeDBToDatetime($get_end_date)."\nThe next stage, please create your game first by sending this command bellow:\n#game[space]group name[space]RTP game.\nFor example :\n#game trivia 25\nAbove command means that in this game have RTP 25%. You can set each game with RTP as you wish. RTP can only be set with numbers 1 - 100",
                                                 "value"     => $get_ph_number,
                                             ];
                                             return response()->json(["success" => $success_data], $this->successStatus);
@@ -516,12 +516,18 @@ class WhatsappBotController extends Controller
                                             ];
                                             \App\Master_group::where('id_groups',$id_group)->update($credit_group_data);
 
-                                            $success_data = [
+                                            $success_group_data = [
                                                 "target"    => "group",
-                                                "response"  => "Hi ".$get_ph_number.", I am a Trivibot, Your success join the sessions in ".$get_group_name."! Good Luck!\nThis sessions :\nStarted at : ".Shwetech::changeDBToDatetime($get_start_date)."\nFinished at : ".Shwetech::changeDBToDatetime($get_end_date)."\nI'll guide your game.\nYou are already registered in this group. Your credit in this group is ".$get_credit_group.", you can follow the game in this group by typing command :\n#b[space]list of stakes[space]amount of stake\nFor example : #b dr 100. Above command means that you give stake to a dragon worth 100.\nYou can check list of stake with command : #listbet\nTo view all stakes in this group with command : #list",
+                                                "response"  => "Hi ".$get_ph_number.", I am a Trivibot, Your success join the sessions in ".$get_group_name."! Good Luck!\nThis sessions :\nStarted at : ".Shwetech::changeDBToDatetime($get_start_date)."\nFinished at : ".Shwetech::changeDBToDatetime($get_end_date)."\nI'll guide your game.\nYou are already registered in this group. You can follow the game in this group by typing command :\n#b[space]list of stakes[space]amount of stake\nFor example : #b dr 100. Above command means that you give stake to a dragon worth 100.\nYou can check list of stake with command : #listbet\nTo view all stakes in this group with command : #list",
                                                 "value"     => $get_group_id
                                             ];
-                                            return response()->json(["success" => $success_data], $this->successStatus);
+
+                                            $success_private_data = [
+                                                "target"    => "private",
+                                                "response"  => "Your credit in ".$get_group_name." group is ".$get_credit_group."\nYou can see all your credits from each game by typing the command : #bal",
+                                                "value"     => $get_ph_number
+                                            ];
+                                            return response()->json(["successgroup" => $success_group_data, "successprivate" => $success_private_data], $this->successStatus);
                                         }
                                         else
                                         {
@@ -600,18 +606,18 @@ class WhatsappBotController extends Controller
             //PARAMETER
                 $get_group_name = request('wa_group_name');
                 $get_ph_number  = request('wa_ph_number');
-                $get_rtp        = request('rtp_game');
+                // $get_rtp        = request('rtp_game');
 
             if($get_group_name != '')
             {
                 if($get_ph_number != '')
                 {
-                    if($get_rtp != '')
-                    {
-                        if(is_numeric($get_rtp))
-                        {
-                            if($get_rtp > 0 && $get_rtp <= 100)
-                            {
+                    // if($get_rtp != '')
+                    // {
+                        // if(is_numeric($get_rtp))
+                        // {
+                            // if($get_rtp > 0 && $get_rtp <= 100)
+                            // {
                                 $date_now               = date('Y-m-d H:i:s');
                                 $check_group            = \App\Master_group::join('users','users_id','=','users.id')
                                                                             ->where('name_groups',$get_group_name)
@@ -644,14 +650,15 @@ class WhatsappBotController extends Controller
                                                             'sessions_id'           => $id_sessions,
                                                             'start_date_games'      => '0000-00-00 00:00:00',
                                                             'end_date_games'        => '0000-00-00 00:00:00',
-                                                            'rtp_games'             => $get_rtp,
+                                                            // 'rtp_games'             => $get_rtp,
                                                             'status_active_games'   => 0,
                                                         ];
                                                         \App\Master_game::insert($games_data);
 
                                                         $success_data = [
                                                             "target"    => "private",
-                                                            "response"  => $get_group_name."\nAwesome! Your game settings are:\nReturn to Player = ".$get_rtp." \n ------------------------------- \nNow you can start the game by enter :\n#start ".$get_group_name." duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
+                                                            // "response"  => $get_group_name."\nAwesome! Your game settings are:\nReturn to Player = ".$get_rtp." \n ------------------------------- \nNow you can start the game by enter :\n#start ".$get_group_name." duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
+                                                            "response"  => $get_group_name."\nAwesome! Your game settings are:\n ------------------------------- \nNow you can start the game by enter :\n#start ".$get_group_name." duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
                                                             "value"     => $get_ph_number
                                                         ];
                                                         return response()->json(["success" => $success_data], $this->successStatus);
@@ -698,14 +705,15 @@ class WhatsappBotController extends Controller
                                                     'sessions_id'           => $id_sessions,
                                                     'start_date_games'      => '0000-00-00 00:00:00',
                                                     'end_date_games'        => '0000-00-00 00:00:00',
-                                                    'rtp_games'             => $get_rtp,
+                                                    // 'rtp_games'             => $get_rtp,
                                                     'status_active_games'   => 0,
                                                 ];
                                                 \App\Master_game::insert($games_data);
 
                                                 $success_data = [
                                                     "target"    => "private",
-                                                    "response"  => $get_group_name."\nAwesome! Your game settings are:\nReturn to Player = ".$get_rtp." \n ------------------------------- \nNow you can start the game by enter :\n#start ".$get_group_name." duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
+                                                    // "response"  => $get_group_name."\nAwesome! Your game settings are:\nReturn to Player = ".$get_rtp." \n ------------------------------- \nNow you can start the game by enter :\n#start ".$get_group_name." duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
+                                                    "response"  => $get_group_name."\nAwesome! Your game settings are:\n ------------------------------- \nNow you can start the game by enter :\n#start ".$get_group_name." duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
                                                     "value"     => $get_ph_number
                                                 ];
                                                 return response()->json(["success" => $success_data], $this->successStatus);
@@ -740,36 +748,36 @@ class WhatsappBotController extends Controller
                                     ];
                                     return response()->json(["error" => $error_data], $this->errorStatus);
                                 }
-                            }
-                            else
-                            {
-                                $error_data =[
-                                    "target"    => "private",
-                                    "response"  => "RTP must be set 1 to 100",
-                                    "value"     => $get_ph_number,
-                                ];
-                                return response()->json(["error" => $error_data], $this->errorStatus);
-                            }
-                        }
-                        else
-                        {
-                            $error_data = [
-                                "target"    => "private",
-                                "response"  => "RTP should be a number",
-                                "value"     => $get_ph_number
-                            ];
-                            return response()->json(["error" => $error_data], $this->errorStatus);
-                        }
-                    }
-                    else
-                    {
-                        $error_data = [
-                            "target"    => "private",
-                            "response"  => "You must enter the RTP (Return To Player)",
-                            "value"     => $get_ph_number
-                        ];
-                        return response()->json(["error" => $error_data], $this->errorStatus);
-                    }
+                    //         }
+                    //         else
+                    //         {
+                    //             $error_data =[
+                    //                 "target"    => "private",
+                    //                 "response"  => "RTP must be set 1 to 100",
+                    //                 "value"     => $get_ph_number,
+                    //             ];
+                    //             return response()->json(["error" => $error_data], $this->errorStatus);
+                    //         }
+                    //     }
+                    //     else
+                    //     {
+                    //         $error_data = [
+                    //             "target"    => "private",
+                    //             "response"  => "RTP should be a number",
+                    //             "value"     => $get_ph_number
+                    //         ];
+                    //         return response()->json(["error" => $error_data], $this->errorStatus);
+                    //     }
+                    // }
+                    // else
+                    // {
+                    //     $error_data = [
+                    //         "target"    => "private",
+                    //         "response"  => "You must enter the RTP (Return To Player)",
+                    //         "value"     => $get_ph_number
+                    //     ];
+                    //     return response()->json(["error" => $error_data], $this->errorStatus);
+                    // }
                 }
                 else
                 {
@@ -855,7 +863,7 @@ class WhatsappBotController extends Controller
 
                                 $success_data = [
                                     "target"    => "private",
-                                    "response"  => $get_group_name."\nPerfect!\n🏁 game starts from now and will end in .".Shwetech::changeDBToDatetime($get_end_date)." 🏁",
+                                    "response"  => $get_group_name."\nPerfect!\n🏁 game starts from now and will end in ".Shwetech::changeDBToDatetime($get_end_date)." 🏁",
                                     "value"     => $get_ph_number
                                 ];
                                 return response()->json(["success" => $success_data], $this->successStatus);
@@ -941,7 +949,7 @@ class WhatsappBotController extends Controller
                             if($check_game != '')
                             {
                                 $id_games   = $check_game->id_games;
-                                $rtp_games  = $check_game->rtp_games;
+                                // $rtp_games  = $check_game->rtp_games;
                                 $check_stakes = \App\Master_stake::where('games_id',$id_games)->count();
                                 if($check_stakes != 0)
                                 {
@@ -953,45 +961,52 @@ class WhatsappBotController extends Controller
                                     else
                                         $total_all_stakes = 0;
 
-                                    $get_calculate_rtp = \App\Master_stake::selectRaw('name_list_stakes,
-                                                                                        (
-                                                                                            ROUND(
-                                                                                                    (('.$total_all_stakes.' - (sum(value_stakes) * 10)) / '.$total_all_stakes.') * 100, 2
-                                                                                                )
-                                                                                        ) AS calculate_rtp')
-                                                                            ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
-                                                                            ->where('games_id',$id_games)
-                                                                            ->groupBy('id_list_stakes')
-                                                                            ->having('calculate_rtp','>',$rtp_games)
-                                                                            ->orderBy('calculate_rtp')
-                                                                            ->limit(1)
-                                                                            ->first();
-                                    if($get_calculate_rtp != '')
-                                        $stakes_winner         = $get_calculate_rtp->name_list_stakes; 
-                                    else
-                                    {
-                                        $get_winner_optional = \App\Master_stake::selectRaw('name_list_stakes,
-                                                                                            (
-                                                                                                ROUND(
-                                                                                                        (('.$total_all_stakes.' - (sum(value_stakes) * 10)) / '.$total_all_stakes.') * 100, 2
-                                                                                                    )
-                                                                                            ) AS calculate_rtp')
+                                    // $get_calculate_rtp = \App\Master_stake::selectRaw('name_list_stakes,
+                                    //                                                     (
+                                    //                                                         ROUND(
+                                    //                                                                 (('.$total_all_stakes.' - (sum(value_stakes) * 10)) / '.$total_all_stakes.') * 100, 2
+                                    //                                                             )
+                                    //                                                     ) AS calculate_rtp')
+                                    //                                         ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
+                                    //                                         ->where('games_id',$id_games)
+                                    //                                         ->groupBy('id_list_stakes')
+                                    //                                         ->having('calculate_rtp','>',$rtp_games)
+                                    //                                         ->orderBy('calculate_rtp')
+                                    //                                         ->limit(1)
+                                    //                                         ->first();
+                                    // if($get_calculate_rtp != '')
+                                    //     $stakes_winner         = $get_calculate_rtp->name_list_stakes; 
+                                    // else
+                                    // {
+                                    //     $get_winner_optional = \App\Master_stake::selectRaw('name_list_stakes,
+                                    //                                                         (
+                                    //                                                             ROUND(
+                                    //                                                                     (('.$total_all_stakes.' - (sum(value_stakes) * 10)) / '.$total_all_stakes.') * 100, 2
+                                    //                                                                 )
+                                    //                                                         ) AS calculate_rtp')
+                                    //                                             ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
+                                    //                                             ->where('games_id',$id_games)
+                                    //                                             ->groupBy('id_list_stakes')
+                                    //                                             ->having('calculate_rtp','<',$rtp_games)
+                                    //                                             ->orderBy('calculate_rtp','desc')
+                                    //                                             ->limit(1)
+                                    //                                             ->first();
+                                    //     if($get_winner_optional != '')
+                                    //         $stakes_winner         = $get_winner_optional->name_list_stakes;
+                                    //     else
+                                    //         $stakes_winner         = 'No Winner';
+                                    // }
+
+                                    // if($stakes_winner != 'No Winner')
+                                    // {
+                                        $get_winner         = \App\Master_stake::select('name_list_stakes')
                                                                                 ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
                                                                                 ->where('games_id',$id_games)
-                                                                                ->groupBy('id_list_stakes')
-                                                                                ->having('calculate_rtp','<',$rtp_games)
-                                                                                ->orderBy('calculate_rtp','desc')
+                                                                                ->orderByRaw('RAND()')
                                                                                 ->limit(1)
                                                                                 ->first();
-                                        if($get_winner_optional != '')
-                                            $stakes_winner         = $get_winner_optional->name_list_stakes;
-                                        else
-                                            $stakes_winner         = 'No Winner';
-                                    }
-
-                                    if($stakes_winner != 'No Winner')
-                                    {
-                                        $get_member_winner = \App\Master_stake::selectRaw('CONCAT(SUBSTRING(`phone_number_register_members`, 1, CHAR_LENGTH(`phone_number_register_members`) - 5),"****") as phone_number,
+                                        $stakes_winner      = $get_winner->name_list_stakes;
+                                        $get_member_winner  = \App\Master_stake::selectRaw('CONCAT(SUBSTRING(`phone_number_register_members`, 1, CHAR_LENGTH(`phone_number_register_members`) - 5),"****") as phone_number,
                                                                                             name_list_stakes,
                                                                                             SUM(value_stakes * 10) AS profit,
                                                                                             id_register_members,
@@ -1044,22 +1059,22 @@ class WhatsappBotController extends Controller
                                             "value"     => $get_group_id
                                         ];
                                         return response()->json(["success" => $success_data], $this->successStatus);
-                                    }
-                                    else
-                                    {
-                                        $games_data = [
-                                            'end_date_games'     => date('Y-m-d H:i:s'),
-                                            'status_active_games'=> 2
-                                        ];
-                                        \App\Master_game::where('id_games',$id_games)->update($games_data);
+                                    // }
+                                    // else
+                                    // {
+                                    //     $games_data = [
+                                    //         'end_date_games'     => date('Y-m-d H:i:s'),
+                                    //         'status_active_games'=> 2
+                                    //     ];
+                                    //     \App\Master_game::where('id_games',$id_games)->update($games_data);
 
-                                        $success_data = [
-                                            "target"    => "group",
-                                            "response"  => $get_group_name."\n No winner in this game",
-                                            "value"     => $get_group_id,
-                                        ];
-                                        return response()->json(["success" => $success_data], $this->errorStatus);
-                                    }
+                                    //     $success_data = [
+                                    //         "target"    => "group",
+                                    //         "response"  => $get_group_name."\n No winner in this game",
+                                    //         "value"     => $get_group_id,
+                                    //     ];
+                                    //     return response()->json(["success" => $success_data], $this->errorStatus);
+                                    // }
                                 }
                                 else
                                 {
@@ -1194,13 +1209,13 @@ class WhatsappBotController extends Controller
 
                                                         $success_private_data = [
                                                             "target"    => "private",
-                                                            "response"  => "You have successfully stake on ".$get_stake." with ".$get_value." credit. Your current balance is ".$credit_register_members_now,
+                                                            "response"  => "You have successfully stake on ".$get_stake." with ".$get_value." credit. Your current balance in ".$get_group_name." group is ".$credit_register_members_now,
                                                             "value"     => $get_ph_number
                                                         ];
 
                                                         $success_group_data = [
                                                             "target"    => "group",
-                                                            "response"  => $get_ph_number." Place a stake!",
+                                                            "response"  => substr($get_ph_number, 0, -8)."**** Place a stake!",
                                                             "value"     => $get_group_id
                                                         ];
                                                         return response()->json(["successgroup" => $success_group_data, "successprivate" => $success_private_data], $this->successStatus);
@@ -1421,7 +1436,7 @@ class WhatsappBotController extends Controller
             }
         }
 
-    //TOP UP AGENT
+    //PRIVATE MESSAGE
         public function top_up_agent()
         {
             //PARAMETER
@@ -1560,7 +1575,7 @@ class WhatsappBotController extends Controller
             }
         }
 
-    //TOP UP GROUP
+    //PRIVATE MESSAGE
         public function top_up_group()
         {
             //PARAMETER
@@ -1717,7 +1732,7 @@ class WhatsappBotController extends Controller
                                         if($check_game != '')
                                         {
                                             $id_games   = $check_game->id_games;
-                                            $rtp_games  = $check_game->rtp_games;
+                                            // $rtp_games  = $check_game->rtp_games;
 
                                             $get_total_all_stake = \App\Master_stake::selectRaw('SUM(value_stakes) AS total_all_stakes')
                                                                                     ->where('games_id',$id_games)
@@ -1727,44 +1742,51 @@ class WhatsappBotController extends Controller
                                             else
                                                 $total_all_stakes = 0;
 
-                                            $get_calculate_rtp = \App\Master_stake::selectRaw('name_list_stakes,
-                                                                                                (
-                                                                                                    ROUND(
-                                                                                                            (('.$total_all_stakes.' - (sum(value_stakes) * 10)) / '.$total_all_stakes.') * 100, 2
-                                                                                                        )
-                                                                                                ) AS calculate_rtp')
-                                                                                    ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
-                                                                                    ->where('games_id',$id_games)
-                                                                                    ->groupBy('id_list_stakes')
-                                                                                    ->having('calculate_rtp','>',$rtp_games)
-                                                                                    ->orderBy('calculate_rtp')
-                                                                                    ->limit(1)
-                                                                                    ->first();
-                                            if($get_calculate_rtp != '')
-                                                $stakes_winner         = $get_calculate_rtp->name_list_stakes; 
-                                            else
-                                            {
-                                                $get_winner_optional = \App\Master_stake::selectRaw('name_list_stakes,
-                                                                                                    (
-                                                                                                        ROUND(
-                                                                                                                (('.$total_all_stakes.' - (sum(value_stakes) * 10)) / '.$total_all_stakes.') * 100, 2
-                                                                                                            )
-                                                                                                    ) AS calculate_rtp')
+                                            // $get_calculate_rtp = \App\Master_stake::selectRaw('name_list_stakes,
+                                            //                                                     (
+                                            //                                                         ROUND(
+                                            //                                                                 (('.$total_all_stakes.' - (sum(value_stakes) * 10)) / '.$total_all_stakes.') * 100, 2
+                                            //                                                             )
+                                            //                                                     ) AS calculate_rtp')
+                                            //                                         ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
+                                            //                                         ->where('games_id',$id_games)
+                                            //                                         ->groupBy('id_list_stakes')
+                                            //                                         ->having('calculate_rtp','>',$rtp_games)
+                                            //                                         ->orderBy('calculate_rtp')
+                                            //                                         ->limit(1)
+                                            //                                         ->first();
+                                            // if($get_calculate_rtp != '')
+                                            //     $stakes_winner         = $get_calculate_rtp->name_list_stakes; 
+                                            // else
+                                            // {
+                                            //     $get_winner_optional = \App\Master_stake::selectRaw('name_list_stakes,
+                                            //                                                         (
+                                            //                                                             ROUND(
+                                            //                                                                     (('.$total_all_stakes.' - (sum(value_stakes) * 10)) / '.$total_all_stakes.') * 100, 2
+                                            //                                                                 )
+                                            //                                                         ) AS calculate_rtp')
+                                            //                                             ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
+                                            //                                             ->where('games_id',$id_games)
+                                            //                                             ->groupBy('id_list_stakes')
+                                            //                                             ->having('calculate_rtp','<',$rtp_games)
+                                            //                                             ->orderBy('calculate_rtp','desc')
+                                            //                                             ->limit(1)
+                                            //                                             ->first();
+                                            //     if($get_winner_optional != '')
+                                            //         $stakes_winner         = $get_winner_optional->name_list_stakes;
+                                            //     else
+                                            //         $stakes_winner         = 'No Winner';
+                                            // }
+
+                                            // if($stakes_winner != 'No Winner')
+                                            // {
+                                                $get_winner         = \App\Master_stake::select('name_list_stakes')
                                                                                         ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
                                                                                         ->where('games_id',$id_games)
-                                                                                        ->groupBy('id_list_stakes')
-                                                                                        ->having('calculate_rtp','<',$rtp_games)
-                                                                                        ->orderBy('calculate_rtp','desc')
+                                                                                        ->orderByRaw('RAND()')
                                                                                         ->limit(1)
                                                                                         ->first();
-                                                if($get_winner_optional != '')
-                                                    $stakes_winner         = $get_winner_optional->name_list_stakes;
-                                                else
-                                                    $stakes_winner         = 'No Winner';
-                                            }
-
-                                            if($stakes_winner != 'No Winner')
-                                            {
+                                                $stakes_winner      = $get_winner->name_list_stakes;
                                                 $get_member_winner = \App\Master_stake::selectRaw('CONCAT(SUBSTRING(`phone_number_register_members`, 1, CHAR_LENGTH(`phone_number_register_members`) - 5),"****") as phone_number,
                                                                                                     name_list_stakes,
                                                                                                     SUM(value_stakes * 10) AS profit,
@@ -1812,9 +1834,9 @@ class WhatsappBotController extends Controller
                                                 ];
                                                 \App\Master_game::where('id_games',$id_games)->update($games_data);
                                                 return response()->json(["success" => $get_member_winner], $this->successStatus);
-                                            }
-                                            else
-                                                return response()->json(["error" => $get_group_name."\n No winner in this game"], $this->errorStatus);
+                                            // }
+                                            // else
+                                            //     return response()->json(["error" => $get_group_name."\n No winner in this game"], $this->errorStatus);
                                         }
                                         else
                                             return response()->json(["error" => $get_group_name."\n No game is active"], $this->errorStatus);
@@ -1838,7 +1860,7 @@ class WhatsappBotController extends Controller
             return response()->json(["success" => "Its Worked"], $this->successStatus);
         }
 
-    //HELP
+    //GROUP MESSAGE
         public function help()
         {
             $get_group_id          = request('wa_group_id');
@@ -1849,7 +1871,7 @@ class WhatsappBotController extends Controller
                 {
                     $success_data = [
                         "target"    => "group",
-                        "response"  => "Here is some command i understand :\n- Register = #reg\n- Bet = #b[space]list stakes[space]amount\n- Check list stakes available = #listber\n- Check all member stakes in current game = #list",
+                        "response"  => "Here is some command i understand :\n- Register = #reg\n- Bet = #b[space]list stakes[space]amount\n- Check list stakes available = #listbet\n- Check all member stakes in current game = #list\n- See all your balance in each game = #bal",
                         "value"     => $get_group_id
                     ];
                     return response()->json(["success" => $success_data], $this->successStatus);
@@ -1875,6 +1897,7 @@ class WhatsappBotController extends Controller
             }
         }
 
+    //PRIVATE MESSAGE
         public function ahelp()
         {
             $get_ph_number = request('wa_ph_number');
@@ -1888,7 +1911,7 @@ class WhatsappBotController extends Controller
                     {
                         $success_data = [
                             "target"    => "private",
-                            "response"  => "Here is some command i understand :\n- Create group = #group[space]group name[space]credit\n- Create session = #session[space]group name[space]credit per member[space]duration (in day)\n- Create game = #game[space]group name[space]rtp\n- Start game = #start[space]group name[space]duration (in minutes)\n- End Game = #end[space]group name\n- Top up group = #credit[space]group name[space]amount",
+                            "response"  => "Here is some command i understand :\n- Create group = #group[space]group name[space]credit\n- Create session = #session[space]group name[space]credit per member[space]duration (in day)\n- Create game = #game[space]group name\n- Start game = #start[space]group name[space]duration (in minutes)\n- End Game = #end[space]group name\n- Top up group = #credit[space]group name[space]amount",
                             "value"     => $get_ph_number
                         ];
                         return response()->json(["success" => $success_data], $this->successStatus);
@@ -1924,6 +1947,7 @@ class WhatsappBotController extends Controller
             }
         }
 
+    //PRIVATE MESSAGE
         public function check_credit_member()
         {
             $get_ph_number = request('wa_ph_number');

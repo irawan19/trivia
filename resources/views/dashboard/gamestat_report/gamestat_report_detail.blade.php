@@ -56,6 +56,7 @@
 							</tr>
 						</table>
 						<br/>
+			            @php($id_games 		= $read_gamestat_reports->id_games)
 						@php($check_register_member = \App\Master_register_member::where('sessions_id',$read_gamestat_reports->id_sessions)->count())
 						@if($check_register_member != 0)
 							@php($check_game = \App\Master_stake::where('games_id',$read_gamestat_reports->id_games)->count())
@@ -92,6 +93,8 @@
 			                        </tbody>
 			                    </table>
 			                    <br/>
+
+			                    <!--
 								<div align="center"><b><u>RTP Options</u></b></div>
 								<table class="tablesaw table-hover table-bordered table" data-tablesaw-mode="columntoggle">
 			                        <thead>
@@ -105,8 +108,8 @@
 			                        </thead>
 			                        <tbody>
 			                        	<?php
+			                        		/*
 			                        		$no 			= 1;
-			                        		$id_games 		= $read_gamestat_reports->id_games;
 			                        		$check_winner	= \App\Master_stake::selectRaw('name_list_stakes,
 		                                                                                    (
 			                                                                                    ROUND(
@@ -184,9 +187,14 @@
 		                                   		<tr>
 		                                   			<td colspan="5">No Winner</td>
 		                                   		</tr>
-		                                   	<?php endif; ?>
+		                                   	<?php
+		                                   		endif; 
+												*/
+		                                   	?>
 			                        </tbody>
 			                    </table>
+			                    -->
+
 			                    <br/>
 			                    <div align="center"><b><u>List of Winner</u></b></div>
 								<table class="tablesaw table-striped table-hover table-bordered table" data-tablesaw-mode="columntoggle">
@@ -201,18 +209,29 @@
 			                        <tbody>
 			                        	<?php
 			                        		$no 				= 1;
-			                        		$list_member_winner = \App\Master_stake::selectRaw('phone_number_register_members as phone_number,
-		                                                                                        name_list_stakes,
-		                                                                                        SUM(value_stakes * 10) AS profit,
-		                                                                                        id_register_members,
-		                                                                                        id_stakes,
-		                                                                                        credit_register_members')
-		                                                                            ->join('master_register_members','register_members_id','master_register_members.id_register_members')
-		                                                                            ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
-		                                                                            ->where('name_list_stakes',$stakes_winner)
-		                                                                            ->where('games_id',$id_games)
-		                                                                            ->groupBy('id_register_members')
-		                                                                            ->get();
+
+			                        		// $list_member_winner = \App\Master_stake::selectRaw('phone_number_register_members as phone_number,
+		                           //                                                              name_list_stakes,
+		                           //                                                              SUM(value_stakes * 10) AS profit,
+		                           //                                                              id_register_members,
+		                           //                                                              id_stakes,
+		                           //                                                              credit_register_members')
+		                           //                                                  ->join('master_register_members','register_members_id','master_register_members.id_register_members')
+		                           //                                                  ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
+		                           //                                                  ->where('name_list_stakes',$stakes_winner)
+		                           //                                                  ->where('games_id',$id_games)
+		                           //                                                  ->groupBy('id_register_members')
+		                           //                                                  ->get();
+
+			                        		$list_member_winner = \App\Master_winlose::selectRaw('phone_number_register_members as phone_number,
+			                        																name_list_stakes,
+			                        																profit_winloses as profit')
+			                        													->join('master_stakes','stakes_id','=','master_stakes.id_stakes')
+			                        													->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
+			                        													->join('master_register_members','register_members_id','=','master_register_members.id_register_members')
+			                        													->where('games_id',$id_games)
+			                        													->groupBy('id_register_members')
+			                        													->get();
 				                        	foreach($list_member_winner as $member_winner):
 			                        	?>
 							                        <tr>
