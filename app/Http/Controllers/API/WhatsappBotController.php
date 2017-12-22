@@ -380,7 +380,7 @@ class WhatsappBotController extends Controller
 
                                             $success_data = [
                                                 "target"    => "private",
-                                                "response"  => $get_group_name."\nGreat! Your sessions has successfully created.\nThis sessions :\nStarted at : ".Shwetech::changeDBToDatetime($get_start_date)."\nFinished at : ".Shwetech::changeDBToDatetime($get_end_date)."\nThe next stage, please create your game first by sending this command bellow:\n#game[space]group name[space]RTP game.\nFor example :\n#game trivia 25\nAbove command means that in this game have RTP 25%. You can set each game with RTP as you wish. RTP can only be set with numbers 1 - 100",
+                                                "response"  => $get_group_name."\nGreat! Your sessions has successfully created.\nThis sessions :\nStarted at : ".Shwetech::changeDBToDatetime($get_start_date)."\nFinished at : ".Shwetech::changeDBToDatetime($get_end_date)."\nThe next stage, please create your game first by sending this command bellow:\n#game[space]group name.\nFor example :\n#game trivia",
                                                 "value"     => $get_ph_number,
                                             ];
                                             return response()->json(["success" => $success_data], $this->successStatus);
