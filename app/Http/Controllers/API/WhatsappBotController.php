@@ -70,7 +70,7 @@ class WhatsappBotController extends Controller
 
                                                     $success_data = [
                                                         "target"    => "private",
-                                                        "response"  => "Great! Your ".$get_group_name." has successfully created.\nAt the first, please create sessions by sending command bellow :\n#ctsessions[space]group name[space]credit / member[space]day duration\nfor example:\n#ctsessions trivia 5000 7\nabove command means that when a player register, each player get 5000 credit upon registration in sessions. And session will run for 7 days",
+                                                        "response"  => "Great! Your ".$get_group_name." has successfully created.\nAt the first, please create sessions by sending command bellow :\n#session[space]group name[space]credit / member[space]day duration\nfor example:\n#session trivia 5000 7\nabove command means that when a player register, each player get 5000 credit upon registration in sessions. And session will run for 7 days",
                                                         "value"     => $get_phone_number,
                                                     ];
                                                     return response()->json(["success" => $success_data], $this->successStatus);
@@ -122,7 +122,7 @@ class WhatsappBotController extends Controller
 
                                                     $success_data = [
                                                         "target"    => "private",
-                                                        "response"  => "Great! Your ".$get_group_name." has successfully created.\nAt the first, please create sessions by sending command bellow :\n#ctsessions[space]group name[space]credit / member[space]day duration\nfor example:\n#ctsessions trivia 5000 7\nabove command means that when a player register, each player get 5000 credit upon registration in sessions. And session will run for 7 days",
+                                                        "response"  => "Great! Your ".$get_group_name." has successfully created.\nAt the first, please create sessions by sending command bellow :\n#session[space]group name[space]credit / member[space]day duration\nfor example:\n#session trivia 5000 7\nabove command means that when a player register, each player get 5000 credit upon registration in sessions. And session will run for 7 days",
                                                         "value"     => $get_phone_number
                                                     ];
                                                     return response()->json(["success" => $success_data], $this->successStatus);
@@ -250,7 +250,7 @@ class WhatsappBotController extends Controller
 
                                 $success_data = [
                                     "target"    => "private",
-                                    "response"  => "Great! Your ".$get_group_name." has successfully updated ID.\nAt the first, please create sessions by sending command bellow :\n#ctsessions[space]group name[space]credit / member[space]day duration\nFor example :\n#ctsessions trivia 5000 7\nAbove command means that when a player register, each player get 5000 credit upon registration in sessions. And session will run for 7 days",
+                                    "response"  => "Great! Your ".$get_group_name." has successfully updated ID.\nAt the first, please create sessions by sending command bellow :\n#session[space]group name[space]credit / member[space]day duration\nFor example :\n#session trivia 5000 7\nAbove command means that when a player register, each player get 5000 credit upon registration in sessions. And session will run for 7 days",
                                     "value"     => $get_ph_number,
                                 ];
                                 return response()->json(['success' => $success_data], $this->successStatus);
@@ -380,7 +380,7 @@ class WhatsappBotController extends Controller
 
                                             $success_data = [
                                                 "target"    => "private",
-                                                "response"  => $get_group_name."\nGreat! Your sessions has successfully created.\nThis sessions :\nStarted at : ".Shwetech::changeDBToDatetime($get_start_date)."\nFinished at : ".Shwetech::changeDBToDatetime($get_end_date)."\nThe next stage, please create your game first by sending this command bellow:\n#ctgame[space]group name[space]RTP game.\nFor example :\n#ctgame trivia 25\nAbove command means that in this game have RTP 25%. You can set each game with RTO as you wish. RTP can only be set with numbers 1 - 100",
+                                                "response"  => $get_group_name."\nGreat! Your sessions has successfully created.\nThis sessions :\nStarted at : ".Shwetech::changeDBToDatetime($get_start_date)."\nFinished at : ".Shwetech::changeDBToDatetime($get_end_date)."\nThe next stage, please create your game first by sending this command bellow:\n#game[space]group name[space]RTP game.\nFor example :\n#game trivia 25\nAbove command means that in this game have RTP 25%. You can set each game with RTO as you wish. RTP can only be set with numbers 1 - 100",
                                                 "value"     => $get_ph_number,
                                             ];
                                             return response()->json(["success" => $success_data], $this->successStatus);
@@ -518,7 +518,7 @@ class WhatsappBotController extends Controller
 
                                             $success_data = [
                                                 "target"    => "group",
-                                                "response"  => "Hi ".$get_ph_number.", I am a Trivibot, Your success join the sessions in ".$get_group_name."! Good Luck!\nThis sessions :\nStarted at : ".Shwetech::changeDBToDatetime($get_start_date)."\nFinished at : ".Shwetech::changeDBToDatetime($get_end_date)."\nI'll guide your game.\nYou are already registered in this group. Your credit in this group is ".$get_credit_group.", you can follow the game in this group by typing command :\n#stake[space]list of stakes[space]amount of stake\nFor example : #stake dr 100. Above command means that you give stake to a dragon worth 100.\nYou can check list of stake with command : #ltstakes\nTo view all stakes in this group with command : #ckstakes",
+                                                "response"  => "Hi ".$get_ph_number.", I am a Trivibot, Your success join the sessions in ".$get_group_name."! Good Luck!\nThis sessions :\nStarted at : ".Shwetech::changeDBToDatetime($get_start_date)."\nFinished at : ".Shwetech::changeDBToDatetime($get_end_date)."\nI'll guide your game.\nYou are already registered in this group. Your credit in this group is ".$get_credit_group.", you can follow the game in this group by typing command :\n#b[space]list of stakes[space]amount of stake\nFor example : #b dr 100. Above command means that you give stake to a dragon worth 100.\nYou can check list of stake with command : #listbet\nTo view all stakes in this group with command : #list",
                                                 "value"     => $get_group_id
                                             ];
                                             return response()->json(["success" => $success_data], $this->successStatus);
@@ -1249,7 +1249,7 @@ class WhatsappBotController extends Controller
                                     {
                                         $error_data = [
                                             "target"    => "private",
-                                            "response"  => $get_group_name."\nYour stakes not in list. You can check the list of stakes by typing command : #ltstakes",
+                                            "response"  => $get_group_name."\nYour stakes not in list. You can check the list of stakes by typing command : #listbet",
                                             "value"     => $get_ph_number
                                         ];
                                         return response()->json(["error" => $error_data], $this->errorStatus);
@@ -1279,7 +1279,7 @@ class WhatsappBotController extends Controller
                         {
                             $error_data = [
                                 "target"    => "private",
-                                "response"  => $get_group_name."\nYou must enter the stake. You can check the list of stakes by typing command : #ltstakes",
+                                "response"  => $get_group_name."\nYou must enter the stake. You can check the list of stakes by typing command : #listbet",
                                 "value"     => $get_ph_number
                             ];
                             return response()->json(["error" => $error_data], $this->errorStatus);
