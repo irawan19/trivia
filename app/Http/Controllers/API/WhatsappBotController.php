@@ -646,11 +646,6 @@ class WhatsappBotController extends Controller
                                                                                                         ->first();
                                                     if($check_phone_number_agent != '')
                                                     {
-                                                        $get_group      = \App\Master_group::join('users','users_id','=','users.id')
-                                                                                            ->where('name_groups',$get_group_name)
-                                                                                            ->where('phone_number_users',$get_ph_number)
-                                                                                            ->first();
-                                                        $get_group_id   = $get_group->groups_Id;
                                                         $games_data     = [
                                                             'sessions_id'           => $id_sessions,
                                                             'start_date_games'      => '0000-00-00 00:00:00',
@@ -660,19 +655,13 @@ class WhatsappBotController extends Controller
                                                         ];
                                                         \App\Master_game::insert($games_data);
 
-                                                        $success_private_data = [
+                                                        $success_data = [
                                                             "target"    => "private",
                                                             // "response"  => $get_group_name."\nAwesome! Your game settings are:\nReturn to Player = ".$get_rtp." \n ------------------------------- \nNow you can start the game by enter :\n#start ".$get_group_name." duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
                                                             "response"  => $get_group_name."\nAwesome! Your game settings are:\n ------------------------------- \nNow you can start the game by enter :\n#start ".$get_group_name." duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
                                                             "value"     => $get_ph_number
                                                         ];
-
-                                                        $success_group_data = [
-                                                            "target"    => "group",
-                                                            "response"  => "The game is start, you can place your stake",
-                                                            "value"     => $get_group_id
-                                                        ];
-                                                        return response()->json(["successgroup" => $success_group_data, "successprivate" => $success_private_data], $this->successStatus);
+                                                        return response()->json(["success" => $success_data], $this->successStatus);
                                                     }
                                                     else
                                                     {
@@ -834,6 +823,11 @@ class WhatsappBotController extends Controller
                                                         ->count();
                         if($check_agent != 0)
                         {
+                            $get_group = \App\Master_group::join('users','users_id','=','users.id')
+                                                        ->where('id_groups',$id_group)
+                                                        ->where('phone_number_users',$get_ph_number)
+                                                        ->first();
+                            $get_group_id               = $get_group->whatsapp_group_id;
                             $check_active_game           = \App\Master_game::join('master_sessions','sessions_id','=','master_sessions.id_sessions')
                                                                             ->where('groups_id',$id_group)
                                                                             ->where('status_active_games',0)
@@ -872,12 +866,19 @@ class WhatsappBotController extends Controller
                                 ];
                                 \App\Master_game::where('id_games',$id_games)->update($games_data);
 
-                                $success_data = [
+                                $success_private_data = [
                                     "target"    => "private",
                                     "response"  => $get_group_name."\nPerfect!\n🏁 game starts from now and will end in ".Shwetech::changeDBToDatetime($get_end_date)." 🏁",
                                     "value"     => $get_ph_number
                                 ];
-                                return response()->json(["success" => $success_data], $this->successStatus);
+
+                                $success_group_data = [
+                                    "target"    => "group",
+                                    "respoonse" => "The game is start, you can place your stake",
+                                    "value"     => $get_group_id
+                                ];
+
+                                return response()->json(["successgroup" => $success_group_data, "successprivate" => $success_private_data], $this->successStatus);
                             }
                             else
                             {
