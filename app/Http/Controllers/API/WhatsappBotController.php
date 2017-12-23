@@ -658,7 +658,7 @@ class WhatsappBotController extends Controller
                                                         $success_data = [
                                                             "target"    => "private",
                                                             // "response"  => $get_group_name."\nAwesome! Your game settings are:\nReturn to Player = ".$get_rtp." \n ------------------------------- \nNow you can start the game by enter :\n#start ".$get_group_name." duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
-                                                            "response"  => $get_group_name."\nAwesome! Your game settings are:\n ------------------------------- \nNow you can start the game by enter :\n#start ".$get_group_name." duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
+                                                            "response"  => $get_group_name."\nAwesome! Your game settings are:\n ------------------------------- \nNow you can start the game by enter :\n#start[space]".$get_group_name."[space]duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
                                                             "value"     => $get_ph_number
                                                         ];
                                                         return response()->json(["success" => $success_data], $this->successStatus);
@@ -713,7 +713,7 @@ class WhatsappBotController extends Controller
                                                 $success_data = [
                                                     "target"    => "private",
                                                     // "response"  => $get_group_name."\nAwesome! Your game settings are:\nReturn to Player = ".$get_rtp." \n ------------------------------- \nNow you can start the game by enter :\n#start ".$get_group_name." duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
-                                                    "response"  => $get_group_name."\nAwesome! Your game settings are:\n ------------------------------- \nNow you can start the game by enter :\n#start ".$get_group_name." duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
+                                                    "response"  => $get_group_name."\nAwesome! Your game settings are:\n ------------------------------- \nNow you can start the game by enter :\n#start[space]".$get_group_name."[space]duration (in minutes).\nBefore you start your game, make sure you have invited your friends to join in ".$get_group_name." group. Then you can start the game",
                                                     "value"     => $get_ph_number
                                                 ];
                                                 return response()->json(["success" => $success_data], $this->successStatus);
@@ -962,9 +962,9 @@ class WhatsappBotController extends Controller
                             {
                                 $id_games   = $check_game->id_games;
                                 // $rtp_games  = $check_game->rtp_games;
-                                $check_stakes = \App\Master_stake::where('games_id',$id_games)->count();
-                                if($check_stakes != 0)
-                                {
+                                // $check_stakes = \App\Master_stake::where('games_id',$id_games)->count();
+                                // if($check_stakes != 0)
+                                // {
                                     $get_total_all_stake = \App\Master_stake::selectRaw('SUM(value_stakes) AS total_all_stakes')
                                                                             ->where('games_id',$id_games)
                                                                             ->first();
@@ -1134,22 +1134,22 @@ class WhatsappBotController extends Controller
                                     //     ];
                                     //     return response()->json(["success" => $success_data], $this->errorStatus);
                                     // }
-                                }
-                                else
-                                {
-                                    $games_data = [
-                                        'end_date_games'     => date('Y-m-d H:i:s'),
-                                        'status_active_games'=> 2
-                                    ];
-                                    \App\Master_game::where('id_games',$id_games)->update($games_data);
+                                // }
+                                // else
+                                // {
+                                //     $games_data = [
+                                //         'end_date_games'     => date('Y-m-d H:i:s'),
+                                //         'status_active_games'=> 2
+                                //     ];
+                                //     \App\Master_game::where('id_games',$id_games)->update($games_data);
 
-                                    $success_data = [
-                                        "target"    => "group",
-                                        "response"  => $get_group_name."\n No winner in this game",
-                                        "value"     => $get_group_id,
-                                    ];
-                                    return response()->json(["success" => $success_data], $this->successStatus);
-                                }
+                                //     $success_data = [
+                                //         "target"    => "group",
+                                //         "response"  => $get_group_name."\n No winner in this game",
+                                //         "value"     => $get_group_id,
+                                //     ];
+                                //     return response()->json(["success" => $success_data], $this->successStatus);
+                                // }
                             }
                             else
                             {
