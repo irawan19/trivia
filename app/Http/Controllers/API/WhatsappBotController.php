@@ -14,146 +14,90 @@ class WhatsappBotController extends Controller
     public $successStatus   = 200;
     public $errorStatus     = 400;
 
-    //PRIVATE MESSAGE BOT
-        public function create_group()
+    /* MASTER AGENT */
+        public function top_up_agent()
         {
             //PARAMETER
-                $get_group_name     = request('wa_group_name');
-                $get_phone_number   = request('wa_ph_number');
-                $get_credit_group   = request('credit_group');
+                $get_ph_number_master_agent     = request('wa_ph_number_master_agent');
+                $get_ph_number_agent            = request('wa_ph_number_agent');
+                $get_credit_top_ups             = request('credit_top_up');
 
-            if($get_group_name != '')
+            if($get_ph_number_master_agent != '')
             {
-                if($get_phone_number != '')
+                if($get_ph_number_agent != '')
                 {
-                    if(preg_match('/\s/',$get_group_name) == '')
+                    if($get_credit_top_ups != '')
                     {
-                        $get_agent = \App\Master_user::where('phone_number_users',$get_phone_number)
-                                                    ->first();
-                        if($get_agent != '')
+                        if(is_numeric($get_credit_top_ups))
                         {
-                            if($get_agent->level_systems_id == 3)
-                            {
-                                $id_agent                   = $get_agent->id;
-                                $get_master_agent           = \App\Master_user::where('id',$get_agent->sub_users_id)->first();
-                                $get_phone_master_agent     = $get_master_agent->phone_number_users;
-                                $max_groups                 = $get_agent->max_group_users;
-                                $credit_users               = $get_agent->credit_users;
-                                $check_total_group_created  = \App\Master_group::where('users_id',$id_agent)
-                                                                                ->count();
-                                if($check_total_group_created < $max_groups)
+                                $get_master_agent      = \App\Master_user::where('phone_number_users',$get_ph_number_master_agent)
+                                                                    ->first();
+                                if($get_master_agent != '')
                                 {
-                                    if (is_numeric($get_credit_group))
+                                    $get_agent   = \App\Master_user::where('phone_number_users',$get_ph_number_agent)
+                                                                    ->first();
+                                    if($get_agent != '')
                                     {
-                                        if($get_credit_group == '')
+                                        $id_master_agent        = $get_master_agent->id;
+                                        $id_agent               = $get_agent->id;
+                                        $check_master_agent     = \App\Master_user::where('id',$id_agent)
+                                                                                ->where('sub_users_id',$id_master_agent)
+                                                                                ->first();
+                                        if($check_master_agent != '')
                                         {
-                                            if($credit_users > 0)
+                                            $credit_master_agent = $get_master_agent->credit_users;
+                                            if($credit_master_agent >= $get_credit_top_ups)
                                             {
-                                                $check_group_name   = \App\Master_group::where('users_id',$id_agent)
-                                                                                        ->where('name_groups',$get_group_name)
-                                                                                        ->count();
-                                                if($check_group_name == 0)
-                                                {
-                                                    $groups_data = [
-                                                        'users_id'          => $id_agent,
-                                                        'credit_groups'     => $credit_users,
-                                                        'whatsapp_group_id' => '',
-                                                        'name_groups'       => $get_group_name,
-                                                        'created_on_groups' => date('Y-m-d H:i:s'),
-                                                    ];
-                                                    \App\Master_group::insert($groups_data);
+                                                $top_ups_data = [
+                                                    'from_users_id' => $get_ph_number_master_agent,
+                                                    'to_users_id'   => $get_ph_number_agent,
+                                                    'date_top_ups'  => date('Y-m-d'),
+                                                    'time_top_ups'  => date('H:i:s'),
+                                                    'credit_top_ups'=> $get_credit_top_ups,
+                                                ];
+                                                \App\Master_top_up::insert($top_ups_data);
 
-                                                    $credit_agent_data = [
-                                                        'credit_users' => 0
-                                                    ];
-                                                    \App\Master_user::where('id',$id_agent)->update($credit_agent_data);
+                                                $credit_agent    = $check_master_agent->credit_users;
+                                                $calculate_agent = $credit_agent + $get_credit_top_ups;
+                                                $agent_data = [
+                                                    'credit_users' => $calculate_agent
+                                                ];
+                                                \App\Master_user::where('id',$id_agent)->update($agent_data);
 
-                                                    $success_data = [
-                                                        "target"    => "private",
-                                                        "response"  => "Great! Your ".$get_group_name." has successfully created.\nAt the first, please create sessions by sending command bellow :\n#session[space]group name[space]credit / member[space]day duration\nfor example:\n#session trivia 5000 7\nabove command means that when a player register, each player get 5000 credit upon registration in sessions. And session will run for 7 days",
-                                                        "value"     => $get_phone_number,
-                                                    ];
-                                                    return response()->json(["success" => $success_data], $this->successStatus);
-                                                }
-                                                else
-                                                {
-                                                    $error_data = [
-                                                        "target"    => "private",
-                                                        "response"  => "Group ".$get_group_name." already exits. Please find another name for your group",
-                                                        "value"     => $get_phone_number,
-                                                    ];
-                                                    return response()->json(["error" => $error_data], $this->errorStatus);
-                                                }
+                                                $calculate_master_agent = $credit_master_agent - $get_credit_top_ups;
+                                                $master_agent_data      = [
+                                                    'credit_users'  => $calculate_master_agent
+                                                ];
+                                                \App\Master_user::where('id',$id_master_agent)->update($master_agent_data);
+
+                                                $success_data = [
+                                                    "target"    => "private",
+                                                    "response"  => "Congratulations you successfully fill credit to agent ".$get_ph_number_agent,
+                                                    "value"     => $get_ph_number_master_agent
+                                                ];
+                                                return response()->json(["success" => $success_data], $this->successStatus);
                                             }
                                             else
-                                            {
                                                 $error_data = [
                                                     "target"    => "private",
-                                                    "response"  => "Your credit is 0. You can't create group anymore.\nPlease top up to your master agent - ".$get_phone_master_agent,
-                                                    "value"     => $get_phone_number,
+                                                    "response"  => "Your credit not enough. Your current credit is ".$credit_master_agent,
+                                                    "value"     => $get_ph_number_master_agent
                                                 ];
-                                                return response()->json(["error" => $error_data], $this->errorStatus);
-                                            }
                                         }
                                         else
-                                        {
-                                            if($get_credit_group <= $credit_users)
-                                            {
-                                                $check_group_name = \App\Master_group::where('users_id',$id_agent)
-                                                                                        ->where('name_groups',$get_group_name)
-                                                                                        ->count();
-                                                if($check_group_name == 0)
-                                                {
-                                                    $calculate_credit_group = $credit_users - $get_credit_group;
-
-                                                    $groups_data = [
-                                                        'users_id'          => $id_agent,
-                                                        'credit_groups'     => $get_credit_group,
-                                                        'whatsapp_group_id' => '',
-                                                        'name_groups'       => $get_group_name,
-                                                        'created_on_groups' => date('Y-m-d H:i:s'),
-                                                    ];
-                                                    \App\Master_group::insert($groups_data);
-
-                                                    $credit_agent_data = [
-                                                        'credit_users' => $calculate_credit_group
-                                                    ];
-                                                    \App\Master_user::where('id',$id_agent)->update($credit_agent_data);
-
-                                                    $success_data = [
-                                                        "target"    => "private",
-                                                        "response"  => "Great! Your ".$get_group_name." has successfully created.\nAt the first, please create sessions by sending command bellow :\n#session[space]group name[space]credit / member[space]day duration\nfor example:\n#session trivia 5000 7\nabove command means that when a player register, each player get 5000 credit upon registration in sessions. And session will run for 7 days",
-                                                        "value"     => $get_phone_number
-                                                    ];
-                                                    return response()->json(["success" => $success_data], $this->successStatus);
-                                                }
-                                                else
-                                                {
-                                                    $error_data = [
-                                                        "target"    => "private",
-                                                        "response"  => "Group ".$get_group_name." already exist. Please find another name for your group",
-                                                        "value"     => $get_phone_number
-                                                    ];
-                                                    return response()->json(["error" => $error_data], $this->errorStatus);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                $error_data = [
-                                                    "target"    => "private",
-                                                    "response"  => "Your credit is not enough. Your current credit is ".$credit_users,
-                                                    "value"     => $get_phone_number,
-                                                ];
-                                                return response()->json(["error" => $error_data], $this->errorStatus);
-                                            }
-                                        }
+                                            $error_data = [
+                                                "target"    => "private",
+                                                "response"  => "Your is not master agent this ".$get_ph_number_agent." agent",
+                                                "value"     => $get_ph_number_master_agent
+                                            ];
+                                            return response()->json(["error" => $error_data], $this->errorStatus);
                                     }
                                     else
                                     {
                                         $error_data = [
                                             "target"    => "private",
-                                            "response"  => "Credit should be a number",
-                                            "value"     => $get_phone_number
+                                            "response"  => "Phone number agent unlisted",
+                                            "value"     => $get_ph_number_master_agent
                                         ];
                                         return response()->json(["error" => $error_data], $this->errorStatus);
                                     }
@@ -162,8 +106,268 @@ class WhatsappBotController extends Controller
                                 {
                                     $error_data = [
                                         "target"    => "private",
-                                        "response"  => "Your group has reached the limit",
-                                        "value"     => $get_group_name,
+                                        "response"  => "Credit should be a number",
+                                        "value"     => $get_ph_number_master_agent
+                                    ];
+                                    return response()->json(["error" => $error_data], $this->errorStatus);
+                                }
+                        }
+                        else
+                        {
+                            $error_data = [
+                                "target"    => "private",
+                                "response"  => "Phone number master agent unlisted",
+                                "value"     => $get_ph_number_master_agent
+                            ];
+                            return response()->json(["error" => $error_data], $this->errorStatus);
+                        }
+                    }
+                    else
+                    {
+                        $error_data = [
+                            "target"    => "private",
+                            "response"  => "You must enter the credit top up",
+                            "value"     => $get_ph_number_master_agent
+                        ];
+                        return response()->json(["error" => $error_data], $this->errorStatus);
+                    }
+                }
+                else
+                {
+                    $error_data = [
+                        "target"    => "private",
+                        "response"  => "You must enter the phone number agent",
+                        "value"     => $get_ph_number_master_agent
+                    ];
+                    return response()->json(["error" => ""], $this->errorStatus);
+                }
+            }
+            else
+            {
+                $error_data = [
+                    "target"    => "private",
+                    "response"  => "You must enter the phone number master agent",
+                    "value"     => $get_ph_number_master_agent
+                ];
+                return response()->json(["error" => $error_data], $this->errorStatus);
+            }
+        }
+    /* MASTER AGENT */
+
+    /* AGENT */
+        public function check_master_agent_number()
+        {
+            //PARAMETER
+                $get_group_id           = request('wa_group_id');
+                $get_agent_phone_number = request('wa_ph_number');
+
+            if($get_agent_phone_number != '')
+            {
+                $check_phone_number_agent = \App\Master_user::where('phone_number_users',$get_agent_phone_number)->first();
+                if($check_phone_number_agent != '')
+                {
+                    $get_master_agent = $check_phone_number_agent->sub_users_id;
+                    $get_master_agent = \App\Master_user::where('id',$get_master_agent)->first();
+                    if($get_master_agent != '')
+                    {
+                        $success_data = [
+                            "target"    => "group",
+                            "response"  => array("master_agent_ph_number" => $get_master_agent->phone_number_users),
+                            "value"     => $get_group_id
+                        ];
+                        return response()->json(["success" => $success_data], $this->successStatus);
+                    }
+                    else
+                    {
+                        $error_data = [
+                            "target"    => "group",
+                            "response"  => "Master agent unlisted",
+                            "value"     => $get_group_id,
+                        ];
+                        return response()->json(["error" => $error_data], $this->errorStatus);
+                    }
+                }
+                else
+                {
+                    $error_data = [
+                        "target"    => "group",
+                        "response"  => "Your not agent",
+                        "value"     => $get_group_id
+                    ];
+                    return response()->json(["error" => $error_data], $this->errorStatus);
+                }
+            }
+            else
+            {
+                $error_data = [
+                    "target"    => "group",
+                    "response"  => "You must enter the phone number",
+                    "value"     => $get_group_id
+                ];
+                return response()->json(["error" => $error_data], $this->errorStatus);
+            }
+        }
+
+        public function create_group()
+        {
+            if($this->check_master_agent_number())
+                //PARAMETER
+                    $get_group_name     = request('wa_group_name');
+                    $get_phone_number   = request('wa_ph_number');
+                    $get_credit_group   = request('credit_group');
+
+                if($get_group_name != '')
+                {
+                    if($get_phone_number != '')
+                    {
+                        if(preg_match('/\s/',$get_group_name) == '')
+                        {
+                            $get_agent = \App\Master_user::where('phone_number_users',$get_phone_number)
+                                                        ->first();
+                            if($get_agent != '')
+                            {
+                                if($get_agent->level_systems_id == 3)
+                                {
+                                    $id_agent                   = $get_agent->id;
+                                    $get_master_agent           = \App\Master_user::where('id',$get_agent->sub_users_id)->first();
+                                    $get_phone_master_agent     = $get_master_agent->phone_number_users;
+                                    $max_groups                 = $get_agent->max_group_users;
+                                    $credit_users               = $get_agent->credit_users;
+                                    $check_total_group_created  = \App\Master_group::where('users_id',$id_agent)
+                                                                                    ->count();
+                                    if($check_total_group_created < $max_groups)
+                                    {
+                                        if (is_numeric($get_credit_group))
+                                        {
+                                            if($get_credit_group == '')
+                                            {
+                                                if($credit_users > 0)
+                                                {
+                                                    $check_group_name   = \App\Master_group::where('users_id',$id_agent)
+                                                                                            ->where('name_groups',$get_group_name)
+                                                                                            ->count();
+                                                    if($check_group_name == 0)
+                                                    {
+                                                        $groups_data = [
+                                                            'users_id'          => $id_agent,
+                                                            'credit_groups'     => $credit_users,
+                                                            'whatsapp_group_id' => '',
+                                                            'name_groups'       => $get_group_name,
+                                                            'created_on_groups' => date('Y-m-d H:i:s'),
+                                                        ];
+                                                        \App\Master_group::insert($groups_data);
+
+                                                        $credit_agent_data = [
+                                                            'credit_users' => 0
+                                                        ];
+                                                        \App\Master_user::where('id',$id_agent)->update($credit_agent_data);
+
+                                                        $success_data = [
+                                                            "target"    => "private",
+                                                            "response"  => "Great! Your ".$get_group_name." has successfully created.\nAt the first, please create sessions by sending command bellow :\n#session[space]group name[space]credit / member[space]day duration\nfor example:\n#session trivia 5000 7\nabove command means that when a player register, each player get 5000 credit upon registration in sessions. And session will run for 7 days",
+                                                            "value"     => $get_phone_number,
+                                                        ];
+                                                        return response()->json(["success" => $success_data], $this->successStatus);
+                                                    }
+                                                    else
+                                                    {
+                                                        $error_data = [
+                                                            "target"    => "private",
+                                                            "response"  => "Group ".$get_group_name." already exits. Please find another name for your group",
+                                                            "value"     => $get_phone_number,
+                                                        ];
+                                                        return response()->json(["error" => $error_data], $this->errorStatus);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    $error_data = [
+                                                        "target"    => "private",
+                                                        "response"  => "Your credit is 0. You can't create group anymore.\nPlease top up to your master agent - ".$get_phone_master_agent,
+                                                        "value"     => $get_phone_number,
+                                                    ];
+                                                    return response()->json(["error" => $error_data], $this->errorStatus);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if($get_credit_group <= $credit_users)
+                                                {
+                                                    $check_group_name = \App\Master_group::where('users_id',$id_agent)
+                                                                                            ->where('name_groups',$get_group_name)
+                                                                                            ->count();
+                                                    if($check_group_name == 0)
+                                                    {
+                                                        $calculate_credit_group = $credit_users - $get_credit_group;
+
+                                                        $groups_data = [
+                                                            'users_id'          => $id_agent,
+                                                            'credit_groups'     => $get_credit_group,
+                                                            'whatsapp_group_id' => '',
+                                                            'name_groups'       => $get_group_name,
+                                                            'created_on_groups' => date('Y-m-d H:i:s'),
+                                                        ];
+                                                        \App\Master_group::insert($groups_data);
+
+                                                        $credit_agent_data = [
+                                                            'credit_users' => $calculate_credit_group
+                                                        ];
+                                                        \App\Master_user::where('id',$id_agent)->update($credit_agent_data);
+
+                                                        $success_data = [
+                                                            "target"    => "private",
+                                                            "response"  => "Great! Your ".$get_group_name." has successfully created.\nAt the first, please create sessions by sending command bellow :\n#session[space]group name[space]credit / member[space]day duration\nfor example:\n#session trivia 5000 7\nabove command means that when a player register, each player get 5000 credit upon registration in sessions. And session will run for 7 days",
+                                                            "value"     => $get_phone_number
+                                                        ];
+                                                        return response()->json(["success" => $success_data], $this->successStatus);
+                                                    }
+                                                    else
+                                                    {
+                                                        $error_data = [
+                                                            "target"    => "private",
+                                                            "response"  => "Group ".$get_group_name." already exist. Please find another name for your group",
+                                                            "value"     => $get_phone_number
+                                                        ];
+                                                        return response()->json(["error" => $error_data], $this->errorStatus);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    $error_data = [
+                                                        "target"    => "private",
+                                                        "response"  => "Your credit is not enough. Your current credit is ".$credit_users,
+                                                        "value"     => $get_phone_number,
+                                                    ];
+                                                    return response()->json(["error" => $error_data], $this->errorStatus);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            $error_data = [
+                                                "target"    => "private",
+                                                "response"  => "Credit should be a number",
+                                                "value"     => $get_phone_number
+                                            ];
+                                            return response()->json(["error" => $error_data], $this->errorStatus);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        $error_data = [
+                                            "target"    => "private",
+                                            "response"  => "Your group has reached the limit",
+                                            "value"     => $get_group_name,
+                                        ];
+                                        return response()->json(["error" => $error_data], $this->errorStatus);
+                                    }
+                                }
+                                else
+                                {
+                                    $error_data = [
+                                        "target"    => "private",
+                                        "response"  => "Your not agent",
+                                        "value"     => $get_phone_number,
                                     ];
                                     return response()->json(["error" => $error_data], $this->errorStatus);
                                 }
@@ -172,7 +376,7 @@ class WhatsappBotController extends Controller
                             {
                                 $error_data = [
                                     "target"    => "private",
-                                    "response"  => "Your not agent",
+                                    "response"  => "Number Not listed",
                                     "value"     => $get_phone_number,
                                 ];
                                 return response()->json(["error" => $error_data], $this->errorStatus);
@@ -182,18 +386,19 @@ class WhatsappBotController extends Controller
                         {
                             $error_data = [
                                 "target"    => "private",
-                                "response"  => "Number Not listed",
+                                "response"  => "Name must not have spaces",
                                 "value"     => $get_phone_number,
                             ];
                             return response()->json(["error" => $error_data], $this->errorStatus);
                         }
+
                     }
                     else
                     {
                         $error_data = [
                             "target"    => "private",
-                            "response"  => "Name must not have spaces",
-                            "value"     => $get_phone_number,
+                            "response"  => "You must enter the phone number",
+                            "value"     => "",
                         ];
                         return response()->json(["error" => $error_data], $this->errorStatus);
                     }
@@ -202,24 +407,13 @@ class WhatsappBotController extends Controller
                 {
                     $error_data = [
                         "target"    => "private",
-                        "response"  => "You must enter the phone number",
-                        "value"     => "",
+                        "response"  => "You must enter the group name",
+                        "value"     => $get_phone_number,
                     ];
                     return response()->json(["error" => $error_data], $this->errorStatus);
                 }
-            }
-            else
-            {
-                $error_data = [
-                    "target"    => "private",
-                    "response"  => "You must enter the group name",
-                    "value"     => $get_phone_number,
-                ];
-                return response()->json(["error" => $error_data], $this->errorStatus);
-            }
         }
 
-    //PRIVATE MESSAGE BOT
         public function update_group()
         {
             //PARAMETER
@@ -306,7 +500,6 @@ class WhatsappBotController extends Controller
             }
         }
 
-    //PRIVATE MESSAGE BOT
         public function create_sessions()
         {
             //PARAMETER
@@ -463,144 +656,6 @@ class WhatsappBotController extends Controller
             }
         }
 
-    //GROUP MESSAGE
-        public function register_members()
-        {
-            //PARAMETER
-                $get_group_id   = request('wa_group_id');
-                $get_ph_number  = request('wa_ph_number');
-
-            if($get_group_id != '')
-            {
-                if($get_ph_number != '')
-                {
-                    $get_group              = \App\Master_group::where('whatsapp_group_id',$get_group_id)
-                                                                ->first();
-                    if($get_group != '')
-                    {
-                        $id_group               = $get_group->id_groups;
-                        $get_group_name         = $get_group->name_groups;
-                        $get_credit_group       = $get_group->credit_groups;
-                        $get_last_sessions      = \App\Master_session::join('master_groups','groups_id','=','master_groups.id_groups')
-                                                                        ->where('groups_id',$id_group)
-                                                                        ->where('status_active_sessions',1)
-                                                                        ->first();
-                        if($get_last_sessions != '')
-                        {
-                            $id_sessions                = $get_last_sessions->id_sessions;
-                            $get_start_date             = $get_last_sessions->start_date_sessions;
-                            $get_end_date               = $get_last_sessions->end_date_sessions;
-                            $get_credit_member_sessions = $get_last_sessions->credit_member_sessions;
-                            $get_agent_id                = $get_last_sessions->users_id;
-                            $get_agent                   = \App\Master_user::where('id',$get_agent_id)->first();
-                            $get_phone_number_agent      = $get_agent->phone_number_users;
-                            if($get_phone_number_agent != $get_ph_number)
-                            {
-                                    $check_register_members     = \App\Master_register_member::where('sessions_id',$id_sessions)
-                                                                                            ->where('phone_number_register_members',$get_ph_number)
-                                                                                            ->count();
-                                    if($check_register_members == 0)
-                                    {
-                                        if($get_credit_group >= $get_credit_member_sessions)
-                                        {
-                                            $register_members_data      = [
-                                                'sessions_id'                       => $id_sessions,
-                                                'credit_register_members'           => $get_credit_member_sessions,
-                                                'phone_number_register_members'     => $get_ph_number
-                                            ];
-                                            \App\Master_register_member::insert($register_members_data);
-
-                                            $calculate_credit_group = $get_credit_group - $get_credit_member_sessions;
-                                            $credit_group_data = [
-                                                'credit_groups' => $calculate_credit_group
-                                            ];
-                                            \App\Master_group::where('id_groups',$id_group)->update($credit_group_data);
-
-                                            $success_group_data = [
-                                                "target"    => "group",
-                                                "response"  => "Hi ".substr($get_ph_number, 0, -8)."****, I am a Trivibot, Your success join the sessions in ".$get_group_name."! Good Luck!\nThis sessions :\nStarted at : ".Shwetech::changeDBToDatetime($get_start_date)."\nFinished at : ".Shwetech::changeDBToDatetime($get_end_date)."\nI'll guide your game.\nYou are already registered in this group. You can follow the game in this group by typing command :\n#b[space]list of stakes[space]amount of stake\nFor example : #b dr 100. Above command means that you give stake to a dragon worth 100.\nYou can check list of stake with command : #listbet\nTo view all stakes in this group with command : #list",
-                                                "value"     => $get_group_id
-                                            ];
-
-                                            $success_private_data = [
-                                                "target"    => "private",
-                                                "response"  => "Your credit in ".$get_group_name." group is ".$get_credit_member_sessions."\nYou can see all your credits from each game by typing the command : #bal",
-                                                "value"     => $get_ph_number
-                                            ];
-                                            return response()->json(["successgroup" => $success_group_data, "successprivate" => $success_private_data], $this->successStatus);
-                                        }
-                                        else
-                                        {
-                                            $error_data = [
-                                                "target"    => "private",
-                                                "response"  => $get_group_name."\nCredit group not enough. Credit ".$get_group_name." is ".$get_credit_group."\nAnd you can't join in this group",
-                                                "value"     => $get_ph_number
-                                            ];
-                                            return response()->json(["error" => $error_data], $this->errorStatus);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        $error_data = [
-                                            "target"    => "group",
-                                            "response"  => $get_ph_number."\nYour already registered",
-                                            "value"     => $get_group_id
-                                        ];
-                                        return response()->json(["error" => $error_data], $this->errorStatus);
-                                    }
-                            }
-                            else
-                            {
-                                $error_data = [
-                                    "target"    => "private",
-                                    "response"  => $get_group_name."\nYour is agent in this group, you can't play in your own group",
-                                    "value"     => $get_ph_number,
-                                ];
-                                return response()->json(["error" => $error_data], $this->errorStatus);
-                            }
-                        }
-                        else
-                        {
-                            $error_data = [
-                                "target"    => "private",
-                                "response"  => $get_group_name."\nGroup doesn't have any sessions",
-                                "value"     => $get_ph_number
-                            ];
-                            return response()->json(["error" => $error_data], $this->errorStatus);
-                        }
-                    }
-                    else
-                    {
-                        $error_data = [
-                            "target"    => "private",
-                            "response"  => "Group unlisted",
-                            "value"     => $get_ph_number,
-                        ];
-                        return response()->json(["error" => $error_data], $this->errorStatus);
-                    }
-                }
-                else
-                {
-                    $error_data = [
-                        "target"    => "private",
-                        "response"  => "You must enter the phone number",
-                        "value"     => $get_ph_number
-                    ];
-                    return response()->json(["error" => $error_data], $this->errorStatus);
-                }
-            }
-            else
-            {
-                $error_data = [
-                    "target"    => "private",
-                    "response"  => "You must enter the group ID",
-                    "value"     => $get_ph_number,
-                ];
-                return response()->json(["error" => $error_data], $this->errorStatus);
-            }
-        }
-
-    //PRIVATE MESSAGE BOT
         public function create_game()
         {
             //PARAMETER
@@ -800,7 +855,6 @@ class WhatsappBotController extends Controller
             }
         }
 
-    //PRIVATE MESSAGE BOT
         public function start_game()
         {
             //PARAMETER
@@ -931,7 +985,76 @@ class WhatsappBotController extends Controller
             }
         }
 
-    //PRIVATE MESSAGE BOT
+        public function get_group_from_private()
+        {
+            //PARAMETER
+                $get_group_name = request('wa_group_name');
+                $get_ph_number  = request('wa_ph_number');
+
+            if($get_group_name != '')
+            {
+                if($get_ph_number != '')
+                {
+                    $get_group = \App\Master_group::where('name_groups',$get_group_name)->first();
+                    if($get_group != '')
+                    {
+                        $id_group       = $get_group->id_groups;
+                        $credit_group   = $get_group->credit_groups;
+                        $check_agent     = \App\Master_group::join('users','users_id','=','users.id')
+                                                        ->where('id_groups',$id_group)
+                                                        ->where('phone_number_users',$get_ph_number)
+                                                        ->first();
+                        if($check_agent != '')
+                        {
+                            $get_group_id   = $check_agent->whatsapp_group_id;
+                            $success_data = [
+                                "target"    => "private",
+                                "response"  => array("wa_group_id" => $get_group_id),
+                                "value"     => $get_ph_number
+                            ];
+                            return response()->json(["success" => $success_data], $this->successStatus);
+                        }
+                        else
+                        {
+                            $error_data = [
+                                "target"    => "private",
+                                "response"  => $get_group_name."\n Your not agent in this group",
+                                "value"     => $get_ph_number
+                            ];
+                            return response()->json(["error" => $error_data], $this->errorStatus);
+                        }
+                    }
+                    else
+                    {
+                        $error_data = [
+                            "target"    => "private",
+                            "response"  => $get_group_name."\n Group unlisted",
+                            "value"     => $get_ph_number,
+                        ];
+                        return response()->json(["error" => $error_data], $this->errorStatus);
+                    }
+                }
+                else
+                {
+                    $error_data = [
+                        "target"    => "private",
+                        "response"  => "You must enter the phone number",
+                        "value"     => $get_ph_number,
+                    ];
+                    return response()->json(["error" => $error_data], $this->errorStatus);
+                }
+            }
+            else
+            {
+                $error_data = [
+                    "target"    => "private",
+                    "response"  => "You must enter the group name",
+                    "value"     => $get_ph_number
+                ];
+                return response()->json(["error" => $error_data], $this->errorStatus);
+            }
+        }
+
         public function end_game()
         {
             //PARAMETER
@@ -1202,439 +1325,6 @@ class WhatsappBotController extends Controller
             }
         }
 
-    //GROUP MESSAGE
-        public function stakes()
-        {
-            //PARAMETER
-                $get_group_id   = request('wa_group_id');
-                $get_ph_number  = request('wa_ph_number');
-                $get_stake      = request('stake');
-                $get_value      = request('value');
-
-            if($get_group_id != '')
-            {
-                if($get_ph_number != '')
-                {
-                    $get_group  = \App\Master_group::where('whatsapp_group_id',$get_group_id)->first();
-                    if($get_group != '')
-                    {
-                        $get_group_name = $get_group->name_groups;
-                        if($get_stake != '')
-                        {
-                            if($get_value != '')
-                            {
-                                if(is_numeric($get_value))
-                                {
-                                    $check_list_stakes = \App\Master_list_stake::where('command_list_stakes',$get_stake)->first();
-                                    if($check_list_stakes != '')
-                                    {
-                                        $get_active_games = \App\Master_game::join('master_sessions','sessions_id','=','master_sessions.id_sessions')
-                                                                            ->join('master_groups','groups_id','=','master_groups.id_groups')
-                                                                            ->where('whatsapp_group_id',$get_group_id)
-                                                                            ->where('status_active_games','1')
-                                                                            ->first();
-                                        if($get_active_games != '')
-                                        {
-                                            $id_sessions            = $get_active_games->id_sessions;
-                                            $get_register_member    = \App\Master_register_member::where('phone_number_register_members',$get_ph_number)
-                                                                                                ->where('sessions_id',$id_sessions)
-                                                                                                ->first();
-                                            if($get_register_member != '')
-                                            {
-                                                $id_register_members    = $get_register_member->id_register_members;
-                                                $credit_register_members= $get_register_member->credit_register_members;
-                                                if($credit_register_members >= $get_value)
-                                                {
-                                                    if($get_value > 0)
-                                                    {
-                                                    
-                                                        $id_list_stake = $check_list_stakes->id_list_stakes;
-                                                        $stakes_data = [
-                                                            'games_id' => $get_active_games->id_games,
-                                                            'register_members_id' => $id_register_members,
-                                                            'list_stakes_id' => $id_list_stake,
-                                                            'value_stakes' => $get_value,
-                                                        ];
-                                                        \App\Master_stake::insert($stakes_data);
-
-                                                        $calculate_credit_members = $credit_register_members - $get_value;
-                                                        $credit_register_members_data = [
-                                                            'credit_register_members'   => $calculate_credit_members
-                                                        ];
-                                                        \App\Master_register_member::where('id_register_members',$id_register_members)->update($credit_register_members_data);
-
-                                                        $get_credit_after_update    = \App\Master_register_member::where('id_register_members',$id_register_members)->first();
-                                                        $credit_register_members_now= $get_credit_after_update->credit_register_members;
-
-                                                        $success_private_data = [
-                                                            "target"    => "private",
-                                                            "response"  => "You have successfully stake on ".$get_stake." with ".$get_value." credit. Your current balance in ".$get_group_name." group is ".$credit_register_members_now,
-                                                            "value"     => $get_ph_number
-                                                        ];
-
-                                                        $success_group_data = [
-                                                            "target"    => "group",
-                                                            "response"  => substr($get_ph_number, 0, -8)."**** Place a stake!",
-                                                            "value"     => $get_group_id
-                                                        ];
-                                                        return response()->json(["successgroup" => $success_group_data, "successprivate" => $success_private_data], $this->successStatus);
-                                                    }
-                                                    else
-                                                    {
-                                                        $error_data = [
-                                                            "target"    => "private",
-                                                            "response"  => $get_group_name."\nAmount can't be smaller than 0",
-                                                            "value"     => $get_ph_number,
-                                                        ];
-                                                        return response()->json(["error" => $error_data], $this->errorStatus);
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    $error_data = [
-                                                        "target"    => "private",
-                                                        "response"  => $get_group_name."\nYour credit not enough. Your credit is ".$credit_register_members,
-                                                        "value"     => $get_ph_number,
-                                                    ];
-                                                    return response()->json(["error" => $error_data], $this->errorStatus);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                $error_data = [
-                                                    "target"    => "private",
-                                                    "response"  => $get_group_name."\nYour not member in ".$get_group_name." group",
-                                                    "value"     => $get_ph_number
-                                                ];
-                                                return response()->json(["error" => $error_data], $this->errorStatus);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            $error_data = [
-                                                "target"    => "private",
-                                                "response"  => $get_group_name."\nNo game is active",
-                                                "value"     => $get_ph_number
-                                            ];
-                                            return response()->json(["error" => $error_data], $this->errorStatus);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        $error_data = [
-                                            "target"    => "private",
-                                            "response"  => $get_group_name."\nYour stakes not in list. You can check the list of stakes by typing command : #listbet",
-                                            "value"     => $get_ph_number
-                                        ];
-                                        return response()->json(["error" => $error_data], $this->errorStatus);
-                                    }
-                                }
-                                else
-                                {
-                                    $error_data = [
-                                        "target"    => "private",
-                                        "response"  => $get_group_name."\nAmount should be a number",
-                                        "value"     => $get_ph_number
-                                    ];
-                                    return response()->json(["error" => $error_data], $this->errorStatus);
-                                }
-                            }
-                            else
-                            {
-                                $error_data = [
-                                    "target"    => "private",
-                                    "response"  => $get_group_name."\nYou must enter the amount",
-                                    "value"     => $get_ph_number,
-                                ];
-                                return response()->json(["error" => $error_data], $this->errorStatus);
-                            }
-                        }
-                        else
-                        {
-                            $error_data = [
-                                "target"    => "private",
-                                "response"  => $get_group_name."\nYou must enter the stake. You can check the list of stakes by typing command : #listbet",
-                                "value"     => $get_ph_number
-                            ];
-                            return response()->json(["error" => $error_data], $this->errorStatus);
-                        }
-                    }
-                    else
-                    {
-                        $error_data = [
-                            "target"    => "private",
-                            "response"  => "Group unlisted",
-                            "value"     => $get_ph_number
-                        ];
-                        return response()->json(["error" => $error_data], $this->errorStatus);
-                    }
-                }
-                else
-                {
-                    $error_data = [
-                        "target"    => "private",
-                        "response"  => "You must enter the phone number",
-                        "value"     => $get_ph_number
-                    ];
-                    return response()->json(["error" => $error_data], $this->errorStatus);
-                }
-            }
-            else
-            {
-                $error_data = [
-                    "target"    => "private",
-                    "response"  => "You must enter the group ID",
-                    "value"     => $get_ph_number,
-                ];
-                return response()->json(["error" => $error_data], $this->errorStatus);
-            }
-        }
-
-    //GROUP MESSAGE
-        public function check_stakes_members()
-        {
-            //PARAMETER
-                $get_group_id      = request('wa_group_id');
-            
-            if($get_group_id != '')
-            {
-                $get_stakes_member = \App\Master_stake::selectRaw('CONCAT(SUBSTRING(`phone_number_register_members`, 1, CHAR_LENGTH(`phone_number_register_members`) - 5),"****") as phone_number,
-                                                                    name_list_stakes,
-                                                                    value_stakes')
-                                                        ->join('master_games','games_id','=','master_games.id_games')
-                                                        ->join('master_sessions','sessions_id','=','master_sessions.id_sessions')
-                                                        ->join('master_groups','groups_id','=','master_groups.id_groups')
-                                                        ->join('master_register_members','register_members_id','=','master_register_members.id_register_members')
-                                                        ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
-                                                        ->where('whatsapp_group_id',$get_group_id)
-                                                        ->where('status_active_games',1)
-                                                        ->get();
-                if($get_stakes_member != '')
-                {
-                    $stakes_members_data = [
-                        'check_stakes_members' => $get_stakes_member
-                    ];
-
-                    $success_data = [
-                        "target"    => "group",
-                        "response"  => $stakes_members_data,
-                        "value"     => $get_group_id,
-                    ];
-                    return response()->json(["success" => $success_data], $this->successStatus);
-                }
-                else
-                {
-                    $error_data = [
-                        "target"    => "group",
-                        "response"  => "List stakes empty",
-                        "value"     => $get_group_id
-                    ];
-                    return response()->json(["error" => $error_data], $this->errorStatus);
-                }
-            }
-            else
-            {
-                $error_data = [
-                    "target"    => "group",
-                    "response"  => "You must enter the whatsapp group ID",
-                    "value"     => $get_group_id
-                ];
-                return response()->json(["error" => $error_data], $this->errorStatus);
-            }
-        }
-
-    //GROUP MESSAGE
-        public function list_stakes()
-        {
-            $get_group_id          = request('wa_group_id');
-            if($get_group_id != '')
-            {
-                $check_group = \App\Master_group::where("whatsapp_group_id",$get_group_id)->count();
-                if($check_group != 0)
-                {
-                    $check_list_stakes = \App\Master_list_stake::count();
-                    if($check_list_stakes != 0)
-                    {
-                        $get_list_stakes = \App\Master_list_stake::select('name_list_stakes','command_list_stakes')
-                                                                ->get();
-                        $list_stakes_data = [
-                            "target"                => "group",
-                            "response"              => $get_list_stakes,
-                            "value"                 => $get_group_id,
-                        ];
-                        return response()->json(["success" => $list_stakes_data], $this->successStatus);
-                    }
-                    else
-                    {
-                        $error_data = [
-                            "target"                => "group",
-                            "response"              => "No list stakes available",
-                            "value"                 => $get_group_id,
-                        ];
-                        return response()->json(["error" => $error_data], $this->errorStatus);
-                    }
-                }
-                else
-                {
-                    $error_data = [
-                        "target"    => "group",
-                        "response"  => "Group Unlisted",
-                        "value"     => $get_group_id
-                    ];
-                    return response()->json(["error" => $error_data], $this->errorStatus);
-                }
-            }
-            else
-            {
-                $error_data = [
-                    "target"    => "group",
-                    "response"  => "You must enter the group ID",
-                    "value"     => $get_group_id,
-                ];
-                return response()->json(["error" => $error_data], $this->errorStatus);
-            }
-        }
-
-    //PRIVATE MESSAGE
-        public function top_up_agent()
-        {
-            //PARAMETER
-                $get_ph_number_master_agent     = request('wa_ph_number_master_agent');
-                $get_ph_number_agent            = request('wa_ph_number_agent');
-                $get_credit_top_ups             = request('credit_top_up');
-
-            if($get_ph_number_master_agent != '')
-            {
-                if($get_ph_number_agent != '')
-                {
-                    if($get_credit_top_ups != '')
-                    {
-                        if(is_numeric($get_credit_top_ups))
-                        {
-                                $get_master_agent      = \App\Master_user::where('phone_number_users',$get_ph_number_master_agent)
-                                                                    ->first();
-                                if($get_master_agent != '')
-                                {
-                                    $get_agent   = \App\Master_user::where('phone_number_users',$get_ph_number_agent)
-                                                                    ->first();
-                                    if($get_agent != '')
-                                    {
-                                        $id_master_agent        = $get_master_agent->id;
-                                        $id_agent               = $get_agent->id;
-                                        $check_master_agent     = \App\Master_user::where('id',$id_agent)
-                                                                                ->where('sub_users_id',$id_master_agent)
-                                                                                ->first();
-                                        if($check_master_agent != '')
-                                        {
-                                            $credit_master_agent = $get_master_agent->credit_users;
-                                            if($credit_master_agent >= $get_credit_top_ups)
-                                            {
-                                                $top_ups_data = [
-                                                    'from_users_id' => $get_ph_number_master_agent,
-                                                    'to_users_id'   => $get_ph_number_agent,
-                                                    'date_top_ups'  => date('Y-m-d'),
-                                                    'time_top_ups'  => date('H:i:s'),
-                                                    'credit_top_ups'=> $get_credit_top_ups,
-                                                ];
-                                                \App\Master_top_up::insert($top_ups_data);
-
-                                                $credit_agent    = $check_master_agent->credit_users;
-                                                $calculate_agent = $credit_agent + $get_credit_top_ups;
-                                                $agent_data = [
-                                                    'credit_users' => $calculate_agent
-                                                ];
-                                                \App\Master_user::where('id',$id_agent)->update($agent_data);
-
-                                                $calculate_master_agent = $credit_master_agent - $get_credit_top_ups;
-                                                $master_agent_data      = [
-                                                    'credit_users'  => $calculate_master_agent
-                                                ];
-                                                \App\Master_user::where('id',$id_master_agent)->update($master_agent_data);
-
-                                                $success_data = [
-                                                    "target"    => "private",
-                                                    "response"  => "Congratulations you successfully fill credit to agent ".$get_ph_number_agent,
-                                                    "value"     => $get_ph_number_master_agent
-                                                ];
-                                                return response()->json(["success" => $success_data], $this->successStatus);
-                                            }
-                                            else
-                                                $error_data = [
-                                                    "target"    => "private",
-                                                    "response"  => "Your credit not enough. Your current credit is ".$credit_master_agent,
-                                                    "value"     => $get_ph_number_master_agent
-                                                ];
-                                        }
-                                        else
-                                            $error_data = [
-                                                "target"    => "private",
-                                                "response"  => "Your is not master agent this ".$get_ph_number_agent." agent",
-                                                "value"     => $get_ph_number_master_agent
-                                            ];
-                                            return response()->json(["error" => $error_data], $this->errorStatus);
-                                    }
-                                    else
-                                    {
-                                        $error_data = [
-                                            "target"    => "private",
-                                            "response"  => "Phone number agent unlisted",
-                                            "value"     => $get_ph_number_master_agent
-                                        ];
-                                        return response()->json(["error" => $error_data], $this->errorStatus);
-                                    }
-                                }
-                                else
-                                {
-                                    $error_data = [
-                                        "target"    => "private",
-                                        "response"  => "Credit should be a number",
-                                        "value"     => $get_ph_number_master_agent
-                                    ];
-                                    return response()->json(["error" => $error_data], $this->errorStatus);
-                                }
-                        }
-                        else
-                        {
-                            $error_data = [
-                                "target"    => "private",
-                                "response"  => "Phone number master agent unlisted",
-                                "value"     => $get_ph_number_master_agent
-                            ];
-                            return response()->json(["error" => $error_data], $this->errorStatus);
-                        }
-                    }
-                    else
-                    {
-                        $error_data = [
-                            "target"    => "private",
-                            "response"  => "You must enter the credit top up",
-                            "value"     => $get_ph_number_master_agent
-                        ];
-                        return response()->json(["error" => $error_data], $this->errorStatus);
-                    }
-                }
-                else
-                {
-                    $error_data = [
-                        "target"    => "private",
-                        "response"  => "You must enter the phone number agent",
-                        "value"     => $get_ph_number_master_agent
-                    ];
-                    return response()->json(["error" => ""], $this->errorStatus);
-                }
-            }
-            else
-            {
-                $error_data = [
-                    "target"    => "private",
-                    "response"  => "You must enter the phone number master agent",
-                    "value"     => $get_ph_number_master_agent
-                ];
-                return response()->json(["error" => $error_data], $this->errorStatus);
-            }
-        }
-
-    //PRIVATE MESSAGE
         public function top_up_group()
         {
             //PARAMETER
@@ -1734,7 +1424,6 @@ class WhatsappBotController extends Controller
             }
         }
 
-    //SESSION STATUS (CRONJOB)
         public function end_sessions()
         {
             $check_sessions = \App\Master_session::join('master_groups','groups_id','=','master_groups.id_groups')
@@ -1972,44 +1661,6 @@ class WhatsappBotController extends Controller
             return response()->json(["success" => "Its Worked"], $this->successStatus);
         }
 
-    //GROUP MESSAGE
-        public function help()
-        {
-            $get_group_id          = request('wa_group_id');
-            if($get_group_id != '')
-            {
-                $check_group = \App\Master_group::where("whatsapp_group_id",$get_group_id)->count();
-                if($check_group != 0)
-                {
-                    $success_data = [
-                        "target"    => "group",
-                        "response"  => "Here is some command i understand :\n- Register = #reg\n- Bet = #b[space]list stakes[space]amount\n- Check list stakes available = #listbet\n- Check all member stakes in current game = #list\n- See all your balance in each game = #bal",
-                        "value"     => $get_group_id
-                    ];
-                    return response()->json(["success" => $success_data], $this->successStatus);
-                }
-                else
-                {
-                    $error_data = [
-                        "target"    => "group",
-                        "response"  => "Group Unlisted",
-                        "value"     => $get_group_id
-                    ];
-                    return response()->json(["error" => $error_data], $this->errorStatus);
-                }
-            }
-            else
-            {
-                $error_data = [
-                    "target"    => "group",
-                    "response"  => "You must enter the group ID",
-                    "value"     => $get_group_id,
-                ];
-                return response()->json(["error" => $error_data], $this->errorStatus);
-            }
-        }
-
-    //PRIVATE MESSAGE
         public function ahelp()
         {
             $get_ph_number = request('wa_ph_number');
@@ -2058,8 +1709,332 @@ class WhatsappBotController extends Controller
                 return response()->json(["error" => $error_data], $this->errorStatus);
             }
         }
+    /* AGENT */
 
-    //PRIVATE MESSAGE
+    /* MEMBER */
+        public function register_members()
+        {
+            //PARAMETER
+                $get_group_id   = request('wa_group_id');
+                $get_ph_number  = request('wa_ph_number');
+
+            if($get_group_id != '')
+            {
+                if($get_ph_number != '')
+                {
+                    $get_group              = \App\Master_group::where('whatsapp_group_id',$get_group_id)
+                                                                ->first();
+                    if($get_group != '')
+                    {
+                        $id_group               = $get_group->id_groups;
+                        $get_group_name         = $get_group->name_groups;
+                        $get_credit_group       = $get_group->credit_groups;
+                        $get_last_sessions      = \App\Master_session::join('master_groups','groups_id','=','master_groups.id_groups')
+                                                                        ->where('groups_id',$id_group)
+                                                                        ->where('status_active_sessions',1)
+                                                                        ->first();
+                        if($get_last_sessions != '')
+                        {
+                            $id_sessions                = $get_last_sessions->id_sessions;
+                            $get_start_date             = $get_last_sessions->start_date_sessions;
+                            $get_end_date               = $get_last_sessions->end_date_sessions;
+                            $get_credit_member_sessions = $get_last_sessions->credit_member_sessions;
+                            $get_agent_id                = $get_last_sessions->users_id;
+                            $get_agent                   = \App\Master_user::where('id',$get_agent_id)->first();
+                            $get_phone_number_agent      = $get_agent->phone_number_users;
+                            if($get_phone_number_agent != $get_ph_number)
+                            {
+                                    $check_register_members     = \App\Master_register_member::where('sessions_id',$id_sessions)
+                                                                                            ->where('phone_number_register_members',$get_ph_number)
+                                                                                            ->count();
+                                    if($check_register_members == 0)
+                                    {
+                                        if($get_credit_group >= $get_credit_member_sessions)
+                                        {
+                                            $register_members_data      = [
+                                                'sessions_id'                       => $id_sessions,
+                                                'credit_register_members'           => $get_credit_member_sessions,
+                                                'phone_number_register_members'     => $get_ph_number
+                                            ];
+                                            \App\Master_register_member::insert($register_members_data);
+
+                                            $calculate_credit_group = $get_credit_group - $get_credit_member_sessions;
+                                            $credit_group_data = [
+                                                'credit_groups' => $calculate_credit_group
+                                            ];
+                                            \App\Master_group::where('id_groups',$id_group)->update($credit_group_data);
+
+                                            $success_group_data = [
+                                                "target"    => "group",
+                                                "response"  => "Hi ".substr($get_ph_number, 0, -8)."****, I am a Trivibot, Your success join the sessions in ".$get_group_name."! Good Luck!\nThis sessions :\nStarted at : ".Shwetech::changeDBToDatetime($get_start_date)."\nFinished at : ".Shwetech::changeDBToDatetime($get_end_date)."\nI'll guide your game.\nYou are already registered in this group. You can follow the game in this group by typing command :\n#b[space]list of stakes[space]amount of stake\nFor example : #b dr 100. Above command means that you give stake to a dragon worth 100.\nYou can check list of stake with command : #listbet\nTo view all stakes in this group with command : #list",
+                                                "value"     => $get_group_id
+                                            ];
+
+                                            $success_private_data = [
+                                                "target"    => "private",
+                                                "response"  => "Your credit in ".$get_group_name." group is ".$get_credit_member_sessions."\nYou can see all your credits from each game by typing the command : #bal",
+                                                "value"     => $get_ph_number
+                                            ];
+                                            return response()->json(["successgroup" => $success_group_data, "successprivate" => $success_private_data], $this->successStatus);
+                                        }
+                                        else
+                                        {
+                                            $error_data = [
+                                                "target"    => "private",
+                                                "response"  => $get_group_name."\nCredit group not enough. Credit ".$get_group_name." is ".$get_credit_group."\nAnd you can't join in this group",
+                                                "value"     => $get_ph_number
+                                            ];
+                                            return response()->json(["error" => $error_data], $this->errorStatus);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        $error_data = [
+                                            "target"    => "group",
+                                            "response"  => $get_ph_number."\nYour already registered",
+                                            "value"     => $get_group_id
+                                        ];
+                                        return response()->json(["error" => $error_data], $this->errorStatus);
+                                    }
+                            }
+                            else
+                            {
+                                $error_data = [
+                                    "target"    => "private",
+                                    "response"  => $get_group_name."\nYour is agent in this group, you can't play in your own group",
+                                    "value"     => $get_ph_number,
+                                ];
+                                return response()->json(["error" => $error_data], $this->errorStatus);
+                            }
+                        }
+                        else
+                        {
+                            $error_data = [
+                                "target"    => "private",
+                                "response"  => $get_group_name."\nGroup doesn't have any sessions",
+                                "value"     => $get_ph_number
+                            ];
+                            return response()->json(["error" => $error_data], $this->errorStatus);
+                        }
+                    }
+                    else
+                    {
+                        $error_data = [
+                            "target"    => "private",
+                            "response"  => "Group unlisted",
+                            "value"     => $get_ph_number,
+                        ];
+                        return response()->json(["error" => $error_data], $this->errorStatus);
+                    }
+                }
+                else
+                {
+                    $error_data = [
+                        "target"    => "private",
+                        "response"  => "You must enter the phone number",
+                        "value"     => $get_ph_number
+                    ];
+                    return response()->json(["error" => $error_data], $this->errorStatus);
+                }
+            }
+            else
+            {
+                $error_data = [
+                    "target"    => "private",
+                    "response"  => "You must enter the group ID",
+                    "value"     => $get_ph_number,
+                ];
+                return response()->json(["error" => $error_data], $this->errorStatus);
+            }
+        }
+
+        public function stakes()
+        {
+            //PARAMETER
+                $get_group_id   = request('wa_group_id');
+                $get_ph_number  = request('wa_ph_number');
+                $get_stake      = request('stake');
+                $get_value      = request('value');
+
+            if($get_group_id != '')
+            {
+                if($get_ph_number != '')
+                {
+                    $get_group  = \App\Master_group::where('whatsapp_group_id',$get_group_id)->first();
+                    if($get_group != '')
+                    {
+                        $get_group_name = $get_group->name_groups;
+                        if($get_stake != '')
+                        {
+                            if($get_value != '')
+                            {
+                                if(is_numeric($get_value))
+                                {
+                                    $check_list_stakes = \App\Master_list_stake::where('command_list_stakes',$get_stake)->first();
+                                    if($check_list_stakes != '')
+                                    {
+                                        $get_active_games = \App\Master_game::join('master_sessions','sessions_id','=','master_sessions.id_sessions')
+                                                                            ->join('master_groups','groups_id','=','master_groups.id_groups')
+                                                                            ->where('whatsapp_group_id',$get_group_id)
+                                                                            ->where('status_active_games','1')
+                                                                            ->first();
+                                        if($get_active_games != '')
+                                        {
+                                            $id_sessions            = $get_active_games->id_sessions;
+                                            $get_register_member    = \App\Master_register_member::where('phone_number_register_members',$get_ph_number)
+                                                                                                ->where('sessions_id',$id_sessions)
+                                                                                                ->first();
+                                            if($get_register_member != '')
+                                            {
+                                                $id_register_members    = $get_register_member->id_register_members;
+                                                $credit_register_members= $get_register_member->credit_register_members;
+                                                if($credit_register_members >= $get_value)
+                                                {
+                                                    if($get_value > 0)
+                                                    {
+                                                    
+                                                        $id_list_stake = $check_list_stakes->id_list_stakes;
+                                                        $stakes_data = [
+                                                            'games_id' => $get_active_games->id_games,
+                                                            'register_members_id' => $id_register_members,
+                                                            'list_stakes_id' => $id_list_stake,
+                                                            'value_stakes' => $get_value,
+                                                        ];
+                                                        \App\Master_stake::insert($stakes_data);
+
+                                                        $calculate_credit_members = $credit_register_members - $get_value;
+                                                        $credit_register_members_data = [
+                                                            'credit_register_members'   => $calculate_credit_members
+                                                        ];
+                                                        \App\Master_register_member::where('id_register_members',$id_register_members)->update($credit_register_members_data);
+
+                                                        $get_credit_after_update    = \App\Master_register_member::where('id_register_members',$id_register_members)->first();
+                                                        $credit_register_members_now= $get_credit_after_update->credit_register_members;
+
+                                                        $success_private_data = [
+                                                            "target"    => "private",
+                                                            "response"  => "You have successfully stake on ".$get_stake." with ".$get_value." credit. Your current balance in ".$get_group_name." group is ".$credit_register_members_now,
+                                                            "value"     => $get_ph_number
+                                                        ];
+
+                                                        $success_group_data = [
+                                                            "target"    => "group",
+                                                            "response"  => substr($get_ph_number, 0, -8)."**** Place a stake!",
+                                                            "value"     => $get_group_id
+                                                        ];
+                                                        return response()->json(["successgroup" => $success_group_data, "successprivate" => $success_private_data], $this->successStatus);
+                                                    }
+                                                    else
+                                                    {
+                                                        $error_data = [
+                                                            "target"    => "private",
+                                                            "response"  => $get_group_name."\nAmount can't be smaller than 0",
+                                                            "value"     => $get_ph_number,
+                                                        ];
+                                                        return response()->json(["error" => $error_data], $this->errorStatus);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    $error_data = [
+                                                        "target"    => "private",
+                                                        "response"  => $get_group_name."\nYour credit not enough. Your credit is ".$credit_register_members,
+                                                        "value"     => $get_ph_number,
+                                                    ];
+                                                    return response()->json(["error" => $error_data], $this->errorStatus);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                $error_data = [
+                                                    "target"    => "private",
+                                                    "response"  => $get_group_name."\nYour not member in ".$get_group_name." group",
+                                                    "value"     => $get_ph_number
+                                                ];
+                                                return response()->json(["error" => $error_data], $this->errorStatus);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            $error_data = [
+                                                "target"    => "private",
+                                                "response"  => $get_group_name."\nNo game is active",
+                                                "value"     => $get_ph_number
+                                            ];
+                                            return response()->json(["error" => $error_data], $this->errorStatus);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        $error_data = [
+                                            "target"    => "private",
+                                            "response"  => $get_group_name."\nYour stakes not in list. You can check the list of stakes by typing command : #listbet",
+                                            "value"     => $get_ph_number
+                                        ];
+                                        return response()->json(["error" => $error_data], $this->errorStatus);
+                                    }
+                                }
+                                else
+                                {
+                                    $error_data = [
+                                        "target"    => "private",
+                                        "response"  => $get_group_name."\nAmount should be a number",
+                                        "value"     => $get_ph_number
+                                    ];
+                                    return response()->json(["error" => $error_data], $this->errorStatus);
+                                }
+                            }
+                            else
+                            {
+                                $error_data = [
+                                    "target"    => "private",
+                                    "response"  => $get_group_name."\nYou must enter the amount",
+                                    "value"     => $get_ph_number,
+                                ];
+                                return response()->json(["error" => $error_data], $this->errorStatus);
+                            }
+                        }
+                        else
+                        {
+                            $error_data = [
+                                "target"    => "private",
+                                "response"  => $get_group_name."\nYou must enter the stake. You can check the list of stakes by typing command : #listbet",
+                                "value"     => $get_ph_number
+                            ];
+                            return response()->json(["error" => $error_data], $this->errorStatus);
+                        }
+                    }
+                    else
+                    {
+                        $error_data = [
+                            "target"    => "private",
+                            "response"  => "Group unlisted",
+                            "value"     => $get_ph_number
+                        ];
+                        return response()->json(["error" => $error_data], $this->errorStatus);
+                    }
+                }
+                else
+                {
+                    $error_data = [
+                        "target"    => "private",
+                        "response"  => "You must enter the phone number",
+                        "value"     => $get_ph_number
+                    ];
+                    return response()->json(["error" => $error_data], $this->errorStatus);
+                }
+            }
+            else
+            {
+                $error_data = [
+                    "target"    => "private",
+                    "response"  => "You must enter the group ID",
+                    "value"     => $get_ph_number,
+                ];
+                return response()->json(["error" => $error_data], $this->errorStatus);
+            }
+        }
+
         public function check_credit_member()
         {
             $get_ph_number = request('wa_ph_number');
@@ -2104,4 +2079,146 @@ class WhatsappBotController extends Controller
                 return response()->json(["error" => $error_data], $this->errorStatus);
             }
         }
+    /* MEMBER */
+
+    /* AGENT + MEMBER */
+        public function check_stakes_members()
+        {
+            //PARAMETER
+                $get_group_id      = request('wa_group_id');
+            
+            if($get_group_id != '')
+            {
+                $get_stakes_member = \App\Master_stake::selectRaw('CONCAT(SUBSTRING(`phone_number_register_members`, 1, CHAR_LENGTH(`phone_number_register_members`) - 5),"****") as phone_number,
+                                                                    name_list_stakes,
+                                                                    value_stakes')
+                                                        ->join('master_games','games_id','=','master_games.id_games')
+                                                        ->join('master_sessions','sessions_id','=','master_sessions.id_sessions')
+                                                        ->join('master_groups','groups_id','=','master_groups.id_groups')
+                                                        ->join('master_register_members','register_members_id','=','master_register_members.id_register_members')
+                                                        ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
+                                                        ->where('whatsapp_group_id',$get_group_id)
+                                                        ->where('status_active_games',1)
+                                                        ->get();
+                if($get_stakes_member != '')
+                {
+                    $stakes_members_data = [
+                        'check_stakes_members' => $get_stakes_member
+                    ];
+
+                    $success_data = [
+                        "target"    => "group",
+                        "response"  => $stakes_members_data,
+                        "value"     => $get_group_id,
+                    ];
+                    return response()->json(["success" => $success_data], $this->successStatus);
+                }
+                else
+                {
+                    $error_data = [
+                        "target"    => "group",
+                        "response"  => "List stakes empty",
+                        "value"     => $get_group_id
+                    ];
+                    return response()->json(["error" => $error_data], $this->errorStatus);
+                }
+            }
+            else
+            {
+                $error_data = [
+                    "target"    => "group",
+                    "response"  => "You must enter the whatsapp group ID",
+                    "value"     => $get_group_id
+                ];
+                return response()->json(["error" => $error_data], $this->errorStatus);
+            }
+        }
+
+        public function list_stakes()
+        {
+            $get_group_id          = request('wa_group_id');
+            if($get_group_id != '')
+            {
+                $check_group = \App\Master_group::where("whatsapp_group_id",$get_group_id)->count();
+                if($check_group != 0)
+                {
+                    $check_list_stakes = \App\Master_list_stake::count();
+                    if($check_list_stakes != 0)
+                    {
+                        $get_list_stakes = \App\Master_list_stake::select('name_list_stakes','command_list_stakes')
+                                                                ->get();
+                        $list_stakes_data = [
+                            "target"                => "group",
+                            "response"              => $get_list_stakes,
+                            "value"                 => $get_group_id,
+                        ];
+                        return response()->json(["success" => $list_stakes_data], $this->successStatus);
+                    }
+                    else
+                    {
+                        $error_data = [
+                            "target"                => "group",
+                            "response"              => "No list stakes available",
+                            "value"                 => $get_group_id,
+                        ];
+                        return response()->json(["error" => $error_data], $this->errorStatus);
+                    }
+                }
+                else
+                {
+                    $error_data = [
+                        "target"    => "group",
+                        "response"  => "Group Unlisted",
+                        "value"     => $get_group_id
+                    ];
+                    return response()->json(["error" => $error_data], $this->errorStatus);
+                }
+            }
+            else
+            {
+                $error_data = [
+                    "target"    => "group",
+                    "response"  => "You must enter the group ID",
+                    "value"     => $get_group_id,
+                ];
+                return response()->json(["error" => $error_data], $this->errorStatus);
+            }
+        }
+
+        public function help()
+        {
+            $get_group_id          = request('wa_group_id');
+            if($get_group_id != '')
+            {
+                $check_group = \App\Master_group::where("whatsapp_group_id",$get_group_id)->count();
+                if($check_group != 0)
+                {
+                    $success_data = [
+                        "target"    => "group",
+                        "response"  => "Here is some command i understand :\n- Register = #reg\n- Bet = #b[space]list stakes[space]amount\n- Check list stakes available = #listbet\n- Check all member stakes in current game = #list\n- See all your balance in each game = #bal",
+                        "value"     => $get_group_id
+                    ];
+                    return response()->json(["success" => $success_data], $this->successStatus);
+                }
+                else
+                {
+                    $error_data = [
+                        "target"    => "group",
+                        "response"  => "Group Unlisted",
+                        "value"     => $get_group_id
+                    ];
+                    return response()->json(["error" => $error_data], $this->errorStatus);
+                }
+            }
+            else
+            {
+                $error_data = [
+                    "target"    => "group",
+                    "response"  => "You must enter the group ID",
+                    "value"     => $get_group_id,
+                ];
+                return response()->json(["error" => $error_data], $this->errorStatus);
+            }
+        }
+    /* AGENT + MEMBER */
 }
