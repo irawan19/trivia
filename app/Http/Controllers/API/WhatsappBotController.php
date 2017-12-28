@@ -152,6 +152,57 @@ class WhatsappBotController extends Controller
                 return response()->json(["error" => $error_data], $this->errorStatus);
             }
         }
+
+        public function mahelp()
+        {
+            //PARAMETER
+                $get_ph_number                  = request('wa_ph_number');
+
+            if($get_ph_number != '')
+            {
+                $check_master_agent = \App\Master_user::where('phone_number_users',$get_ph_number)->first();
+                if($check_master_agent != '')
+                {
+                    $id_level_systems = $check_master_agent->level_systems_id;
+                    if($id_level_systems == 2)
+                    {
+                        $success_data = [
+                            "target"    => "private",
+                            "response"  => "Here is command i understand :\n Top up agent = #tpagent[space]agent phone number[space]credit",
+                            "value"     => $get_ph_number
+                        ];
+                        return response()->json(["success" => $success_data], $this->successStatus);
+                    }
+                    else
+                    {
+                        $error_data = [
+                            "target"    => "private",
+                            "response"  => "Your not master agent",
+                            "value"     => $get_ph_number
+                        ];
+                        return response()->json(["error" => $error_data], $this->errorStatus);
+                    }
+                }
+                else
+                {
+                    $error_data = [
+                        "target"    => "private",
+                        "response"  => "Phone number unlisted",
+                        "value"     => $get_ph_number
+                    ];
+                    return response()->json(["error" => $error_data], $this->errorStatus);
+                }
+            }
+            else
+            {
+                $error_data = [
+                    "target"    => "private",
+                    "response"  => "You must enter the phone number",
+                    "value"     => $get_ph_number
+                ];
+                return response()->json(["error" => $error_data], $this->errorStatus);
+            }
+        }
     /* MASTER AGENT */
 
     /* AGENT */
@@ -161,28 +212,55 @@ class WhatsappBotController extends Controller
                 $get_group_id           = request('wa_group_id');
                 $get_agent_phone_number = request('wa_ph_number');
 
-            if($get_agent_phone_number != '')
+            if($get_group_id != '')
             {
-                $check_phone_number_agent = \App\Master_user::where('phone_number_users',$get_agent_phone_number)->first();
-                if($check_phone_number_agent != '')
+                if($get_agent_phone_number != '')
                 {
-                    $get_master_agent = $check_phone_number_agent->sub_users_id;
-                    $get_master_agent = \App\Master_user::where('id',$get_master_agent)->first();
-                    if($get_master_agent != '')
+                    $check_phone_number_agent = \App\Master_user::where('phone_number_users',$get_agent_phone_number)->first();
+                    if($check_phone_number_agent != '')
                     {
-                        $success_data = [
-                            "target"    => "group",
-                            "response"  => array("master_agent_ph_number" => $get_master_agent->phone_number_users),
-                            "value"     => $get_group_id
-                        ];
-                        return response()->json(["success" => $success_data], $this->successStatus);
+                        $check_group_agent = \App\Master_group::where('whatsapp_group_id',$get_group_id)->count();
+                        if($check_group_agent == 0)
+                        {
+                            $get_master_agent = $check_phone_number_agent->sub_users_id;
+                            $get_master_agent = \App\Master_user::where('id',$get_master_agent)->first();
+                            if($get_master_agent != '')
+                            {
+                                $success_data = [
+                                    "target"    => "group",
+                                    "response"  => array("master_agent_ph_number" => $get_master_agent->phone_number_users),
+                                    "value"     => $get_group_id
+                                ];
+                                return response()->json(["success" => $success_data], $this->successStatus);
+                            }
+                            else
+                            {
+                                $error_data = [
+                                    "target"    => "group",
+                                    "response"  => "Master agent unlisted",
+                                    "value"     => $get_group_id,
+                                ];
+                                return response()->json(["error" => $error_data], $this->errorStatus);
+                            }
+                        }
+                        else
+                        {
+                            $get_group        = \App\Master_group::where('whatsapp_group_id',$get_group_id)->first();
+                            $get_group_name   = $get_group->name_groups;
+                            $error_data = [
+                                "target"    => "private",
+                                "response"  => $get_group_name."\nThis is not manual group from master agent created",
+                                "value"     => $get_agent_phone_number,
+                            ];
+                            return response()->json(["error" => $error_data], $this->errorStatus);
+                        }
                     }
                     else
                     {
                         $error_data = [
                             "target"    => "group",
-                            "response"  => "Master agent unlisted",
-                            "value"     => $get_group_id,
+                            "response"  => "Your not agent",
+                            "value"     => $get_group_id
                         ];
                         return response()->json(["error" => $error_data], $this->errorStatus);
                     }
@@ -191,7 +269,7 @@ class WhatsappBotController extends Controller
                 {
                     $error_data = [
                         "target"    => "group",
-                        "response"  => "Your not agent",
+                        "response"  => "You must enter the phone number",
                         "value"     => $get_group_id
                     ];
                     return response()->json(["error" => $error_data], $this->errorStatus);
@@ -201,8 +279,8 @@ class WhatsappBotController extends Controller
             {
                 $error_data = [
                     "target"    => "group",
-                    "response"  => "You must enter the phone number",
-                    "value"     => $get_group_id
+                    "response"  => "You must enter the group ID",
+                    "value"     => $get_group_id,
                 ];
                 return response()->json(["error" => $error_data], $this->errorStatus);
             }
@@ -922,7 +1000,7 @@ class WhatsappBotController extends Controller
 
                                 $success_private_data = [
                                     "target"    => "private",
-                                    "response"  => $get_group_name."\nPerfect!\n🏁 game starts from now and will end in ".Shwetech::changeDBToDatetime($get_end_date)." 🏁",
+                                    "response"  => $get_group_name."\nPerfect!\ngame starts from now and will end in ".Shwetech::changeDBToDatetime($get_end_date),
                                     "value"     => $get_ph_number
                                 ];
 
@@ -1424,253 +1502,18 @@ class WhatsappBotController extends Controller
             }
         }
 
-        public function end_sessions()
-        {
-            $check_sessions = \App\Master_session::join('master_groups','groups_id','=','master_groups.id_groups')
-                                                  ->where('status_active_sessions',1)
-                                                  ->get();
-            foreach($check_sessions as $sessions)
-            {
-                $id_sessions         = $sessions->id_sessions;
-                $date_now            = date('Y-m-d H:i:s');
-                $start_date_sessions = $sessions->start_date_sessions;
-                $end_date_sessions   = $sessions->end_date_sessions;
-                if(strtotime($date_now) < strtotime($start_date_sessions) && strtotime($date_now) < strtotime($end_date_sessions))
-                    $status_sessions = '0';
-                elseif(strtotime($date_now) >= strtotime($start_date_sessions) && strtotime($date_now) <= strtotime($end_date_sessions))
-                    $status_sessions = '1';
-                elseif(strtotime($date_now) >= strtotime($start_date_sessions) && strtotime($date_now) >= strtotime($end_date_sessions))
-                    $status_sessions = '2';
-
-                if($status_sessions == '2')
-                {
-                    $check_game = \App\Master_game::where('sessions_id',$id_sessions)
-                                                    ->where('status_active_games',1)
-                                                    ->get();
-                    if($check_game != '')
-                    {
-                        foreach($check_game as $game)
-                        {
-                            $start_date_games    = $game->start_date_games;
-                            $end_date_games      = $game->end_date_games;
-                            if(strtotime($date_now) < strtotime($start_date_games) && strtotime($date_now) < strtotime($end_date_games))
-                                $status_game         = '0';
-                            elseif(strtotime($date_now) >= strtotime($start_date_games) && strtotime($date_now) <= strtotime($end_date_games))
-                                $status_game         = '1';
-                            elseif(strtotime($date_now) >= strtotime($start_date_games) && strtotime($date_now) >= strtotime($end_date_games))
-                                $status_game         = '2';
-
-                            if($status_game == '2')
-                            {
-                                $get_group_name = $check_sessions->name_groups;
-                                $get_group      = \App\Master_group::where('name_groups',$get_group_name)->first();
-                                if($get_group != '')
-                                {
-                                    $id_group       = $get_group->id_groups;
-                                    $credit_group   = $get_group->credit_groups;
-                                    $check_agent     = \App\Master_group::join('users','users_id','=','users.id')
-                                                                    ->where('id_groups',$id_group)
-                                                                    ->first();
-                                    if($check_agent != '')
-                                    {
-                                        $check_game = \App\Master_game::join('master_sessions','sessions_id','=','master_sessions.id_sessions')
-                                                                        ->where('groups_id',$id_group)
-                                                                        ->where('status_active_games','1')
-                                                                        ->first();
-                                        if($check_game != '')
-                                        {
-                                            $id_games   = $check_game->id_games;
-                                            // $rtp_games  = $check_game->rtp_games;
-
-                                            $get_total_all_stake = \App\Master_stake::selectRaw('SUM(value_stakes) AS total_all_stakes')
-                                                                                    ->where('games_id',$id_games)
-                                                                                    ->first();
-                                            if($get_total_all_stake != '')
-                                                $total_all_stakes = $get_total_all_stake->total_all_stakes;
-                                            else
-                                                $total_all_stakes = 0;
-
-                                            // $get_calculate_rtp = \App\Master_stake::selectRaw('name_list_stakes,
-                                            //                                                     (
-                                            //                                                         ROUND(
-                                            //                                                                 (('.$total_all_stakes.' - (sum(value_stakes) * 10)) / '.$total_all_stakes.') * 100, 2
-                                            //                                                             )
-                                            //                                                     ) AS calculate_rtp')
-                                            //                                         ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
-                                            //                                         ->where('games_id',$id_games)
-                                            //                                         ->groupBy('id_list_stakes')
-                                            //                                         ->having('calculate_rtp','>',$rtp_games)
-                                            //                                         ->orderBy('calculate_rtp')
-                                            //                                         ->limit(1)
-                                            //                                         ->first();
-                                            // if($get_calculate_rtp != '')
-                                            //     $stakes_winner         = $get_calculate_rtp->name_list_stakes; 
-                                            // else
-                                            // {
-                                            //     $get_winner_optional = \App\Master_stake::selectRaw('name_list_stakes,
-                                            //                                                         (
-                                            //                                                             ROUND(
-                                            //                                                                     (('.$total_all_stakes.' - (sum(value_stakes) * 10)) / '.$total_all_stakes.') * 100, 2
-                                            //                                                                 )
-                                            //                                                         ) AS calculate_rtp')
-                                            //                                             ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
-                                            //                                             ->where('games_id',$id_games)
-                                            //                                             ->groupBy('id_list_stakes')
-                                            //                                             ->having('calculate_rtp','<',$rtp_games)
-                                            //                                             ->orderBy('calculate_rtp','desc')
-                                            //                                             ->limit(1)
-                                            //                                             ->first();
-                                            //     if($get_winner_optional != '')
-                                            //         $stakes_winner         = $get_winner_optional->name_list_stakes;
-                                            //     else
-                                            //         $stakes_winner         = 'No Winner';
-                                            // }
-
-                                            // if($stakes_winner != 'No Winner')
-                                            // {
-                                                $get_winner         = \App\Master_list_stake::selectRaw('" " AS phone_number,
-                                                                                                name_list_stakes,
-                                                                                                " " AS profit,
-                                                                                                command_list_stakes,
-                                                                                                " " AS id_stakes,
-                                                                                                " " AS credit_register_members')
-                                                                                            ->orderByRaw('RAND()')
-                                                                                            ->limit(1)
-                                                                                            ->first();
-                                                $stakes_winner          = $get_winner->name_list_stakes;
-                                                $check_member_winner  = \App\Master_stake::selectRaw('CONCAT(SUBSTRING(`phone_number_register_members`, 1, CHAR_LENGTH(`phone_number_register_members`) - 5),"****") as phone_number,
-                                                                                                    name_list_stakes,
-                                                                                                    SUM(value_stakes * 10) AS profit,
-                                                                                                    id_register_members,
-                                                                                                    command_list_stakes,
-                                                                                                    id_stakes,
-                                                                                                    credit_register_members')
-                                                                                        ->join('master_register_members','register_members_id','master_register_members.id_register_members')
-                                                                                        ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
-                                                                                        ->where('name_list_stakes',$stakes_winner)
-                                                                                        ->where('games_id',$id_games)
-                                                                                        ->groupBy('id_register_members')
-                                                                                        ->count();
-
-                                                if($check_member_winner != 0)
-                                                {
-                                                    $get_member_winner  = \App\Master_stake::selectRaw('CONCAT(SUBSTRING(`phone_number_register_members`, 1, CHAR_LENGTH(`phone_number_register_members`) - 5),"****") as phone_number,
-                                                                                                    name_list_stakes,
-                                                                                                    SUM(value_stakes * 10) AS profit,
-                                                                                                    id_register_members,
-                                                                                                    command_list_stakes,
-                                                                                                    id_stakes,
-                                                                                                    credit_register_members')
-                                                                                        ->join('master_register_members','register_members_id','master_register_members.id_register_members')
-                                                                                        ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
-                                                                                        ->where('name_list_stakes',$stakes_winner)
-                                                                                        ->where('games_id',$id_games)
-                                                                                        ->groupBy('id_register_members')
-                                                                                        ->get();
-
-                                                    foreach($get_member_winner as $member_winner)
-                                                    {
-                                                        $winloses_data = [
-                                                            'stakes_id'         => $member_winner->id_stakes,
-                                                            'profit_winloses'   => $member_winner->profit
-                                                        ];
-                                                        \App\Master_winlose::insert($winloses_data);
-
-                                                        $id_register_members        = $member_winner->id_register_members;
-                                                        $calculate_credit_register_members = $member_winner->credit_register_members + $member_winner->profit;
-                                                        $credit_register_members_data = [
-                                                            'credit_register_members' => $calculate_credit_register_members
-                                                        ];
-                                                        \App\Master_register_member::where('id_register_members',$id_register_members)->update($credit_register_members_data);
-                                                    }
-
-                                                    $get_total_winlose      = \App\Master_winlose::selectRaw('SUM(profit_winloses) AS total_winlose')
-                                                                                                    ->join('master_stakes','stakes_id','=','master_stakes.id_stakes')
-                                                                                                    ->join('master_games','games_id','=','master_games.id_games')
-                                                                                                    ->where('games_id',$id_games)
-                                                                                                    ->first();
-
-                                                    $calculate_credit_group = $credit_group + ($total_all_stakes - $get_total_winlose->total_winlose);
-                                                    $credit_group_data      = [
-                                                        'credit_groups' => $calculate_credit_group
-                                                    ];
-                                                    \App\Master_group::where('id_groups',$id_group)->update($credit_group_data);
-
-                                                    $games_data = [
-                                                        'end_date_games'     => date('Y-m-d H:i:s'),
-                                                        'status_active_games'=> 2
-                                                    ];
-                                                    \App\Master_game::where('id_games',$id_games)->update($games_data);
-
-                                                    $success_data = [
-                                                        "target"    => "group",
-                                                        "response"  => $get_member_winner,
-                                                        "value"     => $get_group_id
-                                                    ];
-                                                    return response()->json(["success" => $success_data], $this->successStatus);
-                                                }
-                                                else
-                                                {
-                                                    $get_all_stakes = \App\Master_stake::selectRaw('SUM(value_stakes) AS total_stakes')
-                                                                                ->where('games_id',$id_games)
-                                                                                ->first();
-                                                    $total_stakes   = $get_all_stakes->total_stakes;
-                                                    $calculate_credit_group = $credit_group + $total_stakes;
-                                                    
-                                                    $credit_group_data = [
-                                                        'credit_groups' => $calculate_credit_group
-                                                    ];
-                                                    \App\Master_group::where('id_groups',$id_group)->update($credit_group_data);
-
-                                                    $games_data = [
-                                                        'end_date_games'     => date('Y-m-d H:i:s'),
-                                                        'status_active_games'=> 2
-                                                    ];
-                                                    \App\Master_game::where('id_games',$id_games)->update($games_data);
-
-                                                    $success_data = [
-                                                        "target"    => "group",
-                                                        "response"  => array($get_winner),
-                                                        "value"     => $get_group_id
-                                                    ];
-                                                    return response()->json(["success" => $success_data], $this->successStatus);
-                                                }
-                                            // }
-                                            // else
-                                            //     return response()->json(["error" => $get_group_name."\n No winner in this game"], $this->errorStatus);
-                                        }
-                                        else
-                                            return response()->json(["error" => $get_group_name."\n No game is active"], $this->errorStatus);
-                                    }
-                                    else
-                                        return response()->json(["error" => $get_group_name."\n Your not agent in this group"], $this->errorStatus);
-                                }
-                                else
-                                    return response()->json(["error" => $get_group_name."\n Group Unlisted"], $this->errorStatus);
-                            }
-                        }
-                    }
-                }
-
-                $sessions_data = [
-                    'status_active_sessions'    => $status_sessions
-                ];
-                \App\Master_session::where('id_sessions',$id_sessions)
-                                    ->update($sessions_data);
-            }
-            return response()->json(["success" => "Its Worked"], $this->successStatus);
-        }
-
         public function ahelp()
         {
-            $get_ph_number = request('wa_ph_number');
+            //PARAMETER
+                $get_ph_number = request('wa_ph_number');
+
             if($get_ph_number != '')
             {
                 $check_agent = \App\Master_user::where('phone_number_users',$get_ph_number)->first();
                 if($check_agent != '')
                 {
                     $id_level_systems = $check_agent->level_systems_id;
-                    if($id_level_systems == 2)
+                    if($id_level_systems == 3)
                     {
                         $success_data = [
                             "target"    => "private",
@@ -2034,51 +1877,6 @@ class WhatsappBotController extends Controller
                 return response()->json(["error" => $error_data], $this->errorStatus);
             }
         }
-
-        public function check_credit_member()
-        {
-            $get_ph_number = request('wa_ph_number');
-            if($get_ph_number != '')
-            {
-                $check_register_members_all = \App\Master_register_member::where('phone_number_register_members',$get_ph_number)
-                                                                          ->first();
-                if($check_register_members_all != '')
-                {
-                    $list_credit_members = \App\Master_register_member::select('name_groups',
-                                                                                'credit_register_members',
-                                                                                'start_date_sessions AS start_sessions',
-                                                                                'end_date_sessions AS end_sessions')
-                                                                        ->join('master_sessions','sessions_id','=','master_sessions.id_sessions')
-                                                                        ->join('master_groups','groups_id','=','master_groups.id_groups')
-                                                                        ->where('phone_number_register_members',$get_ph_number)
-                                                                        ->get();
-                    $success_data = [
-                        "target"    => "private",
-                        "response"  => $list_credit_members,
-                        "value"     => $get_ph_number
-                    ];
-                    return response()->json(["success" => $success_data], $this->successStatus);
-                }
-                else
-                {
-                    $error_data = [
-                        "target"    => "private",
-                        "response"  => "You are not registered in any group",
-                        "value"     => $get_ph_number,
-                    ];
-                    return response()->json(["error" => $error_data], $this->errorStatus);
-                }
-            }
-            else
-            {
-                $error_data = [
-                    "target"    => "private",
-                    "response"  => "You must enter the phone number",
-                    "value"     => $get_ph_number,
-                ];
-                return response()->json(["error" => $error_data], $this->errorStatus);
-            }
-        }
     /* MEMBER */
 
     /* AGENT + MEMBER */
@@ -2136,7 +1934,9 @@ class WhatsappBotController extends Controller
 
         public function list_stakes()
         {
-            $get_group_id          = request('wa_group_id');
+            //PARAMATER
+                $get_group_id          = request('wa_group_id');
+            
             if($get_group_id != '')
             {
                 $check_group = \App\Master_group::where("whatsapp_group_id",$get_group_id)->count();
@@ -2187,7 +1987,9 @@ class WhatsappBotController extends Controller
 
         public function help()
         {
-            $get_group_id          = request('wa_group_id');
+            //PARAMETER
+                $get_group_id          = request('wa_group_id');
+            
             if($get_group_id != '')
             {
                 $check_group = \App\Master_group::where("whatsapp_group_id",$get_group_id)->count();
@@ -2221,4 +2023,292 @@ class WhatsappBotController extends Controller
             }
         }
     /* AGENT + MEMBER */
+
+    /* ALL */
+        public function check_credit_member()
+        {
+            //PARAMETER
+                $get_ph_number = request('wa_ph_number');
+            
+            if($get_ph_number != '')
+            {
+                $check_register_members_all = \App\Master_register_member::where('phone_number_register_members',$get_ph_number)
+                                                                          ->first();
+                if($check_register_members_all != '')
+                {
+                    $list_credit_members = \App\Master_register_member::select('name_groups',
+                                                                                'credit_register_members',
+                                                                                'start_date_sessions AS start_sessions',
+                                                                                'end_date_sessions AS end_sessions')
+                                                                        ->join('master_sessions','sessions_id','=','master_sessions.id_sessions')
+                                                                        ->join('master_groups','groups_id','=','master_groups.id_groups')
+                                                                        ->where('phone_number_register_members',$get_ph_number)
+                                                                        ->get();
+                    $success_data = [
+                        "target"    => "private",
+                        "response"  => $list_credit_members,
+                        "value"     => $get_ph_number
+                    ];
+                    return response()->json(["success" => $success_data], $this->successStatus);
+                }
+                else
+                {
+                    $error_data = [
+                        "target"    => "private",
+                        "response"  => "You are not registered in any group",
+                        "value"     => $get_ph_number,
+                    ];
+                    return response()->json(["error" => $error_data], $this->errorStatus);
+                }
+            }
+            else
+            {
+                $error_data = [
+                    "target"    => "private",
+                    "response"  => "You must enter the phone number",
+                    "value"     => $get_ph_number,
+                ];
+                return response()->json(["error" => $error_data], $this->errorStatus);
+            }
+        }
+    /* ALL */
+
+    /* CRON JOB */
+        public function end_sessions()
+        {
+            $check_sessions = \App\Master_session::join('master_groups','groups_id','=','master_groups.id_groups')
+                                                  ->where('status_active_sessions',1)
+                                                  ->get();
+            foreach($check_sessions as $sessions)
+            {
+                $id_sessions         = $sessions->id_sessions;
+                $date_now            = date('Y-m-d H:i:s');
+                $start_date_sessions = $sessions->start_date_sessions;
+                $end_date_sessions   = $sessions->end_date_sessions;
+                if(strtotime($date_now) < strtotime($start_date_sessions) && strtotime($date_now) < strtotime($end_date_sessions))
+                    $status_sessions = '0';
+                elseif(strtotime($date_now) >= strtotime($start_date_sessions) && strtotime($date_now) <= strtotime($end_date_sessions))
+                    $status_sessions = '1';
+                elseif(strtotime($date_now) >= strtotime($start_date_sessions) && strtotime($date_now) >= strtotime($end_date_sessions))
+                    $status_sessions = '2';
+
+                if($status_sessions == '2')
+                {
+                    $check_game = \App\Master_game::where('sessions_id',$id_sessions)
+                                                    ->where('status_active_games',1)
+                                                    ->get();
+                    if($check_game != '')
+                    {
+                        foreach($check_game as $game)
+                        {
+                            $start_date_games    = $game->start_date_games;
+                            $end_date_games      = $game->end_date_games;
+                            if(strtotime($date_now) < strtotime($start_date_games) && strtotime($date_now) < strtotime($end_date_games))
+                                $status_game         = '0';
+                            elseif(strtotime($date_now) >= strtotime($start_date_games) && strtotime($date_now) <= strtotime($end_date_games))
+                                $status_game         = '1';
+                            elseif(strtotime($date_now) >= strtotime($start_date_games) && strtotime($date_now) >= strtotime($end_date_games))
+                                $status_game         = '2';
+
+                            if($status_game == '2')
+                            {
+                                $get_group_name = $check_sessions->name_groups;
+                                $get_group      = \App\Master_group::where('name_groups',$get_group_name)->first();
+                                if($get_group != '')
+                                {
+                                    $id_group       = $get_group->id_groups;
+                                    $credit_group   = $get_group->credit_groups;
+                                    $check_agent     = \App\Master_group::join('users','users_id','=','users.id')
+                                                                    ->where('id_groups',$id_group)
+                                                                    ->first();
+                                    if($check_agent != '')
+                                    {
+                                        $check_game = \App\Master_game::join('master_sessions','sessions_id','=','master_sessions.id_sessions')
+                                                                        ->where('groups_id',$id_group)
+                                                                        ->where('status_active_games','1')
+                                                                        ->first();
+                                        if($check_game != '')
+                                        {
+                                            $id_games   = $check_game->id_games;
+                                            // $rtp_games  = $check_game->rtp_games;
+
+                                            $get_total_all_stake = \App\Master_stake::selectRaw('SUM(value_stakes) AS total_all_stakes')
+                                                                                    ->where('games_id',$id_games)
+                                                                                    ->first();
+                                            if($get_total_all_stake != '')
+                                                $total_all_stakes = $get_total_all_stake->total_all_stakes;
+                                            else
+                                                $total_all_stakes = 0;
+
+                                            // $get_calculate_rtp = \App\Master_stake::selectRaw('name_list_stakes,
+                                            //                                                     (
+                                            //                                                         ROUND(
+                                            //                                                                 (('.$total_all_stakes.' - (sum(value_stakes) * 10)) / '.$total_all_stakes.') * 100, 2
+                                            //                                                             )
+                                            //                                                     ) AS calculate_rtp')
+                                            //                                         ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
+                                            //                                         ->where('games_id',$id_games)
+                                            //                                         ->groupBy('id_list_stakes')
+                                            //                                         ->having('calculate_rtp','>',$rtp_games)
+                                            //                                         ->orderBy('calculate_rtp')
+                                            //                                         ->limit(1)
+                                            //                                         ->first();
+                                            // if($get_calculate_rtp != '')
+                                            //     $stakes_winner         = $get_calculate_rtp->name_list_stakes; 
+                                            // else
+                                            // {
+                                            //     $get_winner_optional = \App\Master_stake::selectRaw('name_list_stakes,
+                                            //                                                         (
+                                            //                                                             ROUND(
+                                            //                                                                     (('.$total_all_stakes.' - (sum(value_stakes) * 10)) / '.$total_all_stakes.') * 100, 2
+                                            //                                                                 )
+                                            //                                                         ) AS calculate_rtp')
+                                            //                                             ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
+                                            //                                             ->where('games_id',$id_games)
+                                            //                                             ->groupBy('id_list_stakes')
+                                            //                                             ->having('calculate_rtp','<',$rtp_games)
+                                            //                                             ->orderBy('calculate_rtp','desc')
+                                            //                                             ->limit(1)
+                                            //                                             ->first();
+                                            //     if($get_winner_optional != '')
+                                            //         $stakes_winner         = $get_winner_optional->name_list_stakes;
+                                            //     else
+                                            //         $stakes_winner         = 'No Winner';
+                                            // }
+
+                                            // if($stakes_winner != 'No Winner')
+                                            // {
+                                                $get_winner         = \App\Master_list_stake::selectRaw('" " AS phone_number,
+                                                                                                name_list_stakes,
+                                                                                                " " AS profit,
+                                                                                                command_list_stakes,
+                                                                                                " " AS id_stakes,
+                                                                                                " " AS credit_register_members')
+                                                                                            ->orderByRaw('RAND()')
+                                                                                            ->limit(1)
+                                                                                            ->first();
+                                                $stakes_winner          = $get_winner->name_list_stakes;
+                                                $check_member_winner  = \App\Master_stake::selectRaw('CONCAT(SUBSTRING(`phone_number_register_members`, 1, CHAR_LENGTH(`phone_number_register_members`) - 5),"****") as phone_number,
+                                                                                                    name_list_stakes,
+                                                                                                    SUM(value_stakes * 10) AS profit,
+                                                                                                    id_register_members,
+                                                                                                    command_list_stakes,
+                                                                                                    id_stakes,
+                                                                                                    credit_register_members')
+                                                                                        ->join('master_register_members','register_members_id','master_register_members.id_register_members')
+                                                                                        ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
+                                                                                        ->where('name_list_stakes',$stakes_winner)
+                                                                                        ->where('games_id',$id_games)
+                                                                                        ->groupBy('id_register_members')
+                                                                                        ->count();
+
+                                                if($check_member_winner != 0)
+                                                {
+                                                    $get_member_winner  = \App\Master_stake::selectRaw('CONCAT(SUBSTRING(`phone_number_register_members`, 1, CHAR_LENGTH(`phone_number_register_members`) - 5),"****") as phone_number,
+                                                                                                    name_list_stakes,
+                                                                                                    SUM(value_stakes * 10) AS profit,
+                                                                                                    id_register_members,
+                                                                                                    command_list_stakes,
+                                                                                                    id_stakes,
+                                                                                                    credit_register_members')
+                                                                                        ->join('master_register_members','register_members_id','master_register_members.id_register_members')
+                                                                                        ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
+                                                                                        ->where('name_list_stakes',$stakes_winner)
+                                                                                        ->where('games_id',$id_games)
+                                                                                        ->groupBy('id_register_members')
+                                                                                        ->get();
+
+                                                    foreach($get_member_winner as $member_winner)
+                                                    {
+                                                        $winloses_data = [
+                                                            'stakes_id'         => $member_winner->id_stakes,
+                                                            'profit_winloses'   => $member_winner->profit
+                                                        ];
+                                                        \App\Master_winlose::insert($winloses_data);
+
+                                                        $id_register_members        = $member_winner->id_register_members;
+                                                        $calculate_credit_register_members = $member_winner->credit_register_members + $member_winner->profit;
+                                                        $credit_register_members_data = [
+                                                            'credit_register_members' => $calculate_credit_register_members
+                                                        ];
+                                                        \App\Master_register_member::where('id_register_members',$id_register_members)->update($credit_register_members_data);
+                                                    }
+
+                                                    $get_total_winlose      = \App\Master_winlose::selectRaw('SUM(profit_winloses) AS total_winlose')
+                                                                                                    ->join('master_stakes','stakes_id','=','master_stakes.id_stakes')
+                                                                                                    ->join('master_games','games_id','=','master_games.id_games')
+                                                                                                    ->where('games_id',$id_games)
+                                                                                                    ->first();
+
+                                                    $calculate_credit_group = $credit_group + ($total_all_stakes - $get_total_winlose->total_winlose);
+                                                    $credit_group_data      = [
+                                                        'credit_groups' => $calculate_credit_group
+                                                    ];
+                                                    \App\Master_group::where('id_groups',$id_group)->update($credit_group_data);
+
+                                                    $games_data = [
+                                                        'end_date_games'     => date('Y-m-d H:i:s'),
+                                                        'status_active_games'=> 2
+                                                    ];
+                                                    \App\Master_game::where('id_games',$id_games)->update($games_data);
+
+                                                    $success_data = [
+                                                        "target"    => "group",
+                                                        "response"  => $get_member_winner,
+                                                        "value"     => $get_group_id
+                                                    ];
+                                                    return response()->json(["success" => $success_data], $this->successStatus);
+                                                }
+                                                else
+                                                {
+                                                    $get_all_stakes = \App\Master_stake::selectRaw('SUM(value_stakes) AS total_stakes')
+                                                                                ->where('games_id',$id_games)
+                                                                                ->first();
+                                                    $total_stakes   = $get_all_stakes->total_stakes;
+                                                    $calculate_credit_group = $credit_group + $total_stakes;
+                                                    
+                                                    $credit_group_data = [
+                                                        'credit_groups' => $calculate_credit_group
+                                                    ];
+                                                    \App\Master_group::where('id_groups',$id_group)->update($credit_group_data);
+
+                                                    $games_data = [
+                                                        'end_date_games'     => date('Y-m-d H:i:s'),
+                                                        'status_active_games'=> 2
+                                                    ];
+                                                    \App\Master_game::where('id_games',$id_games)->update($games_data);
+
+                                                    $success_data = [
+                                                        "target"    => "group",
+                                                        "response"  => array($get_winner),
+                                                        "value"     => $get_group_id
+                                                    ];
+                                                    return response()->json(["success" => $success_data], $this->successStatus);
+                                                }
+                                            // }
+                                            // else
+                                            //     return response()->json(["error" => $get_group_name."\n No winner in this game"], $this->errorStatus);
+                                        }
+                                        else
+                                            return response()->json(["error" => $get_group_name."\n No game is active"], $this->errorStatus);
+                                    }
+                                    else
+                                        return response()->json(["error" => $get_group_name."\n Your not agent in this group"], $this->errorStatus);
+                                }
+                                else
+                                    return response()->json(["error" => $get_group_name."\n Group Unlisted"], $this->errorStatus);
+                            }
+                        }
+                    }
+                }
+
+                $sessions_data = [
+                    'status_active_sessions'    => $status_sessions
+                ];
+                \App\Master_session::where('id_sessions',$id_sessions)
+                                    ->update($sessions_data);
+            }
+            return response()->json(["success" => "Its Worked"], $this->successStatus);
+        }
+    /* CRON JOB */
 }

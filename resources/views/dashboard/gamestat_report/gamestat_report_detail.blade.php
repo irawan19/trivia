@@ -232,7 +232,17 @@
 			                        													->where('games_id',$id_games)
 			                        													->groupBy('id_register_members')
 			                        													->get();
-				                        	foreach($list_member_winner as $member_winner):
+			                        		$total_list_member_winner = \App\Master_winlose::selectRaw('phone_number_register_members as phone_number,
+			                        																name_list_stakes,
+			                        																profit_winloses as profit')
+			                        													->join('master_stakes','stakes_id','=','master_stakes.id_stakes')
+			                        													->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
+			                        													->join('master_register_members','register_members_id','=','master_register_members.id_register_members')
+			                        													->where('games_id',$id_games)
+			                        													->groupBy('id_register_members')
+			                        													->count();
+			                        		if($total_list_member_winner != 0):
+					                        	foreach($list_member_winner as $member_winner):
 			                        	?>
 							                        <tr>
 							                            <td><?php echo $no; ?></td>
@@ -241,9 +251,14 @@
 							                            <td><?php echo $member_winner->profit; ?></td>
 							                        </tr>
 					                    <?php
-							                	$no++;
-							                endforeach;
+							                		$no++;
+							                	endforeach;
+							                else:
 					                    ?>
+					                    		<tr>
+					                    			<td colspan="4" style="text-align: center">No Winner In This Game</td>
+					                    		</tr>
+						                <?php endif; ?>
 			                        </tbody>
 			                    </table>
 		                	@endif

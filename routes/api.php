@@ -30,4 +30,5 @@ Route::post('top_up_group', 'API\WhatsappBotController@top_up_group');
 Route::get('end_sessions', 'API\WhatsappBotController@end_sessions');
 Route::post('help', 'API\WhatsappBotController@help');
 Route::post('ahelp', 'API\WhatsappBotController@ahelp');
+Route::post('mahelp', 'API\WhatsappBotController@mahelp');
 Route::post('check_credit_member', 'API\WhatsappBotController@check_credit_member');
