@@ -56,6 +56,36 @@
 						</table>
 						<br/>
 			            <?php ($id_games 		= $read_gamestat_reports->id_games); ?>
+						<div align="center"><b><u>Winner</u></b></div>
+							<table class="tablesaw table-striped table-hover table-bordered table" data-tablesaw-mode="columntoggle">
+			                    <thead>
+			                        <tr>
+			                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="2">Image</th>
+			                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="3">Name</th>
+			                        </tr>
+			                    </thead>
+			                    <tbody>
+			                    	<?php ($check_stake_winners = \App\Master_stake_winner::where('games_id',$id_games)
+			                    														->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
+			                    														->first()); ?>
+			                    	<?php if($check_stake_winners != ''): ?>
+			                    		<tr>
+			                    			<td width="5%">
+		                                        <a href="<?php echo e(URL::to($check_stake_winners->path_image_list_stakes)); ?>/<?php echo e($check_stake_winners->name_image_list_stakes); ?>" class="image-popup-no-margins">
+		                                            <img width="100%" src="<?php echo e(URL::to($check_stake_winners->path_image_list_stakes)); ?>/<?php echo e($check_stake_winners->name_image_list_stakes); ?>">
+		                                        </a>
+		                                    </td>
+			                    			<td><?php echo e($check_stake_winners->name_list_stakes); ?></td>
+			                    		</tr>
+			                    	<?php else: ?>
+			                    		<tr>
+			                    			<td colspan="3" style="text-align: center"><b>game is still active</b></td>
+			                    		</tr>
+			                    	<?php endif; ?>
+			                	</tbody>
+			            	</table>
+			           	</div>
+			            <br/>
 						<?php ($check_register_member = \App\Master_register_member::where('sessions_id',$read_gamestat_reports->id_sessions)->count()); ?>
 						<?php if($check_register_member != 0): ?>
 							<?php ($check_game = \App\Master_stake::where('games_id',$read_gamestat_reports->id_games)->count()); ?>
@@ -231,7 +261,17 @@
 			                        													->where('games_id',$id_games)
 			                        													->groupBy('id_register_members')
 			                        													->get();
-				                        	foreach($list_member_winner as $member_winner):
+			                        		$total_list_member_winner = \App\Master_winlose::selectRaw('phone_number_register_members as phone_number,
+			                        																name_list_stakes,
+			                        																profit_winloses as profit')
+			                        													->join('master_stakes','stakes_id','=','master_stakes.id_stakes')
+			                        													->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
+			                        													->join('master_register_members','register_members_id','=','master_register_members.id_register_members')
+			                        													->where('games_id',$id_games)
+			                        													->groupBy('id_register_members')
+			                        													->count();
+			                        		if($total_list_member_winner != 0):
+					                        	foreach($list_member_winner as $member_winner):
 			                        	?>
 							                        <tr>
 							                            <td><?php echo $no; ?></td>
@@ -240,12 +280,20 @@
 							                            <td><?php echo $member_winner->profit; ?></td>
 							                        </tr>
 					                    <?php
-							                	$no++;
-							                endforeach;
+							                		$no++;
+							                	endforeach;
+							                else:
 					                    ?>
+					                    		<tr>
+					                    			<td colspan="4" style="text-align: center">No Winner In This Game</td>
+					                    		</tr>
+						                <?php endif; ?>
 			                        </tbody>
 			                    </table>
 		                	<?php endif; ?>
+		                <?php else: ?>
+		                	<div style="text-align:center;color:red"><b>No Winner In This Game</b></div>
+		                	<br/>
 		                <?php endif; ?>
 						<br/>
 	                    <div class="form-group" align="center">

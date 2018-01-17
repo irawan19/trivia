@@ -52,11 +52,41 @@
 							<tr>
 								<th>RTP</th>
 								<th>:</th>
-								<td>{{ $rtp_games = $read_gamestat_reports->rtp_games }}%</td>
+								<td>{{ $rtp_sessions = $read_gamestat_reports->rtp_sessions }}%</td>
 							</tr>
 						</table>
 						<br/>
 			            @php($id_games 		= $read_gamestat_reports->id_games)
+						<div align="center"><b><u>Winner</u></b></div>
+							<table class="tablesaw table-striped table-hover table-bordered table" data-tablesaw-mode="columntoggle">
+			                    <thead>
+			                        <tr>
+			                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="2">Image</th>
+			                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="3">Name</th>
+			                        </tr>
+			                    </thead>
+			                    <tbody>
+			                    	@php($check_stake_winners = \App\Master_stake_winner::where('games_id',$id_games)
+			                    														->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
+			                    														->first())
+			                    	@if($check_stake_winners != '')
+			                    		<tr>
+			                    			<td width="5%">
+		                                        <a href="{{ URL::to($check_stake_winners->path_image_list_stakes) }}/{{ $check_stake_winners->name_image_list_stakes }}" class="image-popup-no-margins">
+		                                            <img width="100%" src="{{ URL::to($check_stake_winners->path_image_list_stakes) }}/{{ $check_stake_winners->name_image_list_stakes }}">
+		                                        </a>
+		                                    </td>
+			                    			<td>{{ $check_stake_winners->name_list_stakes }}</td>
+			                    		</tr>
+			                    	@else
+			                    		<tr>
+			                    			<td colspan="3" style="text-align: center"><b>game is still active</b></td>
+			                    		</tr>
+			                    	@endif
+			                	</tbody>
+			            	</table>
+			           	</div>
+			            <br/>
 						@php($check_register_member = \App\Master_register_member::where('sessions_id',$read_gamestat_reports->id_sessions)->count())
 						@if($check_register_member != 0)
 							@php($check_game = \App\Master_stake::where('games_id',$read_gamestat_reports->id_games)->count())
@@ -119,7 +149,7 @@
 		                                                                        ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
 		                                                                        ->where('games_id',$id_games)
 		                                                                        ->groupBy('id_list_stakes')
-		                                                                        ->having('calculate_rtp','>',$rtp_games)
+		                                                                        ->having('calculate_rtp','>',$rtp_sessions)
 		                                                                        ->orderBy('calculate_rtp')
 		                                                                        ->limit(1)
 		                                                                        ->first();
@@ -136,7 +166,7 @@
 		                                                                            ->join('master_list_stakes','list_stakes_id','=','master_list_stakes.id_list_stakes')
 		                                                                            ->where('games_id',$id_games)
 		                                                                            ->groupBy('id_list_stakes')
-		                                                                            ->having('calculate_rtp','<',$rtp_games)
+		                                                                            ->having('calculate_rtp','<',$rtp_sessions)
 		                                                                            ->orderBy('calculate_rtp','desc')
 		                                                                            ->limit(1)
 		                                                                            ->first();
@@ -262,6 +292,9 @@
 			                        </tbody>
 			                    </table>
 		                	@endif
+		                @else
+		                	<div style="text-align:center;color:red"><b>No Winner In This Game</b></div>
+		                	<br/>
 		                @endif
 						<br/>
 	                    <div class="form-group" align="center">

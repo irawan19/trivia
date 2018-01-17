@@ -121,7 +121,7 @@ class AgentController extends AdminCoreController
                 'name'               	=> 'required',
                 'email'              	=> 'required|unique:users',
                 'password'           	=> 'required|string|min:6|confirmed',
-                'phone_number_users'    => 'required|numeric',
+                'phone_number_users'    => 'required|numeric|unique:users',
                 'credit_users'          => 'required|check_credit_master_agent',
                 'max_group_users'       => 'required|numeric'
             ]);
@@ -135,7 +135,7 @@ class AgentController extends AdminCoreController
     		    'name' 			     => $request->name,
     		    'email'			     => $request->email,
                 'phone_number_users' => $request->phone_number_users,
-                'bot_phone_number_users'=> $get_master_agent->bot_phone_number_users,
+                'bots_id'            => $get_master_agent->bots_id,
                 'credit_users'       => $credit_create_agent,
                 'max_group_users'    => $request->max_group_users,
     		    'created_at'	     => date('Y-m-d H:i:s'),
@@ -269,7 +269,7 @@ class AgentController extends AdminCoreController
                 	        'updated_at'	      => date('Y-m-d H:i:s'),
                 	        'password' 		      => bcrypt($request->password),
                             'phone_number_users'  => $request->phone_number_users,
-                            'bot_phone_number_users'=> $get_master_agent->bot_phone_number_users,
+                            'bots_id'             => $get_master_agent->bots_id,
                             'credit_users'        => $credit_create_agent,
                             'max_group_users'     => $request->max_group_users
                 	    ];
@@ -305,7 +305,7 @@ class AgentController extends AdminCoreController
                             'level_systems_id'    	=> 3,
                             'sub_users_id'          => $id_master_agent,
                             'phone_number_users'    => $request->phone_number_users,
-                            'bot_phone_number_users'=> $get_master_agent->bot_phone_number_users,
+                            'bots_id'               => $get_master_agent->bots_id,
                             'credit_users'          => $request->credit_users,
                             'max_group_users'       => $request->max_group_users
                 	    ];
@@ -332,7 +332,7 @@ class AgentController extends AdminCoreController
                             'updated_at'          => date('Y-m-d H:i:s'),
                             'password'            => bcrypt($request->password),
                             'phone_number_users'  => $request->phone_number_users,
-                            'bot_phone_number_users'=> $get_master_agent->bot_phone_number_users,
+                            'bots_id'             => $get_master_agent->bots_id,
                             'max_group_users'     => $request->max_group_users
                         ];
                     }
@@ -353,7 +353,7 @@ class AgentController extends AdminCoreController
                             'level_systems_id'      => 3,
                             'sub_users_id'          => $request->sub_users_id,
                             'phone_number_users'    => $request->phone_number_users,
-                            'bot_phone_number_users'=> $get_master_agent->bot_phone_number_users,
+                            'bots_id'               => $get_master_agent->bots_id,
                             'max_group_users'       => $request->max_group_users
                         ];
                     }

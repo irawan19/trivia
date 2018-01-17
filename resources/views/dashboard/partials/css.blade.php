@@ -15,6 +15,11 @@
 <link type="text/css" media="screen" rel="stylesheet" href="{{{ URL::asset('public/dashboard/plugins/daterangepicker/daterangepicker.css')}}}" />
 <link rel="stylesheet" type="text/css" href="{{ URL::asset('public/dashboard/plugins/timepicker/bootstrap-timepicker.min.css') }}">
 <style>
+	.u-info
+	{
+		font-size: 12px;
+		font-family: "Poppins", sans-serif
+	}
     .pager {
 	    padding-left: 0;
 	    margin: 20px 0;

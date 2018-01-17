@@ -12,7 +12,7 @@ class TopUpAgentController extends AdminCoreController
         $link_top_up_agent = 'top_up_agent';
         if(Shwetech::accessRights($link_top_up_agent,'view') == 'true')
         {
-            $data['link_top_up_agent']      		= $link_top_up_agent;
+            $data['link_top_up_agent']      	= $link_top_up_agent;
             $data['result_word']        		= '';
             $result_date_start              	= date('Y-m-d');
             $result_date_end                	= date('Y-m-d');
@@ -22,13 +22,13 @@ class TopUpAgentController extends AdminCoreController
             $id_admins                  		= Auth::user()->id;
             $id_level_systems           		= Auth::user()->level_systems_id;
             if($id_level_systems == 1)
-                $data['result_master_agent']   		= '0';
+                $data['result_master_agent']   	= '0';
             else
-                $data['result_master_agent']   		= $id_admins;
+                $data['result_master_agent']   	= $id_admins;
 
             if($id_level_systems == 1)
             {
-            	$data['view_master_agent']     		= \App\User::where('level_systems_id',2)
+            	$data['view_master_agent']     	= \App\User::where('level_systems_id',2)
                                                     		->get();
 	        	$data['view_top_up_agents']    	= \App\Master_top_up::join('users','to_users_id','=','users.id')
 	        													->join('master_level_systems','level_systems_id','=','master_level_systems.id_level_systems')
@@ -76,11 +76,12 @@ class TopUpAgentController extends AdminCoreController
             $id_admins                  		= Auth::user()->id;
             $id_level_systems           		= Auth::user()->level_systems_id;
             if($id_level_systems == 1)
-                $result_master_agent           		= $request->search_master_agent;
+                $result_master_agent           	= $request->search_master_agent;
             else
-                $result_master_agent           		= $id_admins;
-            $data['view_master_agent']         		= \App\User::where('level_systems_id',2)
+                $result_master_agent           	= $id_admins;
+            $data['view_master_agent']         	= \App\User::where('level_systems_id',2)
                                                     		->get();
+            $data['result_master_agent']        = $result_master_agent;
             if($result_master_agent != 0)
             {
 	            $data['view_top_up_agents']     	= \App\Master_top_up::join('users','to_users_id','=','users.id')
@@ -90,8 +91,12 @@ class TopUpAgentController extends AdminCoreController
 	                                                        ->whereRaw('DATE(date_top_ups) >= "'.$result_date_start.'"')
 	                                                        ->whereRaw('DATE(date_top_ups) <= "'.$result_date_end.'"')
 	        												->where('name', 'LIKE', '%'.$result_word.'%')
+                                                            ->where('id_level_systems','3')
+                                                            ->where('sub_users_id',$result_master_agent)
+                                                            ->whereRaw('DATE(date_top_ups) >= "'.$result_date_start.'"')
+                                                            ->whereRaw('DATE(date_top_ups) <= "'.$result_date_end.'"')
 	                                                    	->orWhere('phone_number_users', 'LIKE', '%'.$result_word.'%')
-	                                                    	->where('level_systems_id','3')
+	                                                    	->where('id_level_systems','3')
 	                                                    	->where('sub_users_id',$result_master_agent)
 	                                                        ->whereRaw('DATE(date_top_ups) >= "'.$result_date_start.'"')
 	                                                        ->whereRaw('DATE(date_top_ups) <= "'.$result_date_end.'"')
@@ -162,6 +167,8 @@ class TopUpAgentController extends AdminCoreController
     		$data = [
                 'from_users_id'	     => Auth::user()->id,
     			'to_users_id'		 => $id_agent,
+                'to_register_members_id' => 0,
+                'to_groups_id'       => 0,
     			'date_top_ups'		 => date('Y-m-d'),
     			'time_top_ups'		 => date('H:i:s'),
                 'credit_top_ups'	 => $get_credit,
@@ -307,6 +314,8 @@ class TopUpAgentController extends AdminCoreController
 	    		$data = [
 	    			'from_users_id'	     => Auth::user()->id,
 	    			'to_users_id'		 => $id_agent,
+                    'to_register_members_id' => 0,
+                    'to_groups_id'       => 0,
 	    			'date_top_ups'		 => date('Y-m-d'),
 	    			'time_top_ups'		 => date('H:i:s'),
 	                'credit_top_ups'	 => $get_credit,
@@ -359,7 +368,22 @@ class TopUpAgentController extends AdminCoreController
             {
             	$get_top_ups 		= \App\Master_top_up::where('id_top_ups',$id_top_ups)->first();
             	$credit_top_ups 	= $get_top_ups->credit_top_ups;
-            	$id_agent 			= $get_top_ups->to_users_id;
+            	
+
+                $id_from_users      = $get_top_ups->from_users_id;
+                $check_master_agent = \App\Master_user::where('id',$id_from_users)->first();
+                if($check_master_agent->level_systems_id == 2)
+                {
+                    $id_master_agent                 = $id_from_users;
+                    $get_credit_master_agent         = $check_master_agent->credit_users;
+                    $calculate_credit_master_agent   = $get_credit_master_agent + $credit_top_ups;
+                    $credit_master_agent_data = [
+                        'credit_users'  => $calculate_credit_master_agent
+                    ];
+                    \App\Master_user::where('id',$id_master_agent)->update($credit_master_agent_data);
+                }
+
+                $id_agent 			= $get_top_ups->to_users_id;
             	$get_agent 			= \App\Master_user::where('id',$id_agent)->first();
             	$get_credit_agent	= $get_agent->credit_users;
             	$calculate_credit 	= $get_credit_agent - $credit_top_ups;

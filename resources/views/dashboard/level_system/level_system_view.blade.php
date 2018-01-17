@@ -20,7 +20,7 @@
 		                <h6 class="card-subtitle" style="text-align:center">set each account to access some menus.</h6>
 	                    <div class="row">
 	                       	<div class="col-lg-12">
-								<form method="GET" action="{{ URL('dashboard/level_system/search') }}" class="form-horizontal m-t-40">>
+								<form method="GET" action="{{ URL('dashboard/level_system/search') }}" class="form-horizontal m-t-40">
 								{{ csrf_field() }}
 									<div class="input-group">
 										<input name="search_word" placeholder="search" value="{{ $result_word }}" class="form-control" type="text">

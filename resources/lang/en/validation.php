@@ -13,6 +13,10 @@ return [
     |
     */
     'check_top_up_agent'        => 'The :attribute not enough credit.',
+    'check_top_up_member'       => 'The :attribute not enough credit.',
+    'check_top_up_member_edit'  => 'The :attribute not enough credit.',
+    'check_top_up_group'       => 'The :attribute not enough credit.',
+    'check_top_up_group_edit'  => 'The :attribute not enough credit.',
     'check_top_up_agent_edit'   => 'The :attribute not enough credit.',
     'check_credit_sessions'     => 'The :attribute not enough credit.',
     'check_credit_members'      => 'The :attribute not enough.',

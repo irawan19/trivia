@@ -13,7 +13,8 @@ class ProfileController extends AdminCoreController
         if(Shwetech::accessRights($link_admin,'edit') == 'true')
         {
 	    	$id_admins 					= Auth::user()->id;
-	    	$data['view_profile']       = \App\Master_user::join('master_level_systems','level_systems_id','=','master_level_systems.id_level_systems')
+	    	$data['view_profile']       = \App\Master_user::join('master_bots','bots_id','=','master_bots.id_bots')
+	    													->join('master_level_systems','level_systems_id','=','master_level_systems.id_level_systems')
 	    													->where('id',$id_admins)
 	    													->first();
 	    	$data['view_id']			= $id_admins;

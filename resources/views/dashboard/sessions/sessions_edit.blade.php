@@ -60,6 +60,12 @@
                                 <input id="credit_member_sessions" type="text" name="credit_member_sessions" class="form-control number_format {{ Shwetech::errorStyleFormControl($errors->first('credit_member_sessions')) }}" value="{{ Request::old('credit_member_sessions') == '' ? $edit_sessions->credit_member_sessions : Request::old('credit_member_sessions') }}" placeholder="Credit Member" required>
                                 {{ Shwetech::formError($errors->first('credit_member_sessions')) }}
                             </div>
+                            <label class="form-control-label">Return to Player <b style="color:red">*</b></label>
+                            <div class="input-group {{ Shwetech::errorStyleGroup($errors->first('rtp_sessions')) }}">
+                                <input id="rtp_sessions" type="text" name="rtp_sessions" class="form-control number_format {{ Shwetech::errorStyleFormControl($errors->first('rtp_sessions')) }}" value="{{ Request::old('rtp_sessions') == '' ? $edit_sessions->rtp_sessions : Request::old('rtp_sessions') }}" placeholder="Return To Player" required aria-describedby="basic-addon2">
+                                <span class="input-group-addon" id="basic-addon2">%</span>
+                                {{ Shwetech::formError($errors->first('rtp_sessions')) }}
+                            </div>
                             <br>
                             <div class="form-group" align="center">
     	            			<button type="submit" name="update" value="update" class="btn btn-success waves-effect waves-light m-r-10"> Update</button>

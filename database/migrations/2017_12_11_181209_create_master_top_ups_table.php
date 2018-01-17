@@ -17,6 +17,8 @@ class CreateMasterTopUpsTable extends Migration
             $table->increments('id_top_ups');
             $table->integer('from_users_id')->index();
             $table->integer('to_users_id')->index();
+            $table->integer('to_register_members_id')->index();
+            $table->integer('to_groups_id')->index();
             $table->date('date_top_ups');
             $table->time('time_top_ups');
             $table->double('credit_top_ups');

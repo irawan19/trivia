@@ -101,7 +101,8 @@
 			                            	</td>
 			                            	<td>{{ Shwetech::changeDBToDatetime($sessions->start_date_sessions) }}</td>
 			                            	<td>{{ Shwetech::changeDBToDatetime($sessions->end_date_sessions) }}</td>
-			                            	<td colspan="3"></td>
+			                            	<td>{{ $sessions->rtp_sessions }}%</td>
+			                            	<td colspan="2"></td>
 			                            </tr>
 			                            @php($get_game 		= \App\Master_game::where('sessions_id', $id_sessions)->get())
 			                            @php($no_game 		= 1)
@@ -112,7 +113,7 @@
 			                            		<td></td>
 			                            		<td>{{ Shwetech::changeDBToDatetime($game->start_date_games) }}</td>
 			                            		<td>{{ Shwetech::changeDBToDatetime($game->end_date_games) }}</td>
-			                            		<td>{{ $game->rtp_games }}%</td>
+			                            		<td></td>
 			                            		<td>
 			                            			@if($game->status_active_games == '0')
 			                            				@php($status_game = 'Pending')

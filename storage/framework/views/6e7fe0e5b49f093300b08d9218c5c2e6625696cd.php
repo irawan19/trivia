@@ -75,10 +75,16 @@
 
                             </div>
                             <?php if(Auth::user()->level_systems_id == 2): ?>
-                                <div class="form-group <?php echo e(Shwetech::errorStyleGroup($errors->first('bot_phone_number_users'))); ?>">
+                                <div class="form-group <?php echo e(Shwetech::errorStyleGroup($errors->first('name_bots'))); ?>">
+                                    <label class="form-control-label">BOT <b style="color:red">*</b></label>
+                                    <input id="name_bots" type="text" name="name_bots" readonly="readonly" class="form-control number_format <?php echo e(Shwetech::errorStyleFormControl($errors->first('name_bots'))); ?>" value="<?php echo e(Request::old('name_bots') == '' ? $view_profile->name_bots : Request::old('name_bots')); ?>" placeholder="BOT Phone Number" required>
+                                    <?php echo e(Shwetech::formError($errors->first('name_bots'))); ?>
+
+                                </div>
+                                <div class="form-group <?php echo e(Shwetech::errorStyleGroup($errors->first('phone_number_bots'))); ?>">
                                     <label class="form-control-label">BOT Phone Number <b style="color:red">*</b></label>
-                                    <input id="bot_phone_number_users" type="text" name="bot_phone_number_users" readonly="readonly" class="form-control number_format <?php echo e(Shwetech::errorStyleFormControl($errors->first('bot_phone_number_users'))); ?>" value="<?php echo e(Request::old('bot_phone_number_users') == '' ? $view_profile->bot_phone_number_users : Request::old('bot_phone_number_users')); ?>" placeholder="BOT Phone Number" required>
-                                    <?php echo e(Shwetech::formError($errors->first('bot_phone_number_users'))); ?>
+                                    <input id="phone_number_bots" type="text" name="phone_number_bots" readonly="readonly" class="form-control number_format <?php echo e(Shwetech::errorStyleFormControl($errors->first('phone_number_bots'))); ?>" value="<?php echo e(Request::old('phone_number_bots') == '' ? $view_profile->phone_number_bots : Request::old('phone_number_bots')); ?>" placeholder="BOT Phone Number" required>
+                                    <?php echo e(Shwetech::formError($errors->first('phone_number_bots'))); ?>
 
                                 </div>
                             <?php endif; ?>

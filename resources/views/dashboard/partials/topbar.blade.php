@@ -43,6 +43,18 @@
                                     </div>
                                 </div>
                             </li>
+                            @if(Auth::user()->level_systems_id != '1')
+                                <li role="separator" class="divider"></li>
+                                <div class="u-info">
+                                    @php($id_admin = Auth::user()->id)
+                                    @php($get_admin = \App\Master_user::join('master_bots','bots_id','=','master_bots.id_bots')
+                                                                        ->where('id',$id_admin)
+                                                                        ->first())
+                                    <b>BOT : {{ $get_admin->name_bots.' - '.$get_admin->phone_number_bots }}</b>
+                                    <br/>
+                                    <b>Credit : {{ $get_admin->credit_users }}</b>
+                                </div>
+                            @endif
                             <li role="separator" class="divider"></li>
                             <li><a href="{{ URL('dashboard/logout') }}"><i class="fa fa-power-off"></i> Logout</a></li>
                         </ul>

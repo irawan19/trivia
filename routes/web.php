@@ -21,6 +21,7 @@ Auth::routes();
 Route::post('dashboard/login', 'Auth\LoginController@login');
 Route::get('/dashboard/logout', 'Auth\LoginController@logout');
 Route::get('/dashboard/home', 'dashboard\HomeController@index');
+Route::get('/dashboard/', 'dashboard\HomeController@index');
 Route::get('/password/email', 'Auth\ForgotPasswordController@showLinkRequestForm');
 
 	/* PROFILE */
@@ -81,6 +82,26 @@ Route::get('/password/email', 'Auth\ForgotPasswordController@showLinkRequestForm
 			Route::post('/processedit/{id}', 'dashboard\GameController@processedit');
 			Route::get('/delete/{id}', 'dashboard\GameController@delete');
 		});
+		Route::group(['prefix' => 'dashboard/top_up_group'], function(){
+			Route::get('/', 'dashboard\TopUpGroupController@index');
+			Route::get('/search', 'dashboard\TopUpGroupController@search');
+			Route::get('/add', 'dashboard\TopUpGroupController@add');
+			Route::post('/processadd', 'dashboard\TopUpGroupController@processadd');
+			Route::get('/read/{id}', 'dashboard\TopUpGroupController@read');
+			Route::get('/edit/{id}', 'dashboard\TopUpGroupController@edit');
+			Route::post('/processedit/{id}', 'dashboard\TopUpGroupController@processedit');
+			Route::get('/delete/{id}', 'dashboard\TopUpGroupController@delete');
+		});
+		Route::group(['prefix' => 'dashboard/top_up_member'], function(){
+			Route::get('/', 'dashboard\TopUpMemberController@index');
+			Route::get('/search', 'dashboard\TopUpMemberController@search');
+			Route::get('/add', 'dashboard\TopUpMemberController@add');
+			Route::post('/processadd', 'dashboard\TopUpMemberController@processadd');
+			Route::get('/read/{id}', 'dashboard\TopUpMemberController@read');
+			Route::get('/edit/{id}', 'dashboard\TopUpMemberController@edit');
+			Route::post('/processedit/{id}', 'dashboard\TopUpMemberController@processedit');
+			Route::get('/delete/{id}', 'dashboard\TopUpMemberController@delete');
+		});
 	/* AGENT */
 
 	/* REPORT */
@@ -95,16 +116,7 @@ Route::get('/password/email', 'Auth\ForgotPasswordController@showLinkRequestForm
 		});
 	/* REPORT */
 
-	/* ADMINISTRATOR */
-		Route::group(['prefix' => 'dashboard/list_stakes'], function(){
-			Route::get('/', 'dashboard\ListStakesController@index');
-			Route::get('/search', 'dashboard\ListStakesController@search');
-			Route::get('/add', 'dashboard\ListStakesController@add');
-			Route::post('/processadd', 'dashboard\ListStakesController@processadd');
-			Route::get('/edit/{id}', 'dashboard\ListStakesController@edit');
-			Route::post('/processedit/{id}', 'dashboard\ListStakesController@processedit');
-			Route::get('/delete/{id}', 'dashboard\ListStakesController@delete');
-		});
+	/* ADMIN */
 		Route::group(['prefix' => 'dashboard/level_system'], function(){
 			Route::get('/', 'dashboard\LevelSystemController@index');
 			Route::get('/search', 'dashboard\LevelSystemController@search');
@@ -145,6 +157,29 @@ Route::get('/password/email', 'Auth\ForgotPasswordController@showLinkRequestForm
 			Route::post('/processedit/{id}', 'dashboard\TopUpMasterAgentController@processedit');
 			Route::get('/delete/{id}', 'dashboard\TopUpMasterAgentController@delete');
 		});
+	/* ADMIN */
+
+
+	/* APP CONFIGURATION */
+		Route::group(['prefix' => 'dashboard/register_bot'], function(){
+			Route::get('/', 'dashboard\RegisterBotController@index');
+			Route::get('/search', 'dashboard\RegisterBotController@search');
+			Route::get('/register', 'dashboard\RegisterBotController@register');
+			Route::post('/processregister', 'dashboard\RegisterBotController@processregister');
+			Route::get('/confirmation/{id}', 'dashboard\RegisterBotController@confirmation');
+			Route::post('/processconfirmation/{id}', 'dashboard\RegisterBotController@processconfirmation');
+			Route::get('/delete/{id}', 'dashboard\RegisterBotController@delete');
+			Route::get('/read/{id}', 'dashboard\RegisterBotController@read');
+		});
+		Route::group(['prefix' => 'dashboard/list_stakes'], function(){
+			Route::get('/', 'dashboard\ListStakesController@index');
+			Route::get('/search', 'dashboard\ListStakesController@search');
+			Route::get('/add', 'dashboard\ListStakesController@add');
+			Route::post('/processadd', 'dashboard\ListStakesController@processadd');
+			Route::get('/edit/{id}', 'dashboard\ListStakesController@edit');
+			Route::post('/processedit/{id}', 'dashboard\ListStakesController@processedit');
+			Route::get('/delete/{id}', 'dashboard\ListStakesController@delete');
+		});
 		Route::group(['prefix' => 'dashboard/app_configuration'], function(){
 			Route::get('/', 'dashboard\AppConfigurationController@index');
 			Route::post('/processedit', 'dashboard\AppConfigurationController@processedit');
@@ -173,4 +208,4 @@ Route::get('/password/email', 'Auth\ForgotPasswordController@showLinkRequestForm
 			Route::post('/processedit_submenu/{id}', 'dashboard\MenuController@processedit_submenu');
 			Route::get('/delete_submenu/{id}', 'dashboard\MenuController@delete_submenu');
 		});
-	/* ADMINISTRATOR */
+	/* APP CONFIGURATION */

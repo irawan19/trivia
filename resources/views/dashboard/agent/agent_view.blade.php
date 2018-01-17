@@ -58,7 +58,7 @@
 	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="4">Total Group</th>
 	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="5">Credit</th>
 	                                @if(Auth::user()->level_systems_id == 1)
-	                                	<th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="6">Agent</th>
+	                                	<th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="6">Master Agent</th>
 	                                @endif
 	                                <th scope="col">Action</th>
 	                            </tr>

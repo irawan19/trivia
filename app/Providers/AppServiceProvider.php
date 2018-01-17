@@ -164,6 +164,8 @@ class AppServiceProvider extends ServiceProvider
                 else
                     return TRUE;
             }
+            else
+                return TRUE;
         });
 
         Validator::extend('check_top_up_agent_edit', function($attribute, $value, $parameters, $validator){
@@ -185,6 +187,90 @@ class AppServiceProvider extends ServiceProvider
                 else
                     return TRUE;
             }
+            else
+                return TRUE;
+        });
+
+        Validator::extend('check_top_up_member', function($attribute, $value, $parameters, $validator){
+            $inputs                     = $validator->getData();
+            $credit_top_ups             = $inputs['credit_top_ups'];
+            $id_agent_master_agent      = Auth::user()->id;
+            $id_level_systems           = Auth::user()->level_systems_id;
+            if($id_level_systems != 1)
+            {
+                $get_credit_admin   = \App\Master_user::where('id',$id_agent_master_agent)->first();
+                $credit_admin       = $get_credit_admin->credit_users;
+                if($credit_admin < $credit_top_ups)
+                    return FALSE;
+                else
+                    return TRUE;
+            }
+            else
+                return TRUE;
+        });
+
+        Validator::extend('check_top_up_member_edit', function($attribute, $value, $parameters, $validator){
+            $inputs                     = $validator->getData();
+            $credit_top_ups             = $inputs['credit_top_ups'];
+            $id_top_ups                 = $inputs['id_top_ups'];
+            
+            $id_agent_master_agent      = Auth::user()->id;
+            $id_level_systems           = Auth::user()->level_systems_id;
+            if($id_level_systems != 1)
+            {
+                $get_old_top_ups        = \App\Master_top_up::where('id_top_ups',$id_top_ups)->first();
+                $get_credit_top_up      = $get_old_top_ups->credit_top_ups;
+
+                $get_credit_master_agent= \App\Master_user::where('id',$id_agent_master_agent)->first();
+                $credit_master_agent    = $get_credit_master_agent->credit_users + $get_credit_top_up;
+                if($credit_master_agent < $credit_top_ups)
+                    return FALSE;
+                else
+                    return TRUE;
+            }
+            else
+                return TRUE;
+        });
+
+        Validator::extend('check_top_up_group', function($attribute, $value, $parameters, $validator){
+            $inputs                     = $validator->getData();
+            $credit_top_ups             = $inputs['credit_top_ups'];
+            $id_agent_master_agent      = Auth::user()->id;
+            $id_level_systems           = Auth::user()->level_systems_id;
+            if($id_level_systems != 1)
+            {
+                $get_credit_admin   = \App\Master_user::where('id',$id_agent_master_agent)->first();
+                $credit_admin       = $get_credit_admin->credit_users;
+                if($credit_admin < $credit_top_ups)
+                    return FALSE;
+                else
+                    return TRUE;
+            }
+            else
+                return TRUE;
+        });
+
+        Validator::extend('check_top_up_group_edit', function($attribute, $value, $parameters, $validator){
+            $inputs                     = $validator->getData();
+            $credit_top_ups             = $inputs['credit_top_ups'];
+            $id_top_ups                 = $inputs['id_top_ups'];
+            
+            $id_agent_master_agent      = Auth::user()->id;
+            $id_level_systems           = Auth::user()->level_systems_id;
+            if($id_level_systems != 1)
+            {
+                $get_old_top_ups        = \App\Master_top_up::where('id_top_ups',$id_top_ups)->first();
+                $get_credit_top_up      = $get_old_top_ups->credit_top_ups;
+
+                $get_credit_master_agent= \App\Master_user::where('id',$id_agent_master_agent)->first();
+                $credit_master_agent    = $get_credit_master_agent->credit_users + $get_credit_top_up;
+                if($credit_master_agent < $credit_top_ups)
+                    return FALSE;
+                else
+                    return TRUE;
+            }
+            else
+                return TRUE;
         });
     }
 

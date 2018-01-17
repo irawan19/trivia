@@ -18,7 +18,6 @@ class CreateMasterGamesTable extends Migration
             $table->integer('sessions_id')->index();
             $table->datetime('start_date_games');
             $table->datetime('end_date_games');
-            $table->double('rtp_games');
             $table->double('status_active_games');
         });
     }

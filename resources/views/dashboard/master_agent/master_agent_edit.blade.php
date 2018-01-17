@@ -20,6 +20,29 @@
                     <div class="card-body">
     		            <form class="form-horizontal m-t-40" action="{{ URL('dashboard/master_agent/processedit/'.$edit_master_agents->id) }}" method="POST">
     						{{ csrf_field() }}
+                            <div class="form-group row">
+                                <label for="example-month-input" class="col-2 col-form-label">BOT <i style="color:red">*</i></label>
+                                <div class="col-12">
+                                    <select name="bots_id" class="custom-select col-12 select2" id="bots_id" required autofocus>
+                                        <option value="">Please Choose...</option>
+                                        @foreach($edit_bots as $bots)
+                                            @php($selected = '')
+                                            @if(Request::old('bots_id') == '')
+                                                @if($bots->id_bots == $edit_master_agents->bots_id)
+                                                    @php($selected = 'selected')
+                                                @endif
+                                            @else
+                                                @if($bots->id_bots == Request::old('bots_id'))
+                                                    @php($selected = 'selected')
+                                                @endif
+                                            @endif
+
+                                            <option value="{{ $bots->id_bots }}" {{ $selected }}>{{ $bots->name_bots.' - '.$bots->phone_number_bots }}</option>
+                                        @endforeach
+                                    </select>
+                                    {{ Shwetech::formError($errors->first('users_id')) }}
+                                </div>
+                            </div>
                             <div class="form-group {{ Shwetech::errorStyleGroup($errors->first('name')) }}">
                                 <label class="form-control-label">Name <b style="color:red">*</b></label>
                                 <input id="name" type="text" name="name" class="form-control {{ Shwetech::errorStyleFormControl($errors->first('name')) }}" value="{{ Request::old('name') == '' ? $edit_master_agents->name : Request::old('name') }}" placeholder="Name" required autofocus>
@@ -45,11 +68,6 @@
                                 <label class="form-control-label">Phone Number <b style="color:red">*</b></label>
                                 <input id="phone_number_users" type="text" name="phone_number_users" class="form-control number_format {{ Shwetech::errorStyleFormControl($errors->first('phone_number_users')) }}" value="{{ Request::old('phone_number_users') == '' ? $edit_master_agents->phone_number_users : Request::old('phone_number_users') }}" placeholder="Phone Number" required>
                                 {{ Shwetech::formError($errors->first('phone_number_users')) }}
-                            </div>
-                            <div class="form-group {{ Shwetech::errorStyleGroup($errors->first('bot_phone_number_users')) }}">
-                                <label class="form-control-label">BOT Phone Number <b style="color:red">*</b></label>
-                                <input id="bot_phone_number_users" type="text" name="bot_phone_number_users" class="form-control number_format {{ Shwetech::errorStyleFormControl($errors->first('bot_phone_number_users')) }}" value="{{ Request::old('bot_phone_number_users') == '' ? $edit_master_agents->bot_phone_number_users : Request::old('bot_phone_number_users') }}" placeholder="BOT Phone Number" required>
-                                {{ Shwetech::formError($errors->first('bot_phone_number_users')) }}
                             </div>
                             <br/>
                             <div align="center">

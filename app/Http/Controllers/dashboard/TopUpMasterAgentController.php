@@ -13,12 +13,12 @@ class TopUpMasterAgentController extends AdminCoreController
         if(Shwetech::accessRights($link_top_up_master_agent,'view') == 'true')
         {
             $data['link_top_up_master_agent']      = $link_top_up_master_agent;
-            $data['result_word']        	= '';
-            $result_date_start              = date('Y-m-d');
-            $result_date_end                = date('Y-m-d');
-            $data['result_date_start']      = $result_date_start;
-            $data['result_date_end']        = $result_date_end;
-        	$data['view_top_up_master_agents']    	= \App\Master_top_up::join('users','to_users_id','=','users.id')
+            $data['result_word']        	       = '';
+            $result_date_start                     = date('Y-m-d');
+            $result_date_end                       = date('Y-m-d');
+            $data['result_date_start']             = $result_date_start;
+            $data['result_date_end']               = $result_date_end;
+        	$data['view_top_up_master_agents']     = \App\Master_top_up::join('users','to_users_id','=','users.id')
         													->join('master_level_systems','level_systems_id','=','master_level_systems.id_level_systems')
         													->where('id_level_systems','2')
                                                             ->whereRaw('DATE(date_top_ups) >= "'.$result_date_start.'"')
@@ -40,26 +40,26 @@ class TopUpMasterAgentController extends AdminCoreController
         if(Shwetech::accessRights($link_top_up_master_agent,'view') == 'true')
         {
             $data['link_top_up_master_agent']      = $link_top_up_master_agent;
-            $url_now                    	= $request->fullUrl();
-            $result_word                	= $request->search_word;
-            $data['result_word']        	= $result_word;
-            $result_date                    = $request->search_date;
-            $separate_daterange             = explode(' - ',$result_date);
-            $result_date_start              = $separate_daterange[0];
-            $result_date_end                = $separate_daterange[1];
-            $data['result_date_start']      = $result_date_start;
-            $data['result_date_end']        = $result_date_end;
+            $url_now                    	       = $request->fullUrl();
+            $result_word                	       = $request->search_word;
+            $data['result_word']        	       = $result_word;
+            $result_date                           = $request->search_date;
+            $separate_daterange                    = explode(' - ',$result_date);
+            $result_date_start                     = $separate_daterange[0];
+            $result_date_end                       = $separate_daterange[1];
+            $data['result_date_start']             = $result_date_start;
+            $data['result_date_end']               = $result_date_end;
             $data['view_top_up_master_agents']     = \App\Master_top_up::join('users','to_users_id','=','users.id')
-        												->join('master_level_systems','level_systems_id','=','master_level_systems.id_level_systems')
-        												->where('id_level_systems','2')
-                                                        ->whereRaw('DATE(date_top_ups) >= "'.$result_date_start.'"')
-                                                        ->whereRaw('DATE(date_top_ups) <= "'.$result_date_end.'"')
-        												->where('name', 'LIKE', '%'.$result_word.'%')
-                                                    	->orWhere('phone_number_users', 'LIKE', '%'.$result_word.'%')
-                                                    	->where('level_systems_id','2')
-                                                        ->whereRaw('DATE(date_top_ups) >= "'.$result_date_start.'"')
-                                                        ->whereRaw('DATE(date_top_ups) <= "'.$result_date_end.'"')
-                                                    	->get();
+        												                ->join('master_level_systems','level_systems_id','=','master_level_systems.id_level_systems')
+        												                ->where('id_level_systems','2')
+                                                                        ->whereRaw('date_top_ups >= "'.$result_date_start.'"')
+                                                                        ->whereRaw('date_top_ups <= "'.$result_date_end.'"')
+        												                ->where('name', 'LIKE', '%'.$result_word.'%')
+                                                                        ->orWhere('phone_number_users', 'LIKE', '%'.$result_word.'%')
+                                                    	                ->where('level_systems_id','2')
+                                                                        ->whereRaw('date_top_ups >= "'.$result_date_start.'"')
+                                                                        ->whereRaw('date_top_ups <= "'.$result_date_end.'"')
+                                                    	                ->get();
             session(['page'                 => $url_now]);
             session(['result_word'		    => $result_word]);
             session(['result_date_start'    => $result_date_start]);
@@ -97,6 +97,8 @@ class TopUpMasterAgentController extends AdminCoreController
     		$data = [
     			'from_users_id'	     => Auth::user()->id,
     			'to_users_id'		 => $id_master_agent,
+                'to_register_members_id' => 0,
+                'to_groups_id'       => 0,
     			'date_top_ups'		 => date('Y-m-d'),
     			'time_top_ups'		 => date('H:i:s'),
                 'credit_top_ups'	 => $get_credit,
@@ -209,6 +211,8 @@ class TopUpMasterAgentController extends AdminCoreController
 	    		$data = [
 	    			'from_users_id'	     => Auth::user()->id,
 	    			'to_users_id'		 => $id_master_agent,
+                    'to_register_members_id' => 0,
+                    'to_groups_id'       => 0,
 	    			'date_top_ups'		 => date('Y-m-d'),
 	    			'time_top_ups'		 => date('H:i:s'),
 	                'credit_top_ups'	 => $get_credit,

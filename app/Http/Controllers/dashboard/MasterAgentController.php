@@ -13,9 +13,10 @@ class MasterAgentController extends AdminCoreController
         if(Shwetech::accessRights($link_master_agent,'view') == 'true')
         {
             $data['link_master_agent']         = $link_master_agent;
-            $data['result_word']        = '';
-        	$data['view_master_agents']    	= \App\User::where('level_systems_id','2')
-        											->get();
+            $data['result_word']               = '';
+        	$data['view_master_agents']    	   = \App\User::join('master_bots','bots_id','=','master_bots.id_bots')
+                                                            ->where('level_systems_id','2')
+        											        ->get();
             session()->forget('page');
             session()->forget('result_word');
         	return view('dashboard/master_agent/master_agent_view', $data);
@@ -29,15 +30,16 @@ class MasterAgentController extends AdminCoreController
         $link_master_agent = 'master_agent';
         if(Shwetech::accessRights($link_master_agent,'view') == 'true')
         {
-            $data['link_master_agent']         = $link_master_agent;
-            $url_now                    = $request->fullUrl();
-            $result_word                = $request->search_word;
-            $data['result_word']        = $result_word;
-            $data['view_master_agents']        = \App\User::where('level_systems_id','2')
-        											->where('name', 'LIKE', '%'.$result_word.'%')
-                                                    ->orWhere('phone_number_users', 'LIKE', '%'.$result_word.'%')
-                                                    ->where('level_systems_id','2')
-                                                    ->get();
+            $data['link_master_agent']          = $link_master_agent;
+            $url_now                            = $request->fullUrl();
+            $result_word                        = $request->search_word;
+            $data['result_word']                = $result_word;
+            $data['view_master_agents']         = \App\User::join('master_bots','bots_id','=','master_bots.id_bots')
+                                                            ->where('level_systems_id','2')
+                											->where('name', 'LIKE', '%'.$result_word.'%')
+                                                            ->orWhere('phone_number_users', 'LIKE', '%'.$result_word.'%')
+                                                            ->where('level_systems_id','2')
+                                                            ->get();
             session(['page'             => $url_now]);
             session(['result_word'		=> $result_word]);
             return view('dashboard/master_agent/master_agent_view', $data);
@@ -50,7 +52,10 @@ class MasterAgentController extends AdminCoreController
     {
         $link_master_agent = 'master_agent';
         if(Shwetech::accessRights($link_master_agent,'add') == 'true')
-            return view('dashboard/master_agent/master_agent_add');
+        {
+            $data['add_bots'] = \App\Master_bot::get();   
+            return view('dashboard/master_agent/master_agent_add',$data);
+        }
         else
             return redirect('/dashboard/master_agent');
     }
@@ -64,8 +69,8 @@ class MasterAgentController extends AdminCoreController
                 'name'               	=> 'required',
                 'email'              	=> 'required|unique:users',
                 'password'           	=> 'required|string|min:6|confirmed',
-                'phone_number_users'	=> 'required|numeric',
-                'bot_phone_number_users'=> 'required|numeric',
+                'phone_number_users'	=> 'required|numeric|unique:users',
+                'bots_id'               => 'required|numeric',
                 'credit_users'			=> 'required|numeric',
             ]);
 
@@ -75,7 +80,7 @@ class MasterAgentController extends AdminCoreController
     		    'name' 			     => $request->name,
     		    'email'			     => $request->email,
                 'phone_number_users' => $request->phone_number_users,
-                'bot_phone_number_users'=> $request->bot_phone_number_users,
+                'bots_id'            => $request->bots_id,
                 'credit_users'		 => $request->credit_users,
                 'max_group_users'    => 0,
     		    'created_at'	     => date('Y-m-d H:i:s'),
@@ -120,9 +125,10 @@ class MasterAgentController extends AdminCoreController
             $check_master_agents = \App\Master_user::where('id',$id_master_agents)->count();
             if($check_master_agents != 0)
             {
-                $data['read_master_agents']            = \App\Master_user::join('master_level_systems','master_level_systems.id_level_systems','=','users.level_systems_id')
-                                                                    ->where('id',$id_master_agents)
-                                                                    ->first();
+                $data['read_master_agents']            = \App\Master_user::join('master_bots','bots_id','=','master_bots.id_bots')
+                                                                            ->join('master_level_systems','master_level_systems.id_level_systems','=','users.level_systems_id')
+                                                                            ->where('id',$id_master_agents)
+                                                                            ->first();
                 return view('dashboard/master_agent/master_agent_read',$data);
             }
             else
@@ -142,8 +148,9 @@ class MasterAgentController extends AdminCoreController
             $check_master_agents = \App\Master_user::where('id',$id_master_agents)->count();
             if($check_master_agents != 0)
             {
+                $data['edit_bots']                  = \App\Master_bot::get();
                 $data['edit_master_agents']			= \App\Master_user::where('id',$id_master_agents)
-                													->first();
+                													   ->first();
                 return view('dashboard/master_agent/master_agent_edit',$data);
             }
             else
@@ -170,7 +177,7 @@ class MasterAgentController extends AdminCoreController
                         'email'                 => 'required|unique:users,email,'.$id_master_agents.',id',
                         'password'              => 'required|string|min:6|confirmed',
                         'phone_number_users'	=> 'required|numeric',
-                        'bot_phone_number_users'=> 'required|numeric',
+                        'bots_id'=> 'required|numeric',
                         'credit_users'			=> 'required|numeric',
                     ]);
 
@@ -182,7 +189,7 @@ class MasterAgentController extends AdminCoreController
             	        'updated_at'	      => date('Y-m-d H:i:s'),
             	        'password' 		      => bcrypt($request->password),
                         'phone_number_users'  => $request->phone_number_users,
-                        'bot_phone_number_users' => $request->bot_phone_number_users,
+                        'bots_id' => $request->bots_id,
                 		'credit_users'		  => $request->credit_users,
                         'max_group_users'     => 0
             	    ];
@@ -193,7 +200,7 @@ class MasterAgentController extends AdminCoreController
             	        'name'                 => 'required',
             	        'email'                => 'required|unique:users,email,'.$id_master_agents.',id',
             	        'phone_number_users'   => 'required|numeric',
-                        'bot_phone_number_users'=> 'required|numeric',
+                        'bots_id'=> 'required|numeric',
             	        'credit_users'		   => 'required|numeric'
             	    ]);
 
@@ -204,7 +211,7 @@ class MasterAgentController extends AdminCoreController
                         'level_systems_id'    	=> 2,
                         'sub_users_id'          => 0,
                         'phone_number_users'    => $request->phone_number_users,
-                        'bot_phone_number_users'=> $request->bot_phone_number_users,
+                        'bots_id'=> $request->bots_id,
                 		'credit_users'		 	=> $request->credit_users,
                         'max_group_users'       => 0
             	    ];
@@ -213,7 +220,7 @@ class MasterAgentController extends AdminCoreController
             	\App\Master_user::where('id', $id_master_agents)->update($data);
 
                 $agent_data = [
-                    'bot_phone_number_users'    => $request->bot_phone_number_users,
+                    'bots_id'    => $request->bots_id,
                 ];
                 \App\Master_user::where('sub_users_id',$id_master_agents)->update($agent_data);
 

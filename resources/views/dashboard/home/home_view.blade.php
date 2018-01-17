@@ -21,26 +21,15 @@
                         </div>
                         <br/>
                         @if(Auth::user()->level_systems_id != '1')
-                            <table width="25%" align="center">
-                                <tr>
-                                    <th width="50%">Your Bot</th>
-                                    <th width="1%">:</th>
-                                    <td>
-                                        @php($id_admin = Auth::user()->id)
-                                        @php($get_admin = \App\Master_user::where('id',$id_admin)->first())
-                                        {{ $get_admin->bot_phone_number_users }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Your Credit</th>
-                                    <th>:</th>
-                                    <td>
-                                        @php($id_admin = Auth::user()->id)
-                                        @php($get_admin = \App\Master_user::where('id',$id_admin)->first())
-                                        {{ $get_admin->credit_users }}
-                                    </td>
-                                </tr>
-                            </table>
+                            <div style="text-align: center;">
+                                @php($id_admin = Auth::user()->id)
+                                @php($get_admin = \App\Master_user::join('master_bots','bots_id','=','master_bots.id_bots')
+                                                                    ->where('id',$id_admin)
+                                                                    ->first())
+                                <b style="font-size: 18px">BOT : {{ $get_admin->name_bots.' - '.$get_admin->phone_number_bots }}</b>
+                                <br/>
+                                <b style="font-size: 18px">Credit : {{ $get_admin->credit_users }}</b>
+                            </div>
                         @endif
                     </div>
                 </div>

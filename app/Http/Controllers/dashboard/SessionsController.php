@@ -175,6 +175,7 @@ class SessionsController extends AdminCoreController
             	'groups_id'				=> 'required|check_last_sessions|check_credit_sessions',
             	'date_sessions'			=> 'required',
                 'credit_member_sessions'=> 'required|not_in:0|check_credit_members',
+                'rtp_sessions'          => 'required|numeric|between:1,100',
             ]);
 
             $id_groups 					= $request->groups_id;
@@ -195,6 +196,7 @@ class SessionsController extends AdminCoreController
             	'start_date_sessions'	=> $start_date,
             	'end_date_sessions'		=> $end_date,
             	'credit_member_sessions'=> $request->credit_member_sessions,
+                'rtp_sessions'          => $request->rtp_sessions,
             	'status_active_sessions'=> $status,
             ];
             \App\Master_session::insert($data);
@@ -285,6 +287,7 @@ class SessionsController extends AdminCoreController
 		    	    	'groups_id'				=> 'required',
 		    	    	'date_sessions'			=> 'required',
                         'credit_member_sessions'=> 'required|not_in:0|check_credit_members',
+                        'rtp_games'             => 'required|numeric|between:1,100',
 		    	    ]);
 
 		    	    $id_groups 					= $request->groups_id;
@@ -305,6 +308,7 @@ class SessionsController extends AdminCoreController
 		    	    	'start_date_sessions'	=> $start_date,
 		    	    	'end_date_sessions'		=> $end_date,
 		    	    	'credit_member_sessions'=> $request->credit_member_sessions,
+                        'rtp_sessions'          => $request->rtp_sessions,
 		    	    	'status_active_sessions'=> $status,
 		    	    ];
 		    	    \App\Master_session::where('id_sessions',$id_sessions)->update($data);

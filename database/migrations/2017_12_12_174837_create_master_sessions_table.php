@@ -20,6 +20,7 @@ class CreateMasterSessionsTable extends Migration
             $table->datetime('end_date_sessions');
             $table->double('max_member_sessions');
             $table->double('credit_member_sessions');
+            $table->double('rtp_sessions');
             $table->double('status_active_sessions');
         });
     }

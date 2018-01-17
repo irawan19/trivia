@@ -64,6 +64,13 @@
                                 <?php echo e(Shwetech::formError($errors->first('credit_member_sessions'))); ?>
 
                             </div>
+                            <label class="form-control-label">Return to Player <b style="color:red">*</b></label>
+                            <div class="input-group <?php echo e(Shwetech::errorStyleFormControl($errors->first('rtp_sessions'))); ?>">
+                                <input id="rtp_sessions" type="text" name="rtp_sessions" class="form-control number_format <?php echo e(Shwetech::errorStyleFormControl($errors->first('rtp_sessions'))); ?>" value="<?php echo e(Request::old('rtp_sessions')); ?>" placeholder="Return To Player" required aria-describedby="basic-addon2">
+                                <span class="input-group-addon" id="basic-addon2">%</span>
+                                <?php echo e(Shwetech::formError($errors->first('rtp_sessions'))); ?>
+
+                            </div>
                             <br/>
                             <div class="form-group" align="center">
     	            			<button type="submit" name="save" value="save" class="btn btn-success waves-effect waves-light m-r-10"> Save</button>

@@ -76,8 +76,8 @@
 	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="2">Group</th>
 	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="3">Sessions</th>
 	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="4">Start</th>
-	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="5">RTP</th>
-	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="5">Status</th>
+	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="5">End</th>
+	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="6">Status</th>
 	                                <th scope="col">Action</th>
 	                            </tr>
 	                        </thead>
@@ -90,7 +90,6 @@
 		                                <td><?php echo e($game->name_sessions); ?></td>
 		                                <td><?php echo e(Shwetech::changeDBToDatetime($game->start_date_games)); ?></td>
 		                                <td><?php echo e(Shwetech::changeDBToDatetime($game->end_date_games)); ?></td>
-		                                <td><?php echo e($game->rtp_games); ?></td>
 		                                <td><?php echo Shwetech::convertStatus($game->status_active_games); ?></td>
 		                                <td width="5%">
 		                                	<div class="input-group">

@@ -3,6 +3,7 @@
 	use DB;
 	use Auth;
 	use Datetime;
+	use Request;
 
 	class Shwetech
 	{
@@ -29,6 +30,26 @@
 			}
 		//ACCESS RIGHTS
 
+		//CHECKING BOT
+			public static function checkBOT($id_users=0)
+			{
+				$get_bot_phone_number 	= Request::segment(2);
+				$get_bots 				= \App\Master_bot::where('phone_number_bots',$get_bot_phone_number)->first();
+				if($get_bots != '')
+				{
+					$get_users 				= \App\Master_user::where('id',$id_users)->first();
+					if($get_users->bots_id == $get_bots->id_bots)
+						$return_check = 1;
+					else
+						$return_check = 0;
+				}
+				else
+					$return_check = 0;
+
+				return $return_check;
+			}
+		//CHECKING BOT
+
 		//MESSAGE NOTIFICATION
 			//ERROR
 				public static function formError($form_input='')
@@ -48,6 +69,17 @@
 					if($form_input != '')
 						echo 'form-control-danger';
 				}
+
+				public static function errorCustom($form_input='')
+				{
+					if($form_input != '')
+					{
+						echo '<div class="alert alert-danger alert-dismissable">
+									<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+									'.$form_input.'
+								</div>';
+					}
+				}
 			//ERROR
 
 			//SUCCESS
@@ -61,6 +93,7 @@
 								</div>';
 					}
 				}
+
 			//SUCCESS
 		//MESSAGE NOTIFICATION
 
@@ -89,6 +122,18 @@
 					echo '
 							<a class="btn waves-effect waves-light btn-success" href="'. $link .'" title="Add" data-rel="tooltip">
 								<i class="fa fa-plus">&nbsp; Add</i>
+							</a>
+						';
+				}
+			}
+
+			public static function register($link_menus='', $link='')
+			{
+				if(Shwetech::accessRights($link_menus,'add') == 'true')
+				{
+					echo '
+							<a class="btn waves-effect waves-light btn-success" href="'. $link .'" title="Register" data-rel="tooltip">
+								<i class="fa fa-drivers-license-o">&nbsp; Register</i>
 							</a>
 						';
 				}

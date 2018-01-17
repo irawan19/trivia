@@ -38,6 +38,7 @@ class TriviaCron extends Command
      */
     public function handle()
     {
+        
         $this->info("It's worked.");
     }
 }

@@ -75,7 +75,8 @@
 	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="3">Start</th>
 	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="4">End</th>
 	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="5">Credit/Member</th>
-	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="6">Status</th>
+	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="6">RTP</th>
+	                                <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="7">Status</th>
 	                                <th scope="col">Action</th>
 	                            </tr>
 	                        </thead>
@@ -88,6 +89,7 @@
 		                                <td><?php echo e(Shwetech::changeDBToDatetime($sessions->start_date_sessions)); ?></td>
 		                                <td><?php echo e(Shwetech::changeDBToDatetime($sessions->end_date_sessions)); ?></td>
 		                                <td><?php echo e(ROUND($sessions->credit_member_sessions)); ?></td>
+		                                <td><?php echo e(ROUND($sessions->rtp_sessions)); ?></td>
 		                                <td><?php echo Shwetech::convertStatus($sessions->status_active_sessions); ?></td>
 		                                <td width="5%">
 		                                	<div class="input-group">

@@ -188,7 +188,6 @@ class GameController extends AdminCoreController
         	$this->validate($request, [
         		'sessions_id'			=> 'required|check_last_game',
         		'date_games'			=> 'required',
-        		'rtp_games'				=> 'required|numeric|between:1,100',
         	]);
 
         	$get_date 					= $request->date_games;
@@ -207,7 +206,6 @@ class GameController extends AdminCoreController
         		'sessions_id'			=> $request->sessions_id,
         		'start_date_games'		=> $start_date,
         		'end_date_games'		=> $end_date,
-        		'rtp_games'				=> $request->rtp_games,
         		'status_active_games'	=> $status,
         	];
         	\App\Master_game::insert($data);
@@ -290,7 +288,6 @@ class GameController extends AdminCoreController
                  $this->validate($request, [
 	    	    	'sessions_id'			=> 'required',
 	    	    	'date_games'			=> 'required',
-	    	    	'rtp_games'				=> 'required|numeric',
 	    	    ]);
 
 		    	$get_date 					= $request->date_games;
@@ -309,7 +306,6 @@ class GameController extends AdminCoreController
 		    		'sessions_id'			=> $request->sessions_id,
 	    	    	'start_date_games'		=> $start_date,
 	    	    	'end_date_games'		=> $end_date,
-	    	    	'rtp_games'				=> $request->rtp_games,
 	    	    	'status_active_games'	=> $status,
 		    	];
 		    	\App\Master_game::where('id_games',$id_games)->update($data);

@@ -51,7 +51,7 @@
 		                                <td>{{ $no }}</td>
 		                                <td>{{ $master_agents->name }}</td>
 		                                <td>{{ $master_agents->phone_number_users }}</td>
-		                                <td>{{ $master_agents->bot_phone_number_users }}</td>
+		                                <td>{{ $master_agents->name_bots }}</td>
 		                                <td>{{ $master_agents->credit_users }}</td>
 		                                <td width="5%">
 		                                	<div class="input-group">

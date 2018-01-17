@@ -52,7 +52,7 @@
 		                                <td><?php echo e($no); ?></td>
 		                                <td><?php echo e($master_agents->name); ?></td>
 		                                <td><?php echo e($master_agents->phone_number_users); ?></td>
-		                                <td><?php echo e($master_agents->bot_phone_number_users); ?></td>
+		                                <td><?php echo e($master_agents->name_bots); ?></td>
 		                                <td><?php echo e($master_agents->credit_users); ?></td>
 		                                <td width="5%">
 		                                	<div class="input-group">
